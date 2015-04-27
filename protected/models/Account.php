@@ -119,7 +119,11 @@ class Account extends CActiveRecord
 
     public function saveAccount($client_id, $client_fname)
     {
-        $account = new Account;
+        $account=$this->getAccountInfo($client_id);
+        if (!isset($account)) {
+            $account = new Account;
+        }
+
         $account->client_id = $client_id;
         $account->name = $client_fname;
         $account->status = Yii::app()->params['_active_status'];
@@ -130,6 +134,7 @@ class Account extends CActiveRecord
     public static function getAccountInfo($client_id)
     {
         return Account::model()->find('client_id=:client_id', array(':client_id' => $client_id));
+
     }
 
     public function updateAccountBal($account, $amount)

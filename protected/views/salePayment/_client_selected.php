@@ -13,8 +13,12 @@
                         'class'=>'update-dialog-open-link',
                         'data-update-dialog-title' => Yii::t('app','Customer Information'),
                     )); ?>
-                
-                <?php echo '( ' . Yii::t('app','Total Due') . ' : ' . number_format($balance,Yii::app()->shoppingCart->getDecimalPlace()) . ' )'; ?>
+
+                    <?php if ($balance==-3.14159) {  ?>
+                        <?php echo 'The account was not setup, plz update first'; ?>
+                    <?php } else {  ?>
+                        <?php echo '( ' . Yii::t('app','Total Due') . ' : ' . number_format($balance,Yii::app()->shoppingCart->getDecimalPlace()) . ' )'; ?>
+                    <?php } ?>
                     
                 </span>    
                 

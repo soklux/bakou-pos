@@ -239,11 +239,20 @@ class SalePaymentController extends Controller
         
         if ($data['client_id']!==null) {
             $account = Account::model()->getAccountInfo($data['client_id']);
-            $data['account'] = $account;
-            $data['balance'] = $account->current_balance;
+            if (isset($account)) {
+                $data['balance'] = $account->current_balance;
+                $data['account'] = $account;
+                $data['save_button'] = false;
+                if ($data['balance']<=0) {
+                    $data['save_button'] = true;
+                }
+            } else {
+                $data['balance'] = -3.14159;
+                $data['save_button'] = true;
+            }
             $client = Client::model()->findbyPk($data['client_id']);
             $data['cust_fullname'] = $client->first_name . ' ' . $client->last_name;
-            $data['save_button'] = false;
+
         } else {
             $data['cust_fullname'] = '';
             $data['balance'] = 0;

@@ -241,10 +241,9 @@ class ClientController extends Controller
                                 try
                                 {
                                     if ($model->save())
-                                    {  
-                                        $account=Account::model()->find('client_id=:client_id',array(':client_id'=>(int)$id));
-                                        $account->name=$model->first_name . ' ' . $model->last_name;
-                                        $account->save();
+                                    {
+                                        $client_fname=$model->first_name . ' ' . $model->last_name;
+                                        Account::model()->saveAccount($model->id,$client_fname);
                                         
                                         $transaction->commit(); 
                                         

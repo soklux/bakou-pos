@@ -4,7 +4,6 @@ $this->breadcrumbs=array(
 	Yii::t('app','Index'),
 );
 
-
 ?>
 
 <div id="payment_container">
@@ -30,7 +29,7 @@ $this->breadcrumbs=array(
                         $this->renderPartial('_client', array('model' => $model)); 
                     } else {
                         $this->renderPartial('_client_selected', array('model' => $model, 
-                                'balance' => $balance, 
+                                'balance' => $balance,
                                 'client_id' => $client_id,
                                 'cust_fullname' => $cust_fullname
                                 )

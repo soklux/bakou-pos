@@ -152,46 +152,52 @@ class Client extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-        
-        /*
-         * Getting client using for select 2
-         */
-        public static function select2Client($name = '') {
 
-            // Recommended: Secure Way to Write SQL in Yii 
-            $sql = 'SELECT id ,concat_ws(" : ",concat_ws("  ",first_name,last_name),mobile_no) AS text 
+    /*
+     * Getting client using for select 2
+     */
+    public static function select2Client($name = '')
+    {
+
+        // Recommended: Secure Way to Write SQL in Yii
+        $sql = 'SELECT id ,concat_ws(" : ",concat_ws("  ",first_name,last_name),mobile_no) AS text
                     FROM client 
                     WHERE (first_name LIKE :name or last_name like :name or mobile_no like :name)
                     AND status=:active_status';
-            
-            $name = '%' . $name . '%';
-            return Yii::app()->db->createCommand($sql)->queryAll(true, array(':name' => $name,':active_status'=>$this->_active_status));
-       
-        }
-        
-        protected function getFullname()
-        {
-            return $this->first_name . ' - ' . $this->last_name;
-        }
-        
-        public function getClient()
-        {
-            $model = Client::model()->findAll('status=:status',array(':status'=>$this->_active_status));
-            $list  = CHtml::listData($model , 'id', 'Fullname');
-            return $list;
-        }
-        
-        public function deleteClient($id)
-        {
-            Client::model()->updateByPk($id,array('status'=>$this->_inactive_status));
-            Account::model()->updateAll(array('status'=>$this->_inactive_status),'client_id=:client_id',array(':client_id'=>$id));
-        }
-        
-        public function undodeleteClient($id)
-        {
-            Client::model()->updateByPk($id,array('status' => $this->_active_status));
-            Account::model()->updateAll(array('status' => $this->_active_status),'client_id=:client_id',array(':client_id'=>$id));
-        }
+
+        $name = '%' . $name . '%';
+
+        return Yii::app()->db->createCommand($sql)->queryAll(true,
+            array(':name' => $name, ':active_status' => $this->_active_status));
+
+    }
+
+    protected function getFullname()
+    {
+        return $this->first_name . ' - ' . $this->last_name;
+    }
+
+    public function getClient()
+    {
+        $model = Client::model()->findAll('status=:status', array(':status' => $this->_active_status));
+        $list = CHtml::listData($model, 'id', 'Fullname');
+
+        return $list    ;
+    }
+
+    public function deleteClient($id)
+    {
+        Client::model()->updateByPk($id, array('status' => $this->_inactive_status));
+        Account::model()->updateAll(array('status' => $this->_inactive_status), 'client_id=:client_id',
+            array(':client_id' => $id));
+    }
+
+    public function undodeleteClient($id)
+    {
+        Client::model()->updateByPk($id, array('status' => $this->_active_status));
+        Account::model()->updateAll(array('status' => $this->_active_status), 'client_id=:client_id',
+            array(':client_id' => $id));
+    }
          
         /**
 	 * Suggests a list of existing values matching the specified keyword.
@@ -217,5 +223,15 @@ class Client extends CActiveRecord
 		}
 		return $suggest;
 	}
+
+    /**
+     * @getClientLink
+     */
+    public function getClientLink()
+    {
+        $url = Url::to(['client/view', 'id'=>$this->id]);
+        $options = [];
+        return Html::a($this->getFullName(), $url, $options);
+    }
         
 }
