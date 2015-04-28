@@ -783,6 +783,33 @@ class Report extends CFormModel
         return $dataProvider; // Return as array object
     }
 
+    public function dbBestCustomer()
+    {
+
+        $sql = "SELECT  @ROW := @ROW + 1 AS rank,customer_name,amount amount
+                FROM (
+                    SELECT CONCAT(c.first_name,'-',last_name) customer_name,SUM(s.sub_total) amount
+                    FROM sale s ,`client` c
+                    WHERE s.client_id = c.id
+                    AND s.status='1'
+                    ORDER BY amount DESC LIMIT 10
+                     ) t1, (SELECT @ROW := 0) RADIANS";
+
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true);
+
+        $dataProvider = new CArrayDataProvider($rawData, array(
+            'keyField' => 'rank',
+            'sort' => array(
+                'attributes' => array(
+                    'customer_name',
+                ),
+            ),
+            'pagination' => false,
+        ));
+
+        return $dataProvider; // Return as array object
+    }
+
     public function itemAsset()
     {
         $sql = "SELECT SUM(quantity) total_qty,SUM(cost_price*quantity) total_amount

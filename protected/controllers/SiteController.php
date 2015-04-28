@@ -53,13 +53,10 @@ class SiteController extends Controller
 	 * This is the default 'index' action that is invoked
 	 * when an action is not explicitly requested by users.
 	 */
-	public function actionIndex()
-	{
-		// renders the view file 'protected/views/site/index.php'
-		// using the default layout 'protected/views/layouts/main.php'
-		//$this->render('index');
-                $this->actionLogin();
-	}
+    public function actionIndex()
+    {
+        $this->actionLogin();
+    }
         
         public function actionAbout()
 	{
@@ -109,53 +106,49 @@ class SiteController extends Controller
 	/**
 	 * Displays the login page
 	 */
-	public function actionLogin()
-	{
-		
-                $model=new LoginForm;
+    public function actionLogin()
+    {
 
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+        $model = new LoginForm;
 
-		// collect user input data
-		if(isset($_POST['LoginForm']))
-		{
-			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
-		}
-		// display the login form
-		// display the login form
-                if(Yii::app()->user->isGuest) 
-                {
-                    $this->layout='//layouts/column3';
-                    $this->render('login_ace',array('model'=>$model));
-                }    
-                else
-                {
-                    if ( Yii::app()->user->checkAccess('report.index') ) {
-                        $this->redirect(array('dashboard/view'));
-                    } else {
-                        $this->redirect(array('saleItem/index'));
-                    }
-                    
-                }
-	}
+        // if it is ajax validation request
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'login-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+
+        // collect user input data
+        if (isset($_POST['LoginForm'])) {
+            $model->attributes = $_POST['LoginForm'];
+            // validate user input and redirect to the previous page if valid
+            if ($model->validate() && $model->login()) {
+                $this->redirect(Yii::app()->user->returnUrl);
+            }
+        }
+        // display the login form
+        // display the login form
+        if (Yii::app()->user->isGuest) {
+            $this->layout = '//layouts/column3';
+            $this->render('login_ace', array('model' => $model));
+        } else {
+            if (Yii::app()->user->checkAccess('report.index')) {
+                $this->redirect(array('dashboard/view'));
+            } else {
+                $this->redirect(array('saleItem/index'));
+            }
+
+        }
+    }
 
 	/**
 	 * Logs out the current user and redirect to homepage.
 	 */
-	public function actionLogout()
-	{
-            UserLog::model()->saveUserLogOut(Yii::app()->session['unique_id'],Date('Y-m-d H:i:s'));
-            Yii::app()->user->logout();
-            $this->redirect(Yii::app()->homeUrl);
-	}
+    public function actionLogout()
+    {
+        UserLog::model()->saveUserLogOut(Yii::app()->session['unique_id'], Date('Y-m-d H:i:s'));
+        Yii::app()->user->logout();
+        $this->redirect(Yii::app()->homeUrl);
+    }
         
         
         /**
@@ -167,18 +160,18 @@ class SiteController extends Controller
             
             $this->render('error_500',$data);
 	}
-        
-        protected function errorInfo($err_no) 
-        {
-           $data=array();
-           
-           if ($err_no==403) {
-               $data['err_no'] = $err_no;
-               $data['header'] = Yii::t('app','No Permission');
-               $data['subject'] = Yii::t('app','You are not authorized to perform this action');
-               $data['bodies'] = array('Read the faq','Contact your system administrator');
-           }
-           
-           return $data;
+
+    protected function errorInfo($err_no)
+    {
+        $data = array();
+
+        if ($err_no == 403) {
+            $data['err_no'] = $err_no;
+            $data['header'] = Yii::t('app', 'No Permission');
+            $data['subject'] = Yii::t('app', 'You are not authorized to perform this action');
+            $data['bodies'] = array('Read the faq', 'Contact your system administrator');
         }
+
+        return $data;
+    }
 }

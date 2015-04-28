@@ -65,10 +65,10 @@ $this->widget('bootstrap.widgets.TbNav', array(
                         'visible'=> Yii::app()->user->checkAccess('report.index') 
                     ),
                     array('label'=>Yii::t('app','Total Asset'), 'icon'=> 'menu-icon fa fa-caret-right', 'url'=>Yii::app()->urlManager->createUrl('report/ItemAsset'),'active'=>$this->id .'/'. $this->action->id =='report/ItemAsset',
-                        'visible'=> Yii::app()->user->checkAccess('report.index') 
+                        'visible'=> Yii::app()->user->checkAccess('report.index'),
                     ),
                     array('label'=>Yii::t('app','User Log Summary'),'icon'=> 'menu-icon fa fa-caret-right', 'url'=>Yii::app()->urlManager->createUrl('report/UserLogSummary'), 'active'=>$this->id .'/'. $this->action->id =='report/UserLogSummary',
-                        'visible'=> Yii::app()->user->isAdmin 
+                        'visible'=> Yii::app()->user->isAdmin,
                     ),
             )),
             array('label'=>'<span class="menu-text">'. strtoupper(Yii::t('menu','PIM')) . '</span>', 'icon'=>'menu-icon fa fa-group','url'=>Yii::app()->urlManager->createUrl('client/admin'),

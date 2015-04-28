@@ -13,104 +13,227 @@ $this->breadcrumbs=array(
         $date[] = $record["date"];
     }
 ?>
-    <div class="row">
-            <div class="span12">
-
-                    <!--PAGE CONTENT BEGINS-->
-                     <div class="row-fluid">
-                        <div class="span11">
-                            <?php 
-                            $this->widget(
-                                'yiiwheels.widgets.highcharts.WhHighCharts',
-                                array(
-                                    'pluginOptions' => array(
-                                        //'chart'=> array('type'=>'bar'),
-                                        'title'  => array('text' => Yii::t('app','Daily Sales')),
-                                        'xAxis'  => array(
-                                            'categories' => $date
-                                        ),
-                                        'yAxis'  => array(
-                                            'title' => array('text' => 'Amount in USD')
-                                        ),
-                                        'series' => array(
-                                            array('name'=>'Date - ' .  date('M Y'),'data' => $amount),
-                                        )
-                                    )
-                                )
-                            ); 
-                            ?>
-                        </div><!--/span-->
-                    </div>
-
-
-                    <div class="row-fluid">
-                            <div class="span6">
-                                    <?php $this->widget('yiiwheels.widgets.grid.WhGridView',array(
-                                        'id'=>'top-product-grid-qty',
-                                        'fixedHeader' => true,
-                                        'responsiveTable' => true,
-                                        'type'=>TbHtml::GRID_TYPE_BORDERED,
-                                        'dataProvider'=>$report->dashtopProduct(),
-                                        'summaryText' =>'<p class="text-info" align="left">' . Yii::t('app','This Year Top 10 Products ') . Yii::t('app','Ranked by QUANTITY') .'</p>', 
-                                        'columns'=>array(
-                                                array('name'=>'rank',
-                                                      'header'=>Yii::t('app','Rank'),
-                                                      'value'=>'$data["rank"]',
-                                                ),
-                                                array('name'=>'item_name',
-                                                      'header'=>Yii::t('app','Item Name'),  
-                                                      'value'=>'$data["item_name"]',
-                                                ),
-                                                array('name'=>'qty',
-                                                      'header'=>Yii::t('app','Quantity'),  
-                                                      'value'=>'$data["qty"]',
-                                                      //'footer'=>$report->paymentTotalQty() ,
-                                                ),
-                                                array('name'=>'amount',
-                                                      'header'=>Yii::t('app','Amount'),  
-                                                      'value'=>'number_format($data["amount"],Yii::app()->shoppingCart->getDecimalPlace())',
-                                                      //'footer'=>Yii::app()->getNumberFormatter()->formatCurrency($report->paymentTotalAmount(),'USD'),
-                                                ),
-                                        ),
-                                    )); ?>
-                            </div> 
-
-                            <div class="span6">
-                                    <?php $this->widget('yiiwheels.widgets.grid.WhGridView',array(
-                                        'id'=>'top-product-grid-amount',
-                                        'fixedHeader' => true,
-                                        'responsiveTable' => true,
-                                        'type'=>TbHtml::GRID_TYPE_BORDERED,
-                                        'dataProvider'=>$report->dashtopProductbyAmount(),
-                                        'summaryText' =>'<p class="text-info" align="left">' . Yii::t('app','This Year Top 10 Products ') . Yii::t('app','Ranked by AMOUNT') .'</p>', 
-                                        'columns'=>array(
-                                                array('name'=>'rank',
-                                                      'header'=>Yii::t('app','Rank'),
-                                                      'value'=>'$data["rank"]',
-                                                ),
-                                                array('name'=>'item_name',
-                                                      'header'=>Yii::t('app','Item Name'),  
-                                                      'value'=>'$data["item_name"]',
-                                                ),
-                                                array('name'=>'qty',
-                                                      'header'=>Yii::t('app','Quantity'),  
-                                                      'value'=>'$data["qty"]',
-                                                      //'footer'=>$report->paymentTotalQty() ,
-                                                ),
-                                                array('name'=>'amount',
-                                                      'header'=>Yii::t('app','Amount'),  
-                                                      'value'=>'number_format($data["amount"],Yii::app()->shoppingCart->getDecimalPlace())',
-                                                      //'footer'=>Yii::app()->getNumberFormatter()->formatCurrency($report->paymentTotalAmount(),'USD'),
-                                                ),
-                                        ),
-                                  )); ?>
+    <div class="">
+            <div class="row">
+                <!--PAGE CONTENT BEGINS-->
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-12 widget-container-col">
+                            <div class="infobox infobox-blue">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-shopping-cart"></i>
+                                </div>
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number">88888888888</span>
+                                    <div class="infobox-content"><?php echo CHtml::link('Today\'s Sale', Yii::app()->createUrl("report/SaleReportTab")); ?></div>
+                                </div>
                             </div>
+
+                            <div class="infobox infobox-blue">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-shopping-cart"></i>
+                                </div>
+
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number">9999999</span>
+
+                                    <div class="infobox-content">Total Sales</div>
+                                </div>
+                            </div>
+
+                            <div class="infobox infobox-blue">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-users"></i>
+                                </div>
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number">8</span>
+
+                                    <div class="infobox-content"><?php echo CHtml::link('Total Customers', Yii::app()->createUrl("client/admin")); ?></div>
+                                </div>
+                            </div>
+
+                            <div class="infobox infobox-green">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-user"></i>
+                                </div>
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number">8</span>
+
+                                    <div class="infobox-content"><?php echo CHtml::link('New Customer Today', Yii::app()->createUrl("client/admin")); ?></div>
+                                </div>
+                            </div>
+
+                            <div class="infobox infobox-blue">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-shopping-cart"></i>
+                                </div>
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number">8</span>
+
+                                    <div class="infobox-content">2015 Revenue</div>
+                                </div>
+                            </div>
+
+                            <div class="infobox infobox-red">
+                                <div class="infobox-icon">
+                                    <i class="ace-icon fa fa-shopping-cart"></i>
+                                </div>
+                                <div class="infobox-data">
+                                    <span class="infobox-data-number">8</span>
+
+                                    <div class="infobox-content">Out of Stock</div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
+                    <div class="space-8"></div>
 
-            </div><!--/row-->
+                    <div class="row">
+                        <div class="col-xs-12 widget-container-col">
+                            <div class="widget-box widget-color-blue2">
+                                <div class="widget-header">
+                                    <h5 class="widget-title bigger lighter">
+                                        <i class="ace-icon fa fa-bar-chart-o"></i>
+                                        <?php echo Yii::t('app','Sale\'s Chart'); ?>
+                                    </h5>
+                                </div>
+                                <div class="widget-body">
+                                    <div class="widget-main no-padding">
+                                        <?php
+                                        $this->widget(
+                                            'yiiwheels.widgets.highcharts.WhHighCharts',
+                                            array(
+                                                'pluginOptions' => array(
+                                                    //'chart'=> array('type'=>'bar'),
+                                                    //'title' => array('text' => Yii::t('app', 'Sale\'s Chart')),
+                                                    'title' => '',
+                                                    'xAxis' => array(
+                                                        'categories' => $date
+                                                    ),
+                                                    'yAxis' => array(
+                                                        'title' => array('text' => 'Amount in USD')
+                                                    ),
+                                                    'series' => array(
+                                                        array('name' => 'Date - ' . date('M Y'), 'data' => $amount),
+                                                    )
+                                                )
+                                            )
+                                        );
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    </div><!--/.row-fluid-->
+                    <div class="space-8"></div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 widget-container-col">
+                            <div class="widget-box widget-color-blue2">
+                                <div class="widget-header">
+                                    <h5 class="widget-title bigger lighter">
+                                        <i class="ace-icon fa fa-trophy"></i>
+                                        <?php echo Yii::t('app','This Year Top 10 Products ') . Yii::t('app','Ranked by AMOUNT'); ?>
+                                    </h5>
+                                </div>
+
+                                <div class="widget-body">
+                                    <div class="widget-main no-padding">
+
+                                        <?php $this->widget('yiiwheels.widgets.grid.WhGridView', array(
+                                            'id' => 'top-product-grid-qty',
+                                            'fixedHeader' => true,
+                                            'responsiveTable' => true,
+                                            'type' => TbHtml::GRID_TYPE_BORDERED,
+                                            'dataProvider' => $report->dashtopProductbyAmount(),
+                                            'summaryText' =>'',
+                                           /* 'summaryText' => '<p class="text-info" align="left">' . Yii::t('app',
+                                                    'This Year Top 10 Products ') . Yii::t('app',
+                                                    'Ranked by QUANTITY') . '</p>',*/
+                                            'columns' => array(
+                                                array(
+                                                    'name' => 'rank',
+                                                    'header' => Yii::t('app', 'Rank'),
+                                                    'value' => '$data["rank"]',
+                                                ),
+                                                array(
+                                                    'name' => 'item_name',
+                                                    'header' => Yii::t('app', 'Item Name'),
+                                                    'value' => '$data["item_name"]',
+                                                ),
+                                                array(
+                                                    'name' => 'qty',
+                                                    'header' => Yii::t('app', 'Quantity'),
+                                                    'value' => '$data["qty"]',
+                                                    //'footer'=>$report->paymentTotalQty() ,
+                                                ),
+                                                array(
+                                                    'name' => 'amount',
+                                                    'header' => Yii::t('app', 'Total Sales'),
+                                                    'value' => 'number_format($data["amount"],Yii::app()->shoppingCart->getDecimalPlace())',
+                                                    //'footer'=>Yii::app()->getNumberFormatter()->formatCurrency($report->paymentTotalAmount(),'USD'),
+                                                ),
+                                            ),
+                                        )); ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 widget-container-col">
+                            <div class="widget-box widget-color-blue2">
+                                <div class="widget-header">
+                                    <h5 class="widget-title bigger lighter">
+                                        <i class="ace-icon fa fa-graduation-cap"></i>
+                                        <?php echo Yii::t('app', 'Best Customer '); ?>
+                                    </h5>
+
+                                </div>
+                                <div class="widget-body">
+                                    <div class="widget-main no-padding">
+
+                                        <?php $this->widget('yiiwheels.widgets.grid.WhGridView', array(
+                                            'id' => 'top-product-grid-amount',
+                                            'fixedHeader' => true,
+                                            'responsiveTable' => true,
+                                            'type' => TbHtml::GRID_TYPE_BORDERED,
+                                            'dataProvider' => $report->dbBestCustomer(),
+                                            'summaryText' => '',
+                                            /*'summaryText' => '<p class="text-info" align="left">' . Yii::t('app',
+                                                    'This Year Top 10 Products ') . Yii::t('app',
+                                                    'Ranked by AMOUNT') . '</p>',*/
+                                            'columns' => array(
+                                                array(
+                                                    'name' => 'rank',
+                                                    'header' => Yii::t('app', 'Rank'),
+                                                    'value' => '$data["rank"]',
+                                                ),
+                                                array(
+                                                    'name' => 'customer_name',
+                                                    'header' => Yii::t('app', 'Customer'),
+                                                    'value' => '$data["customer_name"]',
+                                                ),
+                                                array(
+                                                    'name' => 'amount',
+                                                    'header' => Yii::t('app', 'Purchase Amount'),
+                                                    'value' => 'number_format($data["amount"],Yii::app()->shoppingCart->getDecimalPlace())',
+                                                    //'footer'=>Yii::app()->getNumberFormatter()->formatCurrency($report->paymentTotalAmount(),'USD'),
+                                                ),
+                                            ),
+                                        )); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!--/row-->
+            </div>
+    </div>
           
 <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-small btn-inverse">
         <i class="icon-double-angle-up icon-only bigger-110"></i>
