@@ -22,7 +22,7 @@ $this->widget('bootstrap.widgets.TbNav', array(
             array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu', 'Dashboard')) . '</span>', 'icon'=>'menu-icon fa fa-tachometer', 'url'=>Yii::app()->urlManager->createUrl('dashboard/view'), 'active'=>$this->id .'/'. $this->action->id=='dashboard/view'?true:false,
                     'visible'=> Yii::app()->user->checkAccess('report.index')
             ),
-            array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu', 'Item')) . '</span>', 'icon'=>'menu-icon fa fa-coffee', 'url'=>Yii::app()->urlManager->createUrl('item/admin'), 'active'=>$this->id .'/'. $this->action->id=='item/admin',
+            array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu', 'Item')) . '</span>', 'icon'=>'menu-icon fa fa-coffee', 'url'=>Yii::app()->urlManager->createUrl('item/admin'), 'active'=> $this->id == 'item'  || 'category'  ,
                 'visible'=> Yii::app()->user->checkAccess('item.index') || Yii::app()->user->checkAccess('item.create') || Yii::app()->user->checkAccess('item.update') || Yii::app()->user->checkAccess('item.delete')),
             array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu','Transaction')) .'</span>', 'icon'=>'menu-icon fa fa-desktop','url'=>Yii::app()->urlManager->createUrl('receivingItem/index'),'active'=>$this->id .'/'. $this->action->id=='receivingItem/index',
                 'visible'=> Yii::app()->user->checkAccess('transaction.receive') || Yii::app()->user->checkAccess('transaction.return') || Yii::app()->user->checkAccess('transaction.adjustin') || Yii::app()->user->checkAccess('transaction.adjustout') || Yii::app()->user->checkAccess('transaction.count') ,

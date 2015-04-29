@@ -19,12 +19,12 @@ $this->breadcrumbs=array(
                 <div class="col-xs-12">
                     <div class="row">
                         <div class="col-xs-12 widget-container-col">
-                            <div class="infobox infobox-blue">
+                            <div class="infobox infobox-green">
                                 <div class="infobox-icon">
                                     <i class="ace-icon fa fa-shopping-cart"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">88888888888</span>
+                                    <span class="infobox-data-number"><?php echo number_format($report->totalSale2Y(),Yii::app()->shoppingCart->getDecimalPlace()); ?></span>
                                     <div class="infobox-content"><?php echo CHtml::link('Today\'s Sale', Yii::app()->createUrl("report/SaleReportTab")); ?></div>
                                 </div>
                             </div>
@@ -35,7 +35,7 @@ $this->breadcrumbs=array(
                                 </div>
 
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">9999999</span>
+                                    <span class="infobox-data-number"><?php echo number_format($report->totalSale2D(),Yii::app()->shoppingCart->getDecimalPlace()); ?></span>
 
                                     <div class="infobox-content">Total Sales</div>
                                 </div>
@@ -46,7 +46,7 @@ $this->breadcrumbs=array(
                                     <i class="ace-icon fa fa-users"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">8</span>
+                                    <span class="infobox-data-number"><?php echo $report->countCustomer(); ?></span>
 
                                     <div class="infobox-content"><?php echo CHtml::link('Total Customers', Yii::app()->createUrl("client/admin")); ?></div>
                                 </div>
@@ -57,7 +57,7 @@ $this->breadcrumbs=array(
                                     <i class="ace-icon fa fa-user"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">8</span>
+                                    <span class="infobox-data-number"><?php echo $report->countCustReg2D(); ?></span>
 
                                     <div class="infobox-content"><?php echo CHtml::link('New Customer Today', Yii::app()->createUrl("client/admin")); ?></div>
                                 </div>
@@ -68,7 +68,7 @@ $this->breadcrumbs=array(
                                     <i class="ace-icon fa fa-shopping-cart"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">8</span>
+                                    <span class="infobox-data-number">xXx</span>
 
                                     <div class="infobox-content">2015 Revenue</div>
                                 </div>
@@ -79,7 +79,7 @@ $this->breadcrumbs=array(
                                     <i class="ace-icon fa fa-shopping-cart"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">8</span>
+                                    <span class="infobox-data-number"><?php echo $report->negativeStock(); ?></span>
 
                                     <div class="infobox-content">Out of Stock</div>
                                 </div>

@@ -28,7 +28,7 @@ class Report extends CFormModel
     public $receive_id;
     public $employee_id;
     
-     private $item_active = '1';
+    private $item_active = '1';
 
     /**
      * Returns the static model of the specified AR class.
@@ -947,6 +947,85 @@ class Report extends CFormModel
         ));
 
         return $dataProvider; // Return as array object
+    }
+
+    public function totalSale2D()
+    {
+        $sql = "SELECT IFNULL(SUM(sub_total),0) sale_amount
+                FROM sale
+                WHERE sale_time>=CURDATE()
+                AND `status`=:status";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
+
+        foreach ($result as $record) {
+            $result = $record['sale_amount'];
+        }
+
+        return $result;
+    }
+
+    public function totalSale2Y()
+    {
+        $sql = "SELECT IFNULL(SUM(sub_total),0) sale_amount
+                FROM sale
+                WHERE YEAR(sale_time) = YEAR(CURDATE())
+                AND `status`=:status";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
+
+        foreach ($result as $record) {
+            $result = $record['sale_amount'];
+        }
+
+        return $result;
+    }
+
+    public function countCustomer()
+    {
+        $sql = "SELECT count(*) nCount
+                FROM `client`
+                WHERE `status`=:status";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
+
+        foreach ($result as $record) {
+            $result = $record['nCount'];
+        }
+
+        return $result;
+    }
+
+    public function countCustReg2D()
+    {
+        $sql = "SELECT count(*) nCount
+                FROM `client`
+                WHERE `status`=:status
+                AND DATE(created_at)=DATE(NOW())";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
+
+        foreach ($result as $record) {
+            $result = $record['nCount'];
+        }
+
+        return $result;
+    }
+
+    public function negativeStock()
+    {
+        $sql = "SELECT count(*) nCount
+                FROM `item`
+                WHERE quantity<0
+                AND `status`=:status";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
+
+        foreach ($result as $record) {
+            $result = $record['nCount'];
+        }
+
+        return $result;
     }
 
 }

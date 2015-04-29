@@ -93,13 +93,7 @@ class Item extends CActiveRecord
             array('description, inv_comment, promo_end_date, promo_start_date', 'safe'),
             array('image', 'file', 'types' => 'jpg, gif, png', 'allowEmpty' => true, 'maxSize' => 5 * 1024 * 1024),
             array('item_number', 'default', 'setOnEmpty' => true, 'value' => null),
-            array(
-                'created_date,modified_date',
-                'default',
-                'value' => date('Y-m-d H:i:s'),
-                'setOnEmpty' => true,
-                'on' => 'insert'
-            ),
+            array('created_date,modified_date', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
             array('modified_date', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => false, 'on' => 'update'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.

@@ -50,6 +50,8 @@ class Client extends CActiveRecord
 			array('email', 'length', 'max'=>30),
 			array('status', 'length', 'max'=>1),
 			array('notes', 'safe'),
+            array('created_at,updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
+            array('updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => false, 'on' => 'update'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, first_name, last_name, mobile_no, address1, address2, city_id, country_code, email, notes, status, search', 'safe', 'on'=>'search'),

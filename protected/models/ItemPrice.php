@@ -115,17 +115,17 @@ class ItemPrice extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-        
-        public function saveItemPrice($item_id,$new_price,$old_price)
-        {
-            if ($new_price <> $old_price) {
-                $item_price = new ItemPrice;
-                $item_price->item_id = $item_id;
-                $item_price->old_price = $old_price;
-                $item_price->new_price = $new_price;
-                $item_price->employee_id = Yii::app()->session['employeeid'];
-                $item_price->modified_date = date('Y-m-d H:i:s');
-                $item_price->save();
-            }
+
+    public function saveItemPrice($item_id, $new_price, $old_price)
+    {
+        if ($new_price <> $old_price) {
+            $item_price = new ItemPrice;
+            $item_price->item_id = $item_id;
+            $item_price->old_price = $old_price;
+            $item_price->new_price = $new_price;
+            $item_price->employee_id = Yii::app()->session['employeeid'];
+            $item_price->modified_date = date('Y-m-d H:i:s');
+            $item_price->save();
         }
+    }
 }
