@@ -63,14 +63,14 @@ $this->breadcrumbs=array(
                                 </div>
                             </div>
 
-                            <div class="infobox infobox-blue">
+                            <div class="infobox infobox-orange2">
                                 <div class="infobox-icon">
                                     <i class="ace-icon fa fa-shopping-cart"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number">xXx</span>
+                                    <span class="infobox-data-number"><?php echo $report->outofStock(); ?></span>
 
-                                    <div class="infobox-content">2015 Revenue</div>
+                                    <div class="infobox-content"><?php echo CHtml::link(Yii::t('app;','Out of Stock'), Yii::app()->createUrl("report/inventory",array('filter'=>'outstock'))); ?></div>
                                 </div>
                             </div>
 
@@ -79,9 +79,9 @@ $this->breadcrumbs=array(
                                     <i class="ace-icon fa fa-shopping-cart"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number"><?php echo $report->negativeStock(); ?></span>
+                                    <span class="infobox-data-number"><?php echo -$report->negativeStock(); ?></span>
 
-                                    <div class="infobox-content">Out of Stock</div>
+                                    <div class="infobox-content"><?php echo CHtml::link(Yii::t('app;','Negative Stock'), Yii::app()->createUrl("report/inventory")); ?></div>
                                 </div>
                             </div>
 

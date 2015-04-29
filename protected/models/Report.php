@@ -30,6 +30,8 @@ class Report extends CFormModel
     
     private $item_active = '1';
 
+    private $active_status = '1';
+
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -791,19 +793,20 @@ class Report extends CFormModel
                     SELECT CONCAT(c.first_name,'-',last_name) customer_name,SUM(s.sub_total) amount
                     FROM sale s ,`client` c
                     WHERE s.client_id = c.id
-                    AND s.status='1'
+                    AND s.status=:status
+                    GROUP BY customer_name
                     ORDER BY amount DESC LIMIT 10
-                     ) t1, (SELECT @ROW := 0) RADIANS";
+                     ) t1, (SELECT @ROW := 0) r";
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true);
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true,array('status'=>$this->active_status));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             'keyField' => 'rank',
-            'sort' => array(
+           /* 'sort' => array(
                 'attributes' => array(
                     'customer_name',
                 ),
-            ),
+            ),*/
             'pagination' => false,
         ));
 
@@ -1002,6 +1005,22 @@ class Report extends CFormModel
                 FROM `client`
                 WHERE `status`=:status
                 AND DATE(created_at)=DATE(NOW())";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
+
+        foreach ($result as $record) {
+            $result = $record['nCount'];
+        }
+
+        return $result;
+    }
+
+    public function outofStock()
+    {
+        $sql = "SELECT count(*) nCount
+                FROM `item`
+                WHERE quantity=0
+                AND `status`=:status";
 
         $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status' => $this->item_active));
 
