@@ -15,6 +15,8 @@
  * @property string $email
  * @property string $notes
  * @property string $status
+ * @property date $created_at
+ * @property date $updated_at
  *
  * The followings are the available model relations:
  * @property Account[] $accounts

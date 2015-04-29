@@ -16,6 +16,8 @@
  * @property string $email
  * @property string $notes
  * @property string $status
+ * @property date $created_at
+ * @property date $updated_at
  *
  * The followings are the available model relations:
  * @property Item[] $items
@@ -58,7 +60,9 @@ class Supplier extends CActiveRecord
 			array('address1, address2', 'length', 'max'=>50),
 			array('country_code', 'length', 'max'=>3),
 			array('notes', 'safe'),
-                        array('status', 'length', 'max'=>1),
+            array('created_at,updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
+            array('updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => false, 'on' => 'update'),
+            array('status', 'length', 'max'=>1),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, company_name, first_name, last_name, mobile_no, address1, address2, city_id, country_code, email, notes, status, search', 'safe', 'on'=>'search'),
