@@ -22,7 +22,7 @@ $this->widget('bootstrap.widgets.TbNav', array(
             array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu', 'Dashboard')) . '</span>', 'icon'=>'menu-icon fa fa-tachometer', 'url'=>Yii::app()->urlManager->createUrl('dashboard/view'), 'active'=>$this->id .'/'. $this->action->id=='dashboard/view'?true:false,
                     'visible'=> Yii::app()->user->checkAccess('report.index')
             ),
-            array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu', 'Item')) . '</span>', 'icon'=>'menu-icon fa fa-coffee', 'url'=>Yii::app()->urlManager->createUrl('item/admin'), 'active'=> $this->id == 'item'  || 'category'  ,
+            array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu', 'Item')) . '</span>', 'icon'=>'menu-icon fa fa-coffee', 'url'=>Yii::app()->urlManager->createUrl('item/admin'), 'active'=> $this->id == 'item' ,
                 'visible'=> Yii::app()->user->checkAccess('item.index') || Yii::app()->user->checkAccess('item.create') || Yii::app()->user->checkAccess('item.update') || Yii::app()->user->checkAccess('item.delete')),
             array('label'=>'<span class="menu-text">' . strtoupper(Yii::t('menu','Transaction')) .'</span>', 'icon'=>'menu-icon fa fa-desktop','url'=>Yii::app()->urlManager->createUrl('receivingItem/index'),'active'=>$this->id .'/'. $this->action->id=='receivingItem/index',
                 'visible'=> Yii::app()->user->checkAccess('transaction.receive') || Yii::app()->user->checkAccess('transaction.return') || Yii::app()->user->checkAccess('transaction.adjustin') || Yii::app()->user->checkAccess('transaction.adjustout') || Yii::app()->user->checkAccess('transaction.count') ,
@@ -87,10 +87,11 @@ $this->widget('bootstrap.widgets.TbNav', array(
                                ),
             )),
             array('label'=>'<span class="menu-text">'. strtoupper(Yii::t('menu','Settings')) . '</span>', 'icon'=>'menu-icon fa fa-cogs','url'=>Yii::app()->urlManager->createUrl('settings/index'),
-                           'active'=>$this->id=='priceTier' || strtolower($this->id)=='default' || $this->id=='store' || $this->id=='settings' || $this->id=='location',
+                           'active'=>$this->id=='priceTier' || strtolower($this->id)=='default' || $this->id=='store' || $this->id=='settings' || $this->id=='location' || $this->id=='category',
                            'visible'=>Yii::app()->user->checkAccess('store.update'),
                            'items'=>array(
-                               //array('label'=>Yii::t('menu', 'Employee'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('employee/admin'), 'active'=>$this->id .'/'. $this->action->id=='employee/admin','visible'=>Yii::app()->user->checkAccess('employee.index')),
+                               array('label'=>Yii::t('menu', 'Category'), 'icon'=> TbHtml::ICON_LIST, 'url'=>Yii::app()->urlManager->createUrl('category/admin'), 'active'=>$this->id =='category',
+                                   'visible'=> Yii::app()->user->checkAccess('item.index') || Yii::app()->user->checkAccess('item.create') || Yii::app()->user->checkAccess('item.update') || Yii::app()->user->checkAccess('item.delete')),
                                //array('label'=>Yii::t('menu', 'Publisher'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('publisher/admin'), 'active'=>$this->id .'/'. $this->action->id=='publisher/admin','visible'=>Yii::app()->user->checkAccess('supplier.index')),
                                //array('label'=>Yii::t('menu','Supplier'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('supplier/admin'), 'active'=>$this->id .'/'. $this->action->id=='supplier/admin','visible'=>Yii::app()->user->checkAccess('supplier.index')),
                                array('label'=>Yii::t('menu','Price Tier'),'icon'=> TbHtml::ICON_ADJUST, 'url'=>Yii::app()->urlManager->createUrl('priceTier/admin'), 'active'=>$this->id .'/'. $this->action->id=='priceTier/admin','visible'=>Yii::app()->user->checkAccess('store.update')),

@@ -65,7 +65,7 @@ $this->breadcrumbs=array(
 
                             <div class="infobox infobox-orange2">
                                 <div class="infobox-icon">
-                                    <i class="ace-icon fa fa-shopping-cart"></i>
+                                    <i class="ace-icon fa fa-square-o"></i>
                                 </div>
                                 <div class="infobox-data">
                                     <span class="infobox-data-number"><?php echo $report->outofStock(); ?></span>
@@ -76,7 +76,7 @@ $this->breadcrumbs=array(
 
                             <div class="infobox infobox-red">
                                 <div class="infobox-icon">
-                                    <i class="ace-icon fa fa-shopping-cart"></i>
+                                    <i class="ace-icon fa fa-minus-square"></i>
                                 </div>
                                 <div class="infobox-data">
                                     <span class="infobox-data-number"><?php echo -$report->negativeStock(); ?></span>

@@ -51,21 +51,21 @@ $('.search-form form').submit(function(){
             'url'=>$this->createUrl('createImage'),
     )); ?>
 
-    <?php echo TbHtml::linkButton(Yii::t( 'app', 'New Category' ),array(
+    <?php /*echo TbHtml::linkButton(Yii::t( 'app', 'New Category' ),array(
             'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
             'size'=>TbHtml::BUTTON_SIZE_SMALL,
             'icon'=>'glyphicon-briefcase white',
             'url'=>$this->createUrl('category/create'),
             'class'=>'update-dialog-open-link',
             'data-update-dialog-title' => Yii::t('app','New Category'),
-    )); ?>
+    )); */?>
 
-    <?php echo TbHtml::linkButton(Yii::t( 'app', 'List of Categories' ),array(
+    <?php /*echo TbHtml::linkButton(Yii::t( 'app', 'List of Categories' ),array(
             'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
             'size'=>TbHtml::BUTTON_SIZE_SMALL,
             'icon'=>'glyphicon-list white',
             'url'=>$this->createUrl('category/admin'),
-    )); ?>
+    )); */?>
 
 <?php } ?>
 

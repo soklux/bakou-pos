@@ -1,8 +1,8 @@
 <div class="span10" style="float: none;margin-left: auto; margin-right: auto;">
 <?php
 $this->breadcrumbs=array(
-	Yii::t('menu','Item')=>array('item/admin'),
-	Yii::t('menu','Category'),
+	Yii::t('menu','Category')=>array('category/admin'),
+	Yii::t('menu','Manage'),
 );
 
 Yii::app()->clientScript->registerScript('search', "
