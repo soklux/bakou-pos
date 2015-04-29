@@ -790,7 +790,7 @@ class Report extends CFormModel
 
         $sql = "SELECT  @ROW := @ROW + 1 AS rank,customer_name,amount amount
                 FROM (
-                    SELECT CONCAT(c.first_name,'-',last_name) customer_name,SUM(s.sub_total) amount
+                    SELECT CONCAT(c.first_name,' ',last_name) customer_name,SUM(s.sub_total) amount
                     FROM sale s ,`client` c
                     WHERE s.client_id = c.id
                     AND s.status=:status

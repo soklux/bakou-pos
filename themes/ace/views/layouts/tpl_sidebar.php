@@ -75,14 +75,14 @@ $this->widget('bootstrap.widgets.TbNav', array(
                            'active'=>$this->id=='employee' || $this->id=='supplier' || $this->id=='client' || $this->id=='publisher',
                            'visible'=> Yii::app()->user->checkAccess('store.update') || Yii::app()->user->checkAccess('employee.index') || Yii::app()->user->checkAccess('client.index'),
                            'items'=>array(
-                               array('label'=>Yii::t('menu', 'Customer') , 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('client/admin'), 'active'=>$this->id .'/'. $this->action->id=='client/admin',
+                               array('label'=>Yii::t('menu', 'Customer') , 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('client/admin'), 'active'=>$this->id =='client',
                                    'visible'=> Yii::app()->user->checkAccess('client.index') || Yii::app()->user->checkAccess('client.create') || Yii::app()->user->checkAccess('client.update') || Yii::app()->user->checkAccess('client.delete')
                                ),
-                               array('label'=>Yii::t('menu', 'Employee'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('employee/admin'), 'active'=>$this->id .'/'. $this->action->id=='employee/admin',
+                               array('label'=>Yii::t('menu', 'Employee'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('employee/admin'), 'active'=>$this->id =='employee', //'active'=>$this->id .'/'. $this->action->id=='employee/admin',
                                    'visible'=> Yii::app()->user->checkAccess('employee.index') || Yii::app()->user->checkAccess('employee.create') || Yii::app()->user->checkAccess('employee.update') || Yii::app()->user->checkAccess('employee.delete')
                                ),
                                //array('label'=>Yii::t('menu', 'Publisher'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('publisher/admin'), 'active'=>$this->id .'/'. $this->action->id=='publisher/admin','visible'=>Yii::app()->user->checkAccess('supplier.index')),
-                               array('label'=>Yii::t('menu','Supplier'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('supplier/admin'), 'active'=>$this->id .'/'. $this->action->id=='supplier/admin','visible'=>Yii::app()->user->checkAccess('supplier.index'),
+                               array('label'=>Yii::t('menu','Supplier'), 'icon'=> TbHtml::ICON_USER, 'url'=>Yii::app()->urlManager->createUrl('supplier/admin'), 'active'=>$this->id == 'supplier',
                                     'visible'=> Yii::app()->user->checkAccess('supplier.index') || Yii::app()->user->checkAccess('supplier.create') || Yii::app()->user->checkAccess('supplier.update') || Yii::app()->user->checkAccess('supplier.delete')
                                ),
             )),
