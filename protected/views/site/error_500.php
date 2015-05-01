@@ -6,14 +6,15 @@
         <div class="error-container">
             <div class="well">
                 <h1 class="grey lighter smaller">
-                        <span class="blue bigger-125">
-                                <i class="ace-icon fa fa-random"></i>
-                                <?php echo $err_no; ?>
-                        </span>
-                        <?php echo $header; ?>
+                    <span class="blue bigger-125">
+                            <i class="ace-icon fa fa-random"></i>
+                            <?php echo $err_no; ?>
+                    </span>
+                    <?php echo $header; ?>
                 </h1>
 
                 <hr />
+
                 <h3 class="lighter smaller">
                         <?php echo $subject; ?>
                         <i class="ace-icon fa fa-wrench icon-animated-wrench bigger-125"></i>
@@ -51,6 +52,8 @@
                             Dashboard
                         </a>
                 </div>
+
+
             </div>
         </div>
 

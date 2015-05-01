@@ -4,8 +4,12 @@
         <div class="col-sm-9">
         <?php 
            if ($key === 'currencySymbol' || $key === 'altcurrencySymbol') {
-                echo CHtml::dropDownList(get_class($model) . '[' . $category . '][' . $key . ']',$val,CurrencyType::model()->getCurrency());
-           } else {
+                echo CHtml::dropDownList(get_class($model) . '[' . $category . '][' . $key . ']', $val,
+                   CurrencyType::model()->getCurrency());
+           } elseif ($key == 'priceTax') {
+                echo CHtml::checkBox(get_class($model) . '[' . $category . '][' . $key . ']', $val);
+                echo '<span class="lbl"></span>';
+            } else {
                 echo CHtml::textField(get_class($model) . '[' . $category . '][' . $key . ']', $val, array('class'=>'col-xs-10 col-sm-5')); 
            }
  

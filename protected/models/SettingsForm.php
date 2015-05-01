@@ -14,6 +14,8 @@ class SettingsForm extends CFormModel
         'companyPhone' => '',
         'currencySymbol' => '',
         'altcurrencySymbol' => '', //Alternative , secondar currency
+        'priceTax' => '',
+        'tax1Rate' => '',
         'email' => '',
         'returnPolicy' => '',
     );
@@ -57,6 +59,8 @@ class SettingsForm extends CFormModel
             'companyPhone' => Yii::t('app','Company Phone'),
             'currencySymbol' => Yii::t('app','Currency Symbol'),
             'altcurrencySymbol' => Yii::t('app','Secondary Currency Symbol'),
+            'priceTax' => Yii::t('app','Price include Tax'),
+            'tax1Rate' => Yii::t('app','Tax 1 Rate'),
             'email' => Yii::t('app','E-Mail'),
             'returnPolicy' => Yii::t('app','Return Policy'),
             'language'=> Yii::t('app','Language'),
