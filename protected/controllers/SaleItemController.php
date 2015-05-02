@@ -271,33 +271,32 @@ class SaleItemController extends Controller
 
     public function actionCompleteSale()
     {
-       
+
         $this->layout = '//layouts/column_receipt';
 
         $data=$this->sessionInfo();
-
-        //Save transaction to db
-        $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'], $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'], $data['comment'], Yii::app()->params['sale_complete_status'], $data['total_discount']);
-
-
         $customer = $this->customerInfo($data['customer_id']);
         $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
-        //$data['cust_mobile'] = $customer !== null ? $customer->mobile_no : '';
 
-        if (empty($data['items'])) {
-            $this->redirect(array('saleItem/index'));
-        }
-        
-        if ( $data['amount_change'] > 0 && $customer==null)  {
-            $data['warning'] = Yii::t('app','Plz, Select Customer');
+        /*
+         * Check if there is payment is less than total sale - Customer Must be defined
+         */
+        if ( $data['amount_change'] > 0 && $customer==null) {
+            $data['warning'] = Yii::t('app', 'Plz, Select Customer');
             $this->reload($data);
-        } elseif (substr($data['sale_id'],0,2) == '-1') {
-             $data['warning'] = $data['sale_id'];     
+        } elseif (empty($data['items'])) {
+            $this->redirect(array('saleItem/index'));
         } else {
-            $this->render('_receipt', $data);
-            Yii::app()->shoppingCart->clearAll();
+            //Save transaction to db
+            $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'], $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'], $data['comment'], Yii::app()->params['sale_complete_status'], $data['total_discount']);
+
+            if (substr($data['sale_id'], 0, 2) == '-1') {
+                $data['warning'] = $data['sale_id'];
+            } else {
+                $this->render('_receipt', $data);
+                Yii::app()->shoppingCart->clearAll();
+            }
         }
-       
     }
 
     public function actionSuspendSale()
@@ -446,7 +445,7 @@ class SaleItemController extends Controller
          * Amount_Change suppose to round done [Floor] but usualy this value is minus so using [Ceil] instead
         */
         $data['total_khr_round'] = ceil($data['total_khr']/100)*100; 
-        $data['amount_change_khr_round'] =  ceil($data['amount_change_khr']/100)*100;
+        $data['amount_change_khr_round'] = ceil($data['amount_change_khr']/100)*100;
 
         $data['amount_change_whole'] = ceil($data['amount_change']);  // floor(1.25)=1
         $data['amount_change_fraction_khr'] = ceil( (( $data['amount_change'] -  $data['amount_change_whole'] ) * $data['usd_2_khr'])/100 ) * 100;
