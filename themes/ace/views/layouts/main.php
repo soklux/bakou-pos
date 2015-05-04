@@ -42,6 +42,9 @@
     
     <link rel="stylesheet" type="text/css" href="<?php echo $baseUrl ?>/css/loading_animation.css" />
     <link rel="stylesheet" type="text/css" href="<?php echo $baseUrl ?>/css/jquery-ui-1.10.4.custom.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="<?php echo $baseUrl ?>/css/pace.css" />
+    <script data-pace-options='{ "ajax": true, "document": true, "eventLag": false, "elements": false }' src="<?php echo $baseUrl ?>/js/pace.js"></script>
     
     <!-- ace settings handler -->
     <?php //$cs->registerScriptFile($baseUrl.'/js/bootstrap.min.js',CClientScript::POS_END); ?> 
@@ -53,6 +56,7 @@
         //$cs->registerScriptFile($baseUrl.'/js/jquery.colorbox-min.js',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/ace-elements.min.js',CClientScript::POS_END);  
         $cs->registerScriptFile($baseUrl.'/js/ace.min.js',CClientScript::POS_END);
+        //$cs->registerScriptFile($baseUrl.'/js/ace.ajax-content',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/jquery.form.min.js',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/jquery-ui.min.js',CClientScript::POS_END);
     ?>
@@ -83,7 +87,7 @@
 
     <!-- <section class="main-body"> -->
         <!-- /section:basics/navbar.layout -->
-        <div class="main-container" id="main-container"> 
+        <div class="main-container" id="main-container">
             <!-- #section:basics/sidebar.mobile.toggle -->
             <script type="text/javascript">
                 try{ace.settings.check('main-container' , 'fixed')}catch(e){}
@@ -106,7 +110,6 @@
                               )); ?>
                         <?php endif?>
                 </div>
-
                 <div class="page-content">
                     <div class="row">
                       <div class="col-xs-12">
@@ -115,7 +118,6 @@
                       </div>
                     </div>
                 </div>
-
             </div> <!--/.main-content-->
             <!-- Require the footer -->
             <?php require_once('tpl_footer.php')?>
