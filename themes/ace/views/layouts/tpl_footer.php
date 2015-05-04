@@ -4,7 +4,7 @@
         <div class="footer-content">
                 <span class="bigger-120">
                     <a href="http://ezy-tool.com" target="_blank">
-                    <span class="blue bolder">Noonnight</span>
+                    <span class="blue bolder">Noonight</span>
                     </a>
                     Coder &copy; <?php echo date("Y")-1 . "-" . date("Y"); ?>
                 </span>
