@@ -17,8 +17,8 @@ $this->breadcrumbs=array(
             <div class="row">
                 <!--PAGE CONTENT BEGINS-->
                 <div class="col-xs-12">
-                    <div class="row summary_header">
-                        <div class="col-xs-12 widget-container-col">
+                    <div class="row">
+                        <div class="col-xs-12 widget-container-col summary_header">
                             <div class="infobox infobox-green">
                                 <div class="infobox-icon">
                                     <i class="ace-icon fa fa-shopping-cart"></i>
