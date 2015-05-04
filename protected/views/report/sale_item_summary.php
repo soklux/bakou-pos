@@ -117,13 +117,20 @@
                       'htmlOptions'=>array('style' => 'text-align: right;'),
                       'headerHtmlOptions'=>array('style' => 'text-align: right;'),
                 ),
-		array('name'=>'sub_total',
-                      'header'=>Yii::t('app','Sub Total'),
+		        array('name'=>'sub_total',
+                      'header'=>Yii::t('app','Sale Amount'),
                       'value' =>'number_format($data["sub_total"],Yii::app()->shoppingCart->getDecimalPlace(), ".", ",")',
                       'htmlOptions'=>array('style' => 'text-align: right;'),
                       'headerHtmlOptions'=>array('style' => 'text-align: right;'),
                 ),
+                array('name'=>'profit',
+                    'header'=>Yii::t('app','Profit'),
+                    'value' =>'number_format($data["profit"],Yii::app()->shoppingCart->getDecimalPlace(), ".", ",")',
+                    'htmlOptions'=>array('style' => 'text-align: right;'),
+                    'headerHtmlOptions'=>array('style' => 'text-align: right;'),
+                ),
 	),
+
 )); ?>
     
 </div>

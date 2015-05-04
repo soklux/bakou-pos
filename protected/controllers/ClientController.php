@@ -31,7 +31,7 @@ class ClientController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','admin','GetClient','AddCustomer','delete','undodelete'),
+				'actions'=>array('create','update','admin','GetClient','AddCustomer','delete','undodelete','payment'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -377,29 +377,41 @@ class ClientController extends Controller
 			Yii::app()->end();
 		}
 	}
-        
-        /** Lookup Client for autocomplete 
-         * 
-         * @throws CHttpException
-         */
-        public function actionGetClient() { 
-            if (isset($_GET['term'])) {
-                 $term = trim($_GET['term']);
-                 $ret['results'] = Client::model()->select2Client($term); //PHP Example · ivaynberg/select2  http://bit.ly/10FNaXD got stuck serveral hoursss :|
-                 echo CJSON::encode($ret);
-                 Yii::app()->end();
 
-            }
+    /** Lookup Client for autocomplete
+     *
+     * @throws CHttpException
+     */
+    public function actionGetClient()
+    {
+        if (isset($_GET['term'])) {
+            $term = trim($_GET['term']);
+            $ret['results'] = Client::model()->select2Client($term); //PHP Example · ivaynberg/select2  http://bit.ly/10FNaXD got stuck serveral hoursss :|
+            echo CJSON::encode($ret);
+            Yii::app()->end();
+
         }
-        
-        public function gridBalance($data,$row)
-        {
-            $account = Account::model()->getAccountInfo($data->id);
-            if ($account) {
-                echo $account->current_balance;
-            } else {
-                echo CHtml::encode('0.00');
-            }
+    }
+
+    public function gridBalance($data, $row)
+    {
+        $account = Account::model()->getAccountInfo($data->id);
+        if ($account) {
+            echo $account->current_balance;
+        } else {
+            echo CHtml::encode('0.00');
         }
+    }
+
+    public function actionPayment($client_id)
+    {
+        if (!Yii::app()->user->checkAccess('payment.index')) {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
+
+        Yii::app()->paymentCart->setClientId($client_id);
+        $this->redirect(array('salePayment/index'));
+
+    }
               
 }

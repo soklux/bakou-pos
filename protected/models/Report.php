@@ -888,7 +888,7 @@ class Report extends CFormModel
     public function saleItemSummary()
     {
         $sql="SELECT sm.item_id,MIN(DATE_FORMAT(s.sale_time,'%d-%m-%Y')) from_date, MAX(DATE_FORMAT(s.sale_time,'%d-%m-%Y')) to_date,
-		SUM(sm.quantity) quantity,SUM(sm.price*quantity) sub_total
+		      SUM(sm.quantity) quantity,SUM(sm.price*quantity) sub_total,sum((sm.price-sm.cost_price) * sm.quantity) profit
               FROM v_sale s , sale_item sm
               WHERE s.id=sm.sale_id
               AND s.sale_time>=str_to_date(:from_date,'%d-%m-%Y')  
@@ -896,10 +896,10 @@ class Report extends CFormModel
               AND s.status=:status
               GROUP BY sm.item_id";
         
-        $sql="SELECT i.name item_name,CONCAT_WS(' - ', from_date, to_date) date_report,sub_total,t1.quantity
+        $sql="SELECT i.name item_name,CONCAT_WS(' - ', from_date, to_date) date_report,sub_total,t1.quantity,profit
             FROM (
             SELECT sm.item_id,MIN(DATE_FORMAT(s.sale_time,'%d-%m-%Y')) from_date, MAX(DATE_FORMAT(s.sale_time,'%d-%m-%Y')) to_date,
-                            SUM(sm.quantity) quantity,SUM(sm.price*quantity) sub_total
+                  SUM(sm.quantity) quantity,SUM(sm.price*quantity) sub_total,sum((sm.price-sm.cost_price) * sm.quantity) profit
             FROM v_sale s , sale_item sm
             WHERE s.id=sm.sale_id
             AND s.sale_time>=str_to_date(:from_date,'%d-%m-%Y')  

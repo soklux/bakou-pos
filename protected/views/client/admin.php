@@ -100,9 +100,10 @@ $this->breadcrumbs=array(
                         array('name' =>'balance',
                               'header'=>'Balance',
                               'value' =>array($this,"gridBalance"),
+                              'visible'=> Yii::app()->user->checkAccess("payment.index"),
                         ),
                         array('class'=>'bootstrap.widgets.TbButtonColumn',
-                              'template'=>'<div class="btn-group">{delete}{undeleted}{update}</div>', 
+                              'template'=>'<div class="btn-group">{delete}{undeleted}{update}{payment}</div>',
                               'htmlOptions'=>array('class'=>'nowrap'),
                               'buttons' => array(  
                                   'delete' => array(
@@ -127,18 +128,16 @@ $this->breadcrumbs=array(
                                             'class'=>'btn btn-xs btn-info',
                                          ), 
                                   ),
-                                  /*
                                   'payment' => array(
                                         'label'=>'Payment',
-                                        'icon'=>'fa fa-icon fa-credit-card', 
-                                        'url'=>'Yii::app()->createUrl("salePayment/Payment/",array("client_id"=>$data->id))',
+                                        'icon'=>'fa-icon fa fa-heart',
+                                        'url'=>'Yii::app()->createUrl("client/Payment",array("client_id"=>$data->id))',
                                         'options' => array(
                                            'class'=>'btn btn-xs btn-success',
                                            'title'=>Yii::t('app','Payment'),
-                                         ), 
+                                         ),
+                                        'visible'=>'Yii::app()->user->checkAccess("payment.index")',
                                   ),
-                                   * 
-                                  */
                                ),
                         ),
                 ),

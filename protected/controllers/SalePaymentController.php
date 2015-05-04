@@ -273,6 +273,6 @@ class SalePaymentController extends Controller
         $this->renderPartial('sale_payment', array(
             'model' => $model,'id'=>$id,
         ));
-    }    
-    
+    }
+
 }
