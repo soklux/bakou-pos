@@ -176,14 +176,15 @@ class SalePaymentController extends Controller
             $this->render('_payment', $data);
         }
     }
-        
+
     public function actionSelectCustomer()
     {
-        if ( Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest ) {
+        if (Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest) {
             Yii::app()->paymentCart->setClientId($_POST['SalePayment']['client_id']);
             $this->reload();
         } else {
-           throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            //throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            $this->redirect(array('site/ErrorException', 'err_no' => 400));
         }
     }
     

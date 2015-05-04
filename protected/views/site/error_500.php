@@ -1,3 +1,9 @@
+<?php
+/*$this->breadcrumbs=array(
+    'Go Back'=> Yii::app()->request->urlReferrer,
+);*/
+?>
+
 <div class="row">
     <div class="col-xs-12">
         <!-- PAGE CONTENT BEGINS -->

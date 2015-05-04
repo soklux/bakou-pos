@@ -151,7 +151,7 @@ class SiteController extends Controller
     }
         
         
-        /**
+    /**
 	 * This is the action to handle external exceptions.
 	 */
 	public function actionErrorException($err_no)
@@ -170,6 +170,11 @@ class SiteController extends Controller
             $data['header'] = Yii::t('app', 'No Permission');
             $data['subject'] = Yii::t('app', 'You are not authorized to perform this action');
             $data['bodies'] = array('Read the faq', 'Contact your system administrator');
+        }elseif ($err_no == 400) {
+            $data['err_no'] = $err_no;
+            $data['header'] = Yii::t('app', 'Invalid request');
+            $data['subject'] = Yii::t('app', 'Please do not repeat this request again');
+            $data['bodies'] = array('Make sure the page load completely - Ajax Loading Request');
         }
 
         return $data;
