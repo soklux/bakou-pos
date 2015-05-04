@@ -426,15 +426,18 @@ class ShoppingCart extends CApplicationComponent
         $total = 0;
         foreach ($this->getCart() as $item) {
             if (substr($item['discount'], 0, 1) == '$') {
-                $total+=round($item['price'] * $item['quantity'] - substr($item['discount'], 1), Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
+                $total += round($item['price'] * $item['quantity'] - substr($item['discount'], 1),
+                    Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
             } else {
-                $total+=round($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100, Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
+                $total += round($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100,
+                    Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
             }
         }
-        
-        $total=$total - $total*$this->getTotalDiscount()/100;
 
-        return round($total, $this->getDecimalPlace());
+        $total = $total - ($total * $this->getTotalDiscount()) / 100;
+
+       return round($total, $this->getDecimalPlace());
+       //return $total;
     }
 
     //Alain Multiple Payments
@@ -452,9 +455,9 @@ class ShoppingCart extends CApplicationComponent
     public function getAmountDue()
     {
         //$amount_due=0;
-        $sales_total = $this->getTotal();
-        $payment_total = $this->getPaymentsTotal();
-        $amount_due = $sales_total - $payment_total;
+        //$sales_total = $this->getTotal();
+        //$payment_total = $this->getPaymentsTotal();
+        $amount_due = ($this->getTotal() - $this->getPaymentsTotal());
         return $amount_due;
     }
 

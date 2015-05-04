@@ -429,8 +429,7 @@ class SaleItemController extends Controller
         $data['colspan'] = Yii::app()->settings->get('sale','discount')=='hidden' ? '2' : '3';
         
         $data['discount_amount'] = $data['sub_total'] * $data['total_discount']/100;
-        
-        
+
         /** Rounding a numbere to a nearest 10 or 100 (Floor : round down, Ceil : round up , Round : standard round 
          *  Ref: http://stackoverflow.com/questions/1619265/how-to-round-up-a-number-to-nearest-10
          *    ** http://stackoverflow.com/questions/6619377/how-to-get-whole-and-decimal-part-of-a-number
@@ -438,17 +437,18 @@ class SaleItemController extends Controller
         */
         $data['usd_2_khr'] = Yii::app()->settings->get('exchange_rate', 'USD2KHR');
         $data['total_khr'] = $data['total'] * $data['usd_2_khr']; 
-        $data['amount_change_khr'] =  $data['amount_change'] * $data['usd_2_khr'];
+        $data['amount_change_khr'] = $data['amount_change'] * $data['usd_2_khr']; //Stupid PHP passing calculation 0.9-1 * 4000 = -3999.1 ,  (0.9-1) * 4000 = 400 correct
         
         /*
          * Total is to round up [Ceil] - Company In
-         * Amount_Change suppose to round done [Floor] but usualy this value is minus so using [Ceil] instead
+         * Amount_Change suppose to round done [Floor] but usually this value is minus so using [Ceil] instead
         */
-        $data['total_khr_round'] = ceil($data['total_khr']/100)*100; 
-        $data['amount_change_khr_round'] = ceil($data['amount_change_khr']/100)*100;
+        $data['total_khr_round'] = ceil($data['total_khr']/100)*100;
+
+        $data['amount_change_khr_round'] = ceil($data['amount_change_khr']/100-0.1)*100; // Got no idea why PHP ceil(-0.1/100)*100 = 399
 
         $data['amount_change_whole'] = ceil($data['amount_change']);  // floor(1.25)=1
-        $data['amount_change_fraction_khr'] = ceil( (( $data['amount_change'] -  $data['amount_change_whole'] ) * $data['usd_2_khr'])/100 ) * 100;
+        $data['amount_change_fraction_khr'] = ceil( (( $data['amount_change'] -  $data['amount_change_whole'] ) * $data['usd_2_khr'])/100 - 0.1 ) * 100; //Added 0.1 to solve ceil (-0.1/100)*100=399
                
         // Customer Account Info
         $account = $this->custAccountInfo($data['customer_id']);

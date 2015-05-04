@@ -39,7 +39,7 @@ class SettingsController extends Controller
     public function actionIndex()
     {
 
-        if (!Yii::app()->user->checkAccess('setting.index')) {
+        if (!Yii::app()->user->checkAccess('store.update')) {
             $this->redirect(array('site/ErrorException','err_no'=>403));
         }
 
