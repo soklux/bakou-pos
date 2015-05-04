@@ -17,7 +17,7 @@ $this->breadcrumbs=array(
             <div class="row">
                 <!--PAGE CONTENT BEGINS-->
                 <div class="col-xs-12">
-                    <div class="row">
+                    <div class="row summary_header">
                         <div class="col-xs-12 widget-container-col">
                             <div class="infobox infobox-green">
                                 <div class="infobox-icon">
@@ -93,14 +93,19 @@ $this->breadcrumbs=array(
                     <div class="row">
                         <div class="col-xs-12 widget-container-col">
                             <div class="widget-box widget-color-blue2">
-                                <div class="widget-header">
+                                <div class="widget-header widget-header-flat">
                                     <h5 class="widget-title bigger lighter">
                                         <i class="ace-icon fa fa-bar-chart-o"></i>
                                         <?php echo Yii::t('app','Sale\'s Chart'); ?>
                                     </h5>
+                                    <div class="widget-toolbar">
+                                        <a href="#" data-action="collapse">
+                                            <i class="ace-icon fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
                                 </div>
                                 <div class="widget-body">
-                                    <div class="widget-main no-padding">
+                                    <div class="widget-main padding-4">
                                         <?php
                                         $this->widget(
                                             'yiiwheels.widgets.highcharts.WhHighCharts',
@@ -238,4 +243,21 @@ $this->breadcrumbs=array(
 <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-small btn-inverse">
         <i class="icon-double-angle-up icon-only bigger-110"></i>
 </a>
+
+<!--http://stackoverflow.com/questions/5052543/how-to-fire-ajax-request-periodically-->
+
+<script>
+(function worker() {
+    $.ajax({
+        url: 'AjaxRefresh',
+        success: function(data) {
+            $('.summary_header').html(data);
+        },
+        complete: function() {
+            // Schedule the next request when the current one's complete
+            setTimeout(worker, 10000);
+        }
+    });
+})();
+</script>
 
