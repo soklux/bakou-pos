@@ -161,17 +161,18 @@ class SalePayment extends CActiveRecord
 
     public function invoice($client_id)
     {
-        $sql = "SELECT sale_id,sale_time,client_name,sub_total,discount_amount,paid,balance
+        $sql = "SELECT sale_id,sale_time,client_name,sub_total,discount_amount,paid,balance,employee_id
                   FROM (
                     SELECT s.sale_id,sale_time,client_name,s.sub_total,s.discount_amount,
                         IFNULL(sp.payment_amount,0) paid,
-                        (s.`sub_total`- s.discount_amount-IFNULL(sp.payment_amount,0)) balance
+                        (s.`sub_total`- s.discount_amount-IFNULL(sp.payment_amount,0)) balance,employee_id
                     FROM 
                     (SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',last_name) client_name,
                         s.`sub_total`,
                          (CASE WHEN ((`s`.`discount_type` = '%') OR ISNULL(`s`.`discount_type`)) THEN ((`s`.`sub_total` * IFNULL(`s`.`discount_amount`,0)) / 100) 
                                ELSE IFNULL(`s`.`discount_amount`,0) 
-                         END) AS `discount_amount`
+                         END) AS `discount_amount`,
+                         (SELECT CONCAT_WS(' ',first_name,last_name) FROM employee e WHERE e.id=s.employee_id) employee_id
                      FROM sale s, `client` c
                      WHERE s.`client_id` = c.id
                      AND c.id=:client_id) s LEFT JOIN v_sale_payment sp ON sp.sale_id=s.sale_id

@@ -54,7 +54,7 @@ $this->breadcrumbs=array(
 
                             <div class="infobox infobox-green">
                                 <div class="infobox-icon">
-                                    <i class="ace-icon fa fa-user"></i>
+                                    <i class="ace-icon fa fa-user icon-animated-vertical"></i>
                                 </div>
                                 <div class="infobox-data">
                                     <span class="infobox-data-number"><?php echo $report->countCustReg2D(); ?></span>
@@ -76,7 +76,7 @@ $this->breadcrumbs=array(
 
                             <div class="infobox infobox-red">
                                 <div class="infobox-icon">
-                                    <i class="ace-icon fa fa-minus-square"></i>
+                                    <i class="ace-icon fa fa-minus-square icon-animated-bell""></i>
                                 </div>
                                 <div class="infobox-data">
                                     <span class="infobox-data-number"><?php echo -$report->negativeStock(); ?></span>
@@ -214,7 +214,7 @@ $this->breadcrumbs=array(
                                                 ),
                                                 array(
                                                     'name' => 'customer_name',
-                                                    'header' => Yii::t('app', 'Customer'),
+                                                    'header' => Yii::t('app', 'Customer Name'),
                                                     'value' => '$data["customer_name"]',
                                                 ),
                                                 array(

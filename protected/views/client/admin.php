@@ -130,7 +130,7 @@ $this->breadcrumbs=array(
                                   ),
                                   'payment' => array(
                                         'label'=>'Payment',
-                                        'icon'=>'fa-icon fa fa-heart',
+                                        'icon'=>'fa-icon fa fa-heart icon-animated-vertical',
                                         'url'=>'Yii::app()->createUrl("client/Payment",array("client_id"=>$data->id))',
                                         'options' => array(
                                            'class'=>'btn btn-xs btn-success',

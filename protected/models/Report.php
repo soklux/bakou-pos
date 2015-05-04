@@ -92,8 +92,8 @@ class Report extends CFormModel
                        (SELECT CONCAT_WS(' ',first_name,last_name) FROM employee e WHERE e.id=s.employee_id) employee_id,
                        status,remark
                  FROM (SELECT s.id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i') sale_time,s.client_id,s.employee_id,
-                             sum(s.sub_total) sub_total, SUM(sm.quantity) quantity,
-                             status_f status,remark,
+                       sum(s.sub_total) sub_total, SUM(sm.quantity) quantity,
+                       status_f status,remark,
                              sum(discount_amount) discount_amount
                       FROM v_sale s, v_sale_item_sum sm
                       WHERE s.id=sm.sale_id

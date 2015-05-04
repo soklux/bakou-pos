@@ -1,3 +1,4 @@
+<?php $this->widget( 'ext.modaldlg.EModalDlg' ); ?>
 <?php $this->widget('EExcelView',array(
         'id'=>'invoice-grid',
         'fixedHeader' => true,
@@ -5,13 +6,13 @@
         'type'=>'striped bordered hover',
         'template'=>"{summary}\n{items}\n{exportbuttons}\n{pager}",
         'dataProvider'=>$model->invoice($client_id),
-        'summaryText' =>'<p class="text-info"> Invoice Detail </p>', 
+        'summaryText' =>'<p class="text-info">  </p>',
         'htmlOptions'=>array('class'=>'table-responsive panel'),
         'columns'=>array(
-                array('name'=>'id',
+              array('name'=>'id',
                       'header'=>Yii::t('app','Invoice ID'),
                       'type'=>'raw',
-                      'value'=>'$data["sale_id"]',  
+                      'value'=>'$data["sale_id"]',
                 ),
                 array('name'=>'client_name',
                       'header'=>Yii::t('app','Customer Name'), 
@@ -49,5 +50,26 @@
                       'footer'=> number_format($balance,Yii::app()->shoppingCart->getDecimalPlace(),'.', ','),
                       'footerHtmlOptions'=>array('style' => 'text-align: right;'),
                 ),
+            array('class'=>'bootstrap.widgets.TbButtonColumn',
+                'header'=>'Action',
+                'template'=>'<div class="btn-group">{view}</div>',
+                //'htmlOptions'=>array('class'=>'hidden-phone visible-desktop btn-group'),
+                'buttons' => array(
+                    'view' => array(
+                        'click' => 'updateDialogOpen',
+                        'label'=>'Detail',
+                        'url'=>'Yii::app()->createUrl("report/SaleInvoiceItem", array("sale_id"=>$data["sale_id"],"employee_id"=>$data["employee_id"]))',
+                        'options' => array(
+                            'data-update-dialog-title' => Yii::t( 'app', 'Invoice Detail' ),
+                            //'class'=>'label label-important',
+                            'title'=>Yii::t('app','Invoice Detail'),
+                            'class'=>'btn btn-xs btn-info',
+                            'id'=>uniqid(),
+                            'on'=>false,
+                        ),
+                        //'htmlOptions' => array('id'=>uniqid()),
+                    ),
+                ),
+             ),
         ),
 )); ?>   

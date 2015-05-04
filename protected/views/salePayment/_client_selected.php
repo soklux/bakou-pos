@@ -9,7 +9,7 @@
             <label class="col-sm-3 control-label required" for="SalePayment_payment_amount">  </label>
             <div class="col-sm-9">
                 <span style="font-size:20px;font-weight:bold;color:brown">
-                    <?php echo TbHtml::link(ucwords($cust_fullname),$this->createUrl('Client/View/',array('id'=>$client_id)), array(
+                    <?php echo TbHtml::link($cust_fullname,$this->createUrl('Client/View/',array('id'=>$client_id)), array(
                         'class'=>'update-dialog-open-link',
                         'data-update-dialog-title' => Yii::t('app','Customer Information'),
                     )); ?>
