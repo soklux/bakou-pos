@@ -85,8 +85,8 @@ class SalePaymentController extends Controller
         if (Yii::app()->user->checkAccess('payment.index')) {
             $this->reload();
         } else {
-            throw new CHttpException(403, 'You are not authorized to perform this action');
-            //$this->redirect(array('site/ErrorException','err_no'=>403));
+            //throw new CHttpException(403, 'You are not authorized to perform this action');
+            $this->redirect(array('site/ErrorException','err_no'=>403));
         }
     }
 
@@ -251,7 +251,7 @@ class SalePaymentController extends Controller
                 $data['save_button'] = true;
             }
             $client = Client::model()->findbyPk($data['client_id']);
-            $data['cust_fullname'] = $client->first_name . ' ' . $client->last_name;
+            $data['cust_fullname'] = ucwords( $client->first_name . ' ' . $client->last_name );
 
         } else {
             $data['cust_fullname'] = '';
