@@ -13,7 +13,7 @@
                       'value'=>'$data["receive_id"]',
                 ),
                 array('name'=>'supplier_name',
-                      'header'=>Yii::t('app','Customer Name'), 
+                      'header'=>Yii::t('app','Supplier Name'),
                       'value'=>'$data["supplier_name"]',
                 ),
                 array('name'=>'receive_time',
