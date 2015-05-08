@@ -244,7 +244,7 @@ $this->breadcrumbs=array(
         <i class="icon-double-angle-up icon-only bigger-110"></i>
 </a>
 
-<!--http://stackoverflow.com/questions/5052543/how-to-fire-ajax-request-periodically-->\
+<!--http://stackoverflow.com/questions/5052543/how-to-fire-ajax-request-periodically-->
 
 <!--http://stackoverflow.com/questions/13668484/warn-user-when-new-data-is-inserted-on-database-->
 
