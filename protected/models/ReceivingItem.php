@@ -70,37 +70,37 @@ class ReceivingItem extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
-		/*
+    public function attributeLabels()
+    {
+        /*
                 return array(
-			'receive_id' => 'Receive',
-			'item_id' => 'Item',
-			'description' => 'Description',
-			'line' => 'Line',
-			'quantity' => 'Quantity',
-			'cost_price' => 'Cost Price',
-			'unit_price' => 'Unit Price',
-			'price' => 'Price',
-			'discount_amount' => 'Discount Amount',
-			'discount_type' => 'Discount Type',
-		);
+            'receive_id' => 'Receive',
+            'item_id' => 'Item',
+            'description' => 'Description',
+            'line' => 'Line',
+            'quantity' => 'Quantity',
+            'cost_price' => 'Cost Price',
+            'unit_price' => 'Unit Price',
+            'price' => 'Price',
+            'discount_amount' => 'Discount Amount',
+            'discount_type' => 'Discount Type',
+        );
                 */
-                return array(
-			'receive_id' => Yii::t('app','Receiving'), //'Sale',
-			'item_id' => Yii::t('app','Item'), //'Item',
-			'description' => Yii::t('app','model.receivingitem.description'), //'Description',
-			'line' => Yii::t('app','model.receivingitem.line'), //'Line',
-			'quantity' => Yii::t('app','Quantity'), //'Quantity',
-			'cost_price' => Yii::t('app','Buy Price'), //'Cost Price',
-			'unit_price' => Yii::t('app','Sell Price'), // 'Unit Price',
-			'price' => Yii::t('app','Price'), //'Price',
-			'discount_amount' => Yii::t('app','Discount'), // 'Discount Amount',
-			'discount_type' => Yii::t('app','Discount Type'),//'Discount Type',
-                        'name' => Yii::t('app','Item Name'),
-                        'payment_type' => Yii::t('app','Payment Type'),
-		);
-	}
+        return array(
+            'receive_id' => Yii::t('app', 'Receiving'), //'Sale',
+            'item_id' => Yii::t('app', 'Item'), //'Item',
+            'description' => Yii::t('app', 'Description'), //'Description',
+            'line' => Yii::t('app', 'Line'), //'Line',
+            'quantity' => Yii::t('app', 'Quantity'), //'Quantity',
+            'cost_price' => Yii::t('app', 'Buy Price'), //'Cost Price',
+            'unit_price' => Yii::t('app', 'Sell Price'), // 'Unit Price',
+            'price' => Yii::t('app', 'Price'), //'Price',
+            'discount_amount' => Yii::t('app', 'Discount'), // 'Discount Amount',
+            'discount_type' => Yii::t('app', 'Discount Type'),//'Discount Type',
+            'name' => Yii::t('app', 'Item Name'),
+            'payment_type' => Yii::t('app', 'Payment Type'),
+        );
+    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
