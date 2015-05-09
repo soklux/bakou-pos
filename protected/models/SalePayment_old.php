@@ -21,8 +21,6 @@ class SalePayment extends CActiveRecord
 {
         public $total_due;
         public $client_id;
-
-    private $_sale_completed='1';
     
         /**
 	 * @return string the associated database table name
@@ -163,18 +161,26 @@ class SalePayment extends CActiveRecord
 
     public function invoice($client_id)
     {
-        $sql="SELECT s.id sale_id,s.`sale_time`,
-               CONCAT(c.first_name,' ',c.last_name) client_name,CONCAT_WS(' ',e.first_name,e.last_name) employee_id,
-               s.`sub_total`,s.`discount_amount`,s.vat_amount,s.total,
-               IFNULL(sp.payment_amount,0) paid,(s.total - IFNULL(sp.payment_amount,0)) balance
-            FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
-                LEFT JOIN employee e ON e.id=s.employee_id
-                    LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
-            WHERE s.status=:status
-            AND (s.total - IFNULL(sp.payment_amount,0))>0
-            ORDER BY sale_time";
+        $sql = "SELECT sale_id,sale_time,client_name,sub_total,discount_amount,paid,balance,employee_id
+                  FROM (
+                    SELECT s.sale_id,sale_time,client_name,s.sub_total,s.discount_amount,
+                        IFNULL(sp.payment_amount,0) paid,
+                        (s.`sub_total`- s.discount_amount-IFNULL(sp.payment_amount,0)) balance,employee_id
+                    FROM 
+                    (SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',last_name) client_name,
+                        s.`sub_total`,
+                         (CASE WHEN ((`s`.`discount_type` = '%') OR ISNULL(`s`.`discount_type`)) THEN ((`s`.`sub_total` * IFNULL(`s`.`discount_amount`,0)) / 100) 
+                               ELSE IFNULL(`s`.`discount_amount`,0) 
+                         END) AS `discount_amount`,
+                         (SELECT CONCAT_WS(' ',first_name,last_name) FROM employee e WHERE e.id=s.employee_id) employee_id
+                     FROM sale s, `client` c
+                     WHERE s.`client_id` = c.id
+                     AND c.id=:client_id) s LEFT JOIN v_sale_payment sp ON sp.sale_id=s.sale_id
+                    ) AS t
+                  WHERE balance>0
+                  ORDER BY sale_time";
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             'keyField' => 'sale_id',
@@ -194,35 +200,25 @@ class SalePayment extends CActiveRecord
 
     public function invoiceHis($client_id)
     {
-        $sql = "SELECT sale_id,sale_time,client_name,sub_total,discount_amount,vat_amount,paid,(balance+vat_amount) balance,employee_id
+        $sql = "SELECT sale_id,sale_time,client_name,sub_total,discount_amount,paid,balance
                   FROM (
                     SELECT s.sale_id,sale_time,client_name,s.sub_total,s.discount_amount,
                         IFNULL(sp.payment_amount,0) paid,
-                        (s.sub_total*vat) / 100 vat_amount,
-                        (s.`sub_total`- s.discount_amount-IFNULL(sp.payment_amount,0)) balance,employee_id
-                    FROM
+                        (s.`sub_total`- s.discount_amount-IFNULL(sp.payment_amount,0)) balance
+                    FROM 
                     (SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',last_name) client_name,
-                            s.`sub_total`,s.`discount_amount`,s.vat,s.total,
-                        (SELECT CONCAT_WS(' ',first_name,last_name) FROM employee e WHERE e.id=s.employee_id) employee_id,
-                     FROM v_sale s, `client` c
+                        s.`sub_total`,
+                         (CASE WHEN ((`s`.`discount_type` = '%') OR ISNULL(`s`.`discount_type`)) THEN ((`s`.`sub_total` * IFNULL(`s`.`discount_amount`,0)) / 100) 
+                               ELSE IFNULL(`s`.`discount_amount`,0) 
+                         END) AS `discount_amount`
+                     FROM sale s, `client` c
                      WHERE s.`client_id` = c.id
                      AND c.id=:client_id) s LEFT JOIN v_sale_payment sp ON sp.sale_id=s.sale_id
                     ) AS t
                   WHERE balance=0
                   ORDER BY sale_time";
 
-        $sql="SELECT s.id sale_id,s.`sale_time`,
-               CONCAT(c.first_name,' ',c.last_name) client_name,CONCAT_WS(' ',e.first_name,e.last_name) employee_id,
-               s.`sub_total`,s.`discount_amount`,s.vat_amount,s.total,
-               IFNULL(sp.payment_amount,0) paid,(s.total - sp.payment_amount) balance
-            FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
-                LEFT JOIN employee e ON e.id=s.employee_id
-                    LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
-            WHERE s.status=:status
-            AND (s.total - IFNULL(sp.payment_amount,0))=0
-            ORDER BY sale_time";
-
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             'keyField' => 'sale_id',
@@ -275,7 +271,7 @@ class SalePayment extends CActiveRecord
         $sql = "SELECT sale_id,sale_time,client_name,amount_to_paid
                   FROM (
                     SELECT s.sale_id,sale_time,client_name,(s.`sub_total`-IFNULL(sp.payment_amount,0)) amount_to_paid
-                    FROM
+                    FROM 
                     (SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',last_name) client_name,s.`sub_total`
                      FROM sale s, `client` c
                      WHERE s.`client_id` = c.id
@@ -284,28 +280,22 @@ class SalePayment extends CActiveRecord
                   WHERE amount_to_paid>0
                   ORDER BY sale_time";
 
-        $sql="SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',c.last_name) client_name
-              ,(s.total - IFNULL(sp.payment_amount,0)) amount_to_paid
-            FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
-                    LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
-            WHERE s.status=:status
-            AND (s.total - IFNULL(sp.payment_amount,0))>0
-            ORDER BY sale_time";
-
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id));
 
         $paid_amount = $total_paid;
 
         $transaction = Yii::app()->db->beginTransaction();
         try {
 
-            $payment_id = PaymentHistory::model()->savePaymentHistory($client_id, $total_paid, $paid_date, $employee_id, $note);
+            $payment_id = PaymentHistory::model()->savePaymentHistory($client_id, $total_paid, $paid_date, $employee_id,
+                $note);
 
             foreach ($result as $record) {
                 if ($paid_amount <= $record["amount_to_paid"]) {
                     $payment_amount = $paid_amount;
                     $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
-                    $this->saveAccuntRecv($account->id, $employee_id, $record["sale_id"], $payment_amount, $paid_date, $note);
+                    $this->saveAccuntRecv($account->id, $employee_id, $record["sale_id"], $payment_amount, $paid_date,
+                        $note);
                     break;
                 } else {
                     $paid_amount = $paid_amount - $record["amount_to_paid"];
