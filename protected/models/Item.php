@@ -476,7 +476,7 @@ class Item extends CActiveRecord
         $suggest = array();
         foreach ($models as $model) {
             $suggest[] = array(
-                'label' => $model->name . ' - ' . $model->unit_price . ' - ' . $model->quantity,
+                'label' => $model->name . ' : ' . Yii::app()->settings->get('site', 'currencySymbol') . $model->unit_price, //. ' - ' . $model->quantity,
                 // label for dropdown list
                 'value' => $model->name,
                 // value for input field

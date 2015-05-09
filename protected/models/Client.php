@@ -220,7 +220,7 @@ class Client extends CActiveRecord
 		$suggest=array();
 		foreach($models as $model) {
 			$suggest[] = array(
-				'label'=>$model->first_name.' - '.$model->last_name.' - '.$model->mobile_no,  // label for dropdown list
+				'label'=>$model->first_name.' '.$model->last_name.' - '.$model->mobile_no,  // label for dropdown list
 				'value'=>$model->first_name,  // value for input field
 				'id'=>$model->id,       // return values from autocomplete
 			);
