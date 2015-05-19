@@ -171,18 +171,18 @@ class Sale extends CActiveRecord
                 $sale_id = $model->id;
                 $date_paid = $trans_date;
                 
-                // Savnig Sale Item (Sale & Sale Item gotta save firstly even for Suspended Sale)
+                // Saving Sale Item (Sale & Sale Item gotta save firstly even for Suspended Sale)
                 $this->saveSaleItem($items, $sale_id, $employee_id);
                 
                 // We only save Sale Payment, Account Receivable transaction and update Account (oustanding balance) of completed sale transaction
                 if ( $status == self::sale_complete_status ) {
                 
-                    //These two statment need to place in order $actual_paid has to place first
+                    //These two statement need to place in order $actual_paid has to place first
                     $actual_paid = ($payment_received > $sub_total) ? $sub_total : $payment_received;
                     $sale_amount = $model->sub_total - ($model->sub_total*$discount_amount)/100; // Net Sale Amount after discount
                     $hot_bill = $sale_amount - $actual_paid;
                     
-                     // Savign Payment History
+                     // Saving Payment History
                     $payment_id = PaymentHistory::model()->savePaymentHistory($customer_id,$payment_received, $date_paid, $employee_id, $comment);
 
                     if ($payment_id>0) {
@@ -716,60 +716,6 @@ class Sale extends CActiveRecord
 
         foreach ($result as $record) {
             $amount = $record['amount_to_paid'];
-        }
-
-        return $amount;
-    }
-
-    public function currentBalance($client_id)
-    {
-        if (isset($this->sale_id)) {
-            $sql = "SELECT SUM(IFNULL(balance,0)) balance
-                    FROM sale s INNER JOIN sale_amount sa ON sa.sale_id=s.id
-                    WHERE s.id=:sale_id 
-                    and client_id=:client_id
-                    ";
-            $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => (int) $this->sale_id, ':client_id' => (int) $client_id));
-        } else {
-
-            $sql = "SELECT SUM(IFNULL(balance,0)) balance
-                        FROM sale s INNER JOIN sale_amount sa ON sa.sale_id=s.id
-                        WHERE client_id=:client_id
-                        ";
-            $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => (int) $client_id));
-            
-            /*
-            $sql = "SELECT SUM(IFNULL(balance,0)) balance
-                        FROM sale s INNER JOIN sale_amount sa ON sa.sale_id=s.id
-                        WHERE s.id=:sale_id 
-                        and client_id=:client_id
-                        ";
-            $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => (int) $this->sale_id, ':client_id' => (int) $client_id));
-             */
-        }
-
-        foreach ($result as $record) {
-            $amount = $record['balance'];
-        }
-
-        return $amount;
-    }
-
-    public function clientBalance($client_id)
-    {
-        $sql = "SELECT sum(balance) amount
-                        FROM (
-                        SELECT s.id sale_id,s.`sale_time`,CONCAT_WS(' ',first_name,last_name) client_id,IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                        FROM sale s INNER JOIN sale_amount sa ON sa.`sale_id`=s.`id`
-                                        INNER JOIN `client` c ON c.`id`=s.`client_id`
-                                            AND c.id=:client_id
-                        WHERE s.status IS NULL                     
-                        ) AS t";
-
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id));
-
-        foreach ($result as $record) {
-            $amount = $record['amount'];
         }
 
         return $amount;
