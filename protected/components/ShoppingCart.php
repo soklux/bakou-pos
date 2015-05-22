@@ -174,6 +174,27 @@ class ShoppingCart extends CApplicationComponent
         unset($this->session['pricetier']);
     }
 
+    public function getSaleRep()
+    {
+        $this->setSession(Yii::app()->session);
+        if (!isset($this->session['salerep'])) {
+            $this->setPriceTier(null);
+        }
+        return $this->session['salerep'];
+    }
+
+    public function setSaleRep($data)
+    {
+        $this->setSession(Yii::app()->session);
+        $this->session['salerep'] = $data;
+    }
+
+    public function clearSaleRep()
+    {
+        $this->setSession(Yii::app()->session);
+        unset($this->session['salerep']);
+    }
+
     public function getComment()
     {
         $this->setSession(Yii::app()->session);
@@ -570,6 +591,7 @@ class ShoppingCart extends CApplicationComponent
         $this->clearPriceTier();
         $this->clearTotalDiscount();
         $this->clearPaymentNote();
+        $this->clearSaleRep();
     }
 
 }

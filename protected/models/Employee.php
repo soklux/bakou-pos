@@ -7,6 +7,7 @@
  * @property integer $id
  * @property string $first_name
  * @property string $last_name
+ * @property date $dob
  * @property string $mobile_no
  * @property string $adddress1
  * @property string $address2
@@ -57,7 +58,7 @@ class Employee extends CActiveRecord
 			array('notes', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, first_name, last_name, mobile_no, adddress1, address2, city_id, country_code, email, notes, status', 'safe', 'on'=>'search'),
+			array('id, first_name, last_name, dob, mobile_no, adddress1, address2, city_id, country_code, email, notes, status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -77,22 +78,22 @@ class Employee extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'first_name' => Yii::t('app','First Name'), //'First Name',
-			'last_name' => Yii::t('app','Last Name'), //'Last Name',
-			'mobile_no' => Yii::t('app','Mobile No'), //'Mobile No',
-			'adddress1' => Yii::t('app','Address1'), //'Adddress1',
-			'address2' => Yii::t('app','Address2'), //Address2',
-			'city_id' => Yii::t('app','City'), //'City',
-			'country_code' => Yii::t('app','Country Code'), //'Country Code',
-			'email' => Yii::t('app','Email'), //'Email',
-			'notes' => Yii::t('app','Notes'), //'Notes',
-                        'search' => Yii::t('app','Search') . Yii::t('app','Employee'),
-		);
-	}
+    public function attributeLabels()
+    {
+        return array(
+            'id' => 'ID',
+            'first_name' => Yii::t('app', 'First Name'), //'First Name',
+            'last_name' => Yii::t('app', 'Last Name'), //'Last Name',
+            'mobile_no' => Yii::t('app', 'Mobile No'), //'Mobile No',
+            'adddress1' => Yii::t('app', 'Address1'), //'Adddress1',
+            'address2' => Yii::t('app', 'Address2'), //Address2',
+            'city_id' => Yii::t('app', 'City'), //'City',
+            'country_code' => Yii::t('app', 'Country Code'), //'Country Code',
+            'email' => Yii::t('app', 'Email'), //'Email',
+            'notes' => Yii::t('app', 'Notes'), //'Notes',
+            'search' => Yii::t('app', 'Search') . Yii::t('app', 'Employee'),
+        );
+    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
@@ -150,15 +151,90 @@ class Employee extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-        
-        public function deleteEmployee($id)
-        {
-            Employee::model()->updateByPk((int)$id,array('status'=>$this->employee_inactive));
-        }
 
-        public function undodeleteEmployee($id)
-        {
-            Employee::model()->updateByPk((int)$id,array('status'=>$this->employee_active));
+    public function deleteEmployee($id)
+    {
+        Employee::model()->updateByPk((int)$id, array('status' => $this->employee_inactive));
+    }
+
+    public function undodeleteEmployee($id)
+    {
+        Employee::model()->updateByPk((int)$id, array('status' => $this->employee_active));
+    }
+
+    protected function getEmployeeInfo()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+
+    }
+
+    public function getEmployee()
+    {
+        $model = Employee::model()->findAll();
+        $list  = CHtml::listData($model , 'id', 'EmployeeInfo');
+        return $list;
+    }
+
+    /*
+     * This is to get Employee but as Sale Representative
+     */
+    public function getEmpRep($employee_id)
+    {
+        $model = Employee::model()->findAll(
+            array('select' => '*',
+                'condition' => 'id not in ("1","2") and id<>:employee_id',
+                 'params'=>array(':employee_id' => $employee_id)
+                ,
+            ));
+        $list  = CHtml::listData($model , 'id', 'EmployeeInfo');
+        return $list;
+    }
+
+
+    public static function itemAlias($type, $code = null)
+    {
+
+        $_items = array(
+            'day' => array(
+                '01' => '01',
+                '02' => '02',
+                '03' => '03',
+                '04' => '04',
+                '05' => '05',
+                '06' => '06',
+                '07' => '07',
+                '08' => '08',
+                '09' => '09',
+                '10' => '10',
+                '11' => '11',
+                '12' => '12',
+                '13' => '13',
+                '14' => '14',
+                '15' => '15',
+                '16' => '16',
+                '17' => '17',
+                '18' => '18',
+                '19' => '19',
+                '20' => '20',
+                '21' => '21',
+                '22' => '22',
+                '23' => '23',
+                '24' => '24',
+                '25' => '25',
+                '26' => '26',
+                '27' => '27',
+                '28' => '28',
+                '29' => '29',
+                '30' => '30',
+                '31' => '31',
+            ),
+        );
+
+        if (isset($code)) {
+            return isset($_items[$type][$code]) ? $_items[$type][$code] : false;
+        } else {
+            return isset($_items[$type]) ? $_items[$type] : false;
         }
+    }
         
 }

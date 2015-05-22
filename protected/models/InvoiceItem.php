@@ -109,19 +109,21 @@ class InvoiceItem extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-        
-        public static function itemAlias($type,$code=NULL) {
-		
-            $_items = array(
-                     'payment_type' => array(
-                             'Cash' => Yii::t('app','form.paymenttype.cash'),
-                             //'Debt'=> Yii::t('app','form.paymenttype.debt'),
-                     ),
-             );
 
-             if (isset($code))
-                     return isset($_items[$type][$code]) ? $_items[$type][$code] : false;
-             else
-                     return isset($_items[$type]) ? $_items[$type] : false;
-	}
+    public static function itemAlias($type, $code = null)
+    {
+
+        $_items = array(
+            'payment_type' => array(
+                'Cash' => Yii::t('app', 'Cash'),
+                'Credit' => Yii::t('app', 'Credit'),
+            ),
+        );
+
+        if (isset($code)) {
+            return isset($_items[$type][$code]) ? $_items[$type][$code] : false;
+        } else {
+            return isset($_items[$type]) ? $_items[$type] : false;
+        }
+    }
 }

@@ -14,6 +14,7 @@
  * @property string $remark
  * @property double $discount_amount
  * @property integer $discount_percent
+ * @property integer $salerep_id
  *
  * The followings are the available model relations:
  * @property SaleItem[] $saleItems
@@ -133,7 +134,7 @@ class Sale extends CActiveRecord
         ));
     }
 
-    public function saveSale($in_sale_id, $items, $payments, $payment_received, $customer_id, $employee_id, $sub_total, $comment, $status = self::sale_complete_status, $discount_amount)
+    public function saveSale($in_sale_id, $items, $payments, $payment_received, $customer_id, $employee_id, $sub_total, $comment, $status = self::sale_complete_status, $discount_amount,$sale_rep_id)
     {
         if (count($items) == 0) {
             return '-1';
@@ -166,6 +167,7 @@ class Sale extends CActiveRecord
             $model->status = $status;
             $model->discount_amount = $discount_amount == null ? 0 : $discount_amount;
             $model->discount_type = '%'; //To do : consider to support discount in USD as well for next version
+            $model->salerep_id = $sale_rep_id;
 
             if ($model->save()) {
                 $sale_id = $model->id;

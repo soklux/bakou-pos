@@ -48,6 +48,14 @@
             ),
         ));
     ?>
+
+    <?php echo $form->dropDownList($model,'emnployee_id', Employee::model()->getEmpRep($employee_id),
+        array(
+            'id'=>'sale_rep_id',
+            'prompt' => ' - Select Sale Representative -',
+            'options'=>array(Yii::app()->shoppingCart->getSaleRep()=>array('selected'=>true),
+            ))
+    );?>
    
     <?php /* echo TbHtml::linkButton('',array(
         'color'=>TbHtml::BUTTON_COLOR_INFO,
@@ -256,7 +264,27 @@
                 });
             });
       ");
- ?> 
+ ?>
+
+<?php
+Yii::app()->clientScript->registerScript( 'saleRepOption', "
+        jQuery( function($){
+            $('div#itemlookup').on('change','#sale_rep_id',function(e) {
+                e.preventDefault();
+                var Id=$(this).val();
+                $.ajax({url: 'setSaleRep',
+                        data : {id : Id},
+                        type : 'post',
+                        beforeSend: function() { $('.waiting').show(); },
+                        complete: function() { $('.waiting').hide(); },
+                        success : function(data) {
+                           $('#register_container').html(data);
+                        }
+                });
+            });
+        });
+      ");
+?>
 
 <?php if  (Yii::app()->settings->get('sale', 'disableConfirmation')=='1') { ?>
     <script>

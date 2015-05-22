@@ -27,6 +27,16 @@
 
                 <?php echo $form->textFieldControlGroup($model,'mobile_no',array('class'=>'span10','maxlength'=>15)); ?>
 
+                <div class="">
+
+                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('day'), array('empty' => '(Select a category')); ?>
+
+                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('day'), array('empty' => '(Select a category')); ?>
+
+                    <?php //echo $form->dropDownList($model, 'city_id', Employee::itemAlias('day'), array('id' => 'day_id','style' => 'width:65px')); ?>
+
+                </div>
+
                 <?php echo $form->textFieldControlGroup($model,'adddress1',array('class'=>'span10','maxlength'=>60)); ?>
 
                 <?php echo $form->textFieldControlGroup($model,'address2',array('class'=>'span10','maxlength'=>60)); ?>

@@ -22,7 +22,7 @@ class SaleItemController extends Controller
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('Add','RemoveCustomer', 'SetComment', 'DeleteItem', 'AddItem', 'EditItem', 'EditItemPrice', 'Index', 'IndexPara', 'AddPayment', 'CancelSale', 'CompleteSale', 'Complete', 'SuspendSale', 'DeletePayment', 'SelectCustomer', 'AddCustomer', 'Receipt', 'UnsuspendSale', 'EditSale', 'Receipt', 'Suspend', 'ListSuspendedSale', 'SetPriceTier','SetTotalDiscount','DeleteSale'),
+                'actions' => array('Add','RemoveCustomer', 'SetComment', 'DeleteItem', 'AddItem', 'EditItem', 'EditItemPrice', 'Index', 'IndexPara', 'AddPayment', 'CancelSale', 'CompleteSale', 'Complete', 'SuspendSale', 'DeletePayment', 'SelectCustomer', 'AddCustomer', 'Receipt', 'UnsuspendSale', 'EditSale', 'Receipt', 'Suspend', 'ListSuspendedSale', 'SetPriceTier','SetTotalDiscount','DeleteSale','SetSaleRep'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -213,6 +213,15 @@ class SaleItemController extends Controller
         $this->reload();
     }
 
+    public function actionSetSaleRep()
+    {
+        if (Yii::app()->request->isPostRequest) {
+            $employee_id = $_POST['id'];
+            Yii::app()->shoppingCart->setSaleRep($employee_id);
+            $this->reload();
+        }
+    }
+
     private function reload($data=array())
     {
         $this->layout = '//layouts/column_sale';
@@ -274,21 +283,24 @@ class SaleItemController extends Controller
 
         $this->layout = '//layouts/column_receipt';
 
-        $data=$this->sessionInfo();
+        $data = $this->sessionInfo();
         $customer = $this->customerInfo($data['customer_id']);
         $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
 
         /*
          * Check if there is payment is less than total sale - Customer Must be defined
          */
-        if ( $data['amount_change'] > 0 && $customer==null) {
+        if ($data['amount_change'] > 0 && $customer == null) {
             $data['warning'] = Yii::t('app', 'Plz, Select Customer');
             $this->reload($data);
         } elseif (empty($data['items'])) {
             $this->redirect(array('saleItem/index'));
         } else {
             //Save transaction to db
-            $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'], $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'], $data['comment'], Yii::app()->params['sale_complete_status'], $data['total_discount']);
+            $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'],
+                $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'],
+                $data['comment'], Yii::app()->params['sale_complete_status'], $data['total_discount'],
+                $data['salerep_id']);
 
             if (substr($data['sale_id'], 0, 2) == '-1') {
                 $data['warning'] = $data['sale_id'];
@@ -418,6 +430,7 @@ class SaleItemController extends Controller
         $data['customer_id'] = Yii::app()->shoppingCart->getCustomer();
         $data['comment'] = Yii::app()->shoppingCart->getComment();
         $data['employee_id'] = Yii::app()->session['employeeid'];
+        $data['salerep_id'] = Yii::app()->shoppingCart->getSaleRep();
         $data['transaction_date'] = date('d/m/Y');
         $data['transaction_time'] = date('h:i:s');
         $data['session_sale_id'] = Yii::app()->shoppingCart->getSaleId();
