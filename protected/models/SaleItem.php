@@ -32,6 +32,7 @@ class SaleItem extends CActiveRecord
         public $sub_total;
         public $total_discount;
         public $tier_id;
+        public $employee_id;
         //public $total_discount;
     
         /**

@@ -19,7 +19,7 @@
 <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
 	'action'=>Yii::app()->createUrl('saleItem/add'),
 	'method'=>'post',
-        'layout'=>TbHtml::FORM_LAYOUT_HORIZONTAL,
+        'layout'=>TbHtml::FORM_LAYOUT_INLINE,
         'id'=>'add_item_form',
 )); ?>    
    
@@ -49,7 +49,7 @@
         ));
     ?>
 
-    <?php echo $form->dropDownList($model,'emnployee_id', Employee::model()->getEmpRep($employee_id),
+    <?php echo $form->dropDownList($model,'employee_id', Employee::model()->getEmpRep($employee_id),
         array(
             'id'=>'sale_rep_id',
             'prompt' => ' - Select Sale Representative -',

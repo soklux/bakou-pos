@@ -25,15 +25,23 @@
 
                 <?php echo $form->textFieldControlGroup($model,'last_name',array('class'=>'span10','maxlength'=>50,'data-required'=>'true')); ?>
 
-                <?php echo $form->textFieldControlGroup($model,'mobile_no',array('class'=>'span10','maxlength'=>15)); ?>
+                <?php //echo $form->textFieldControlGroup($model,'mobile_no',array('class'=>'span10','maxlength'=>15)); ?>
 
-                <div class="">
+                <div class="form-group">
 
-                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('day'), array('empty' => '(Select a category')); ?>
+                    <label class="col-sm-3 control-label" for="Employee_dob"><?php echo Yii::t('app','Birthday'); ?></label>
 
-                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('day'), array('empty' => '(Select a category')); ?>
+                    <div class="col-sm-9">
 
-                    <?php //echo $form->dropDownList($model, 'city_id', Employee::itemAlias('day'), array('id' => 'day_id','style' => 'width:65px')); ?>
+                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('day'), array('empty' => yii::t('app','Day'))); ?>
+
+                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('month'), array('empty' => yii::t('app','Month'))); ?>
+
+                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('year'), array('empty' => yii::t('app','Year'))); ?>
+
+                    <?php //echo CHtml::activeTelField($model,'city_id',array('class'=> 'input-sm','maxlength' => 4,'help'=>'YYYY')); ?>
+
+                    </div>
 
                 </div>
 
