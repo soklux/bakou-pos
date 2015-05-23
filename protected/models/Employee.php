@@ -195,6 +195,16 @@ class Employee extends CActiveRecord
         return $list;
     }
 
+    protected function afterFind()
+    {
+        $dob = strtotime($this->dob);
+
+        $this->day = date('d',$dob);
+        $this->month = date('m',$dob);
+        $this->year = date('Y',$dob);
+        return parent::afterFind();
+    }
+
 
     public static function itemAlias($type, $code = null)
     {
