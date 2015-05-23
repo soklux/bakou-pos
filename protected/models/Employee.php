@@ -27,6 +27,9 @@ class Employee extends CActiveRecord
         public $login_id;
         public $image;
         public $search;
+        public $day; //Day : DD
+        public $month; // Month : MM
+        public $year; // Year - YYYY
         
         private $employee_active = '1';
         private $employee_inactive = '0'; 
@@ -55,7 +58,8 @@ class Employee extends CActiveRecord
 			array('country_code', 'length', 'max'=>2),
 			array('email', 'length', 'max'=>30),
 			array('status', 'length', 'max'=>1),
-			array('notes', 'safe'),
+            array('dob ', 'date', 'format'=>array('yyyy-MM-dd'), 'allowEmpty'=>true),
+			array('notes, dob, day, month, year', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, first_name, last_name, dob, mobile_no, adddress1, address2, city_id, country_code, email, notes, status', 'safe', 'on'=>'search'),
@@ -92,6 +96,7 @@ class Employee extends CActiveRecord
             'email' => Yii::t('app', 'Email'), //'Email',
             'notes' => Yii::t('app', 'Notes'), //'Notes',
             'search' => Yii::t('app', 'Search') . Yii::t('app', 'Employee'),
+            'dob' => Yii::t('app','Date of Birth'),
         );
     }
 
@@ -242,85 +247,7 @@ class Employee extends CActiveRecord
                 '11' => Yii::t('app','November'),
                 '12' => Yii::t('app','December'),
             ),
-            'year' => array(
-                '2015' => '2015',
-                '2014' => '2014',
-                '2013' => '2013',
-                '2012' => '2012',
-                '2011' => '2011',
-                '2010' => '2010',
-                '2009' => '2009',
-                '2008' => '2008',
-                '2007' => '2007',
-                '2006' => '2006',
-                '2005' => '2005',
-                '2004' => '2004',
-                '2003' => '2003',
-                '2002' => '2002',
-                '2001' => '2001',
-                '2000' => '2000',
-                '1999' => '1999',
-                '1998' => '1998',
-                '1997' => '1997',
-                '1996' => '1996',
-                '1995' => '1995',
-                '1994' => '1994',
-                '1993' => '1993',
-                '1992' => '1992',
-                '1991' => '1991',
-                '1990' => '1990',
-                '1989' => '1989',
-                '1988' => '1988',
-                '1987' => '1987',
-                '1986' => '1986',
-                '1985' => '1985',
-                '1984' => '1984',
-                '1983' => '1983',
-                '1982' => '1982',
-                '1981' => '1981',
-                '1980' => '1980',
-                '1979' => '1979',
-                '1978' => '1978',
-                '1977' => '1977',
-                '1976' => '1976',
-                '1975' => '1975',
-                '1974' => '1974',
-                '1973' => '1973',
-                '1972' => '1972',
-                '1971' => '1971',
-                '1970' => '1970',
-                '1969' => '1969',
-                '1968' => '1968',
-                '1967' => '1967',
-                '1966' => '1966',
-                '1965' => '1965',
-                '1964' => '1964',
-                '1963' => '1963',
-                '1962' => '1962',
-                '1961' => '1961',
-                '1960' => '1960',
-                '1959' => '1959',
-                '1958' => '1958',
-                '1957' => '1957',
-                '1956' => '1956',
-                '1955' => '1955',
-                '1954' => '1954',
-                '1953' => '1953',
-                '1952' => '1952',
-                '1951' => '1951',
-                '1950' => '1950',
-                '1949' => '1949',
-                '1948' => '1948',
-                '1947' => '1947',
-                '1946' => '1946',
-                '1945' => '1945',
-                '1944' => '1944',
-                '1943' => '1943',
-                '1942' => '1942',
-                '1941' => '1941',
-                '1940' => '1940',
-
-            ),
+            'year' => array_combine(range(date("Y"), 1910), range(date("Y"), 1910)),  //http://stackoverflow.com/questions/2807394/php-years-array
         );
 
         if (isset($code)) {

@@ -29,18 +29,17 @@
 
                 <div class="form-group">
 
-                    <label class="col-sm-3 control-label" for="Employee_dob"><?php echo Yii::t('app','Birthday'); ?></label>
+                    <label class="col-sm-3 control-label" for="Employee_dob"><?php echo Yii::t('app','Date of Birth') ?></label>
 
                     <div class="col-sm-9">
 
-                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('day'), array('empty' => yii::t('app','Day'))); ?>
+                        <?php echo CHtml::activeDropDownList($model, 'day', Employee::itemAlias('day'), array('prompt' => yii::t('app','Day'))); ?>
 
-                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('month'), array('empty' => yii::t('app','Month'))); ?>
+                        <?php echo CHtml::activeDropDownList($model, 'month', Employee::itemAlias('month'), array('prompt' => yii::t('app','Month'))); ?>
 
-                    <?php echo CHtml::dropDownList('city_id', $model, Employee::itemAlias('year'), array('empty' => yii::t('app','Year'))); ?>
+                        <?php echo CHtml::activeDropDownList($model, 'year', Employee::itemAlias('year'), array('prompt' => yii::t('app','Year'))); ?>
 
-                    <?php //echo CHtml::activeTelField($model,'city_id',array('class'=> 'input-sm','maxlength' => 4,'help'=>'YYYY')); ?>
-
+                        <span class="help-block"> <?php echo $form->error($model,'dob'); ?> </span>
                     </div>
 
                 </div>

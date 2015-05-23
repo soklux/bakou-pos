@@ -78,6 +78,11 @@ class EmployeeController extends Controller
                 $model->attributes = $_POST['Employee'];
                 $user->attributes = $_POST['RbacUser'];
                 //$location_id = $_POST['Employee']['location'];
+
+                if ( $_POST['Employee']['year'] !== "" || $_POST['Employee']['month'] !== "" || $_POST['Employee']['day'] !== "" ) {
+                    $dob = $_POST['Employee']['year'] . '-' . $_POST['Employee']['month'] . '-' . $_POST['Employee']['day'];
+                    $model->dob = $dob;
+                }
           
                 // validate BOTH $a and $b
                 $valid = $model->validate();
