@@ -140,7 +140,7 @@ class EmployeeController extends Controller
      */
     public function actionUpdate($id)
     {
-         $disabled = "";
+        $disabled = "";
         if (Yii::app()->user->checkAccess('employee.update')) {
 
             $model = $this->loadModel($id);
@@ -174,6 +174,11 @@ class EmployeeController extends Controller
             if (isset($_POST['Employee'])) {
                 $model->attributes = $_POST['Employee'];
                 $user->attributes=$_POST['RbacUser'];
+
+                if ( $_POST['Employee']['year'] !== "" || $_POST['Employee']['month'] !== "" || $_POST['Employee']['day'] !== "" ) {
+                    $dob = $_POST['Employee']['year'] . '-' . $_POST['Employee']['month'] . '-' . $_POST['Employee']['day'];
+                    $model->dob = $dob;
+                }
                 
                 // validate BOTH $a and $b
                 $valid = $model->validate();
