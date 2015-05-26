@@ -162,10 +162,10 @@ class ShoppingCart extends CApplicationComponent
         return $this->session['pricetier'];
     }
 
-    public function setPriceTier($pricetier_data)
+    public function setPriceTier($data)
     {
         $this->setSession(Yii::app()->session);
-        $this->session['pricetier'] = $pricetier_data;
+        $this->session['pricetier'] = $data;
     }
 
     public function clearPriceTier()
@@ -178,7 +178,7 @@ class ShoppingCart extends CApplicationComponent
     {
         $this->setSession(Yii::app()->session);
         if (!isset($this->session['salerep'])) {
-            $this->setPriceTier(null);
+            $this->setSaleRep(null);
         }
         return $this->session['salerep'];
     }
@@ -578,6 +578,7 @@ class ShoppingCart extends CApplicationComponent
         $this->setSession(Yii::app()->session);
         unset($this->session['dayinterval']);
     }
+
     
     public function clearAll()
     {

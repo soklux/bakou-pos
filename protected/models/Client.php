@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table 'client':
  * @property integer $id
+ * @property integer $price_tier_id
  * @property string $first_name
  * @property string $last_name
  * @property string $mobile_no
@@ -17,6 +18,7 @@
  * @property string $status
  * @property date $created_at
  * @property date $updated_at
+ * @property integer $employee_id
  *
  * The followings are the available model relations:
  * @property Account[] $accounts
@@ -44,7 +46,7 @@ class Client extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('first_name, mobile_no', 'required'),
-			array('city_id', 'numerical', 'integerOnly'=>true),
+			array('city_id, price_tier_id, employee_id', 'numerical', 'integerOnly'=>true),
 			array('first_name, last_name', 'length', 'max'=>100),
 			array('mobile_no', 'length', 'max'=>15),
 			array('address1, address2', 'length', 'max'=>60),
@@ -56,7 +58,7 @@ class Client extends CActiveRecord
             array('updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => false, 'on' => 'update'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, first_name, last_name, mobile_no, address1, address2, city_id, country_code, email, notes, status, search', 'safe', 'on'=>'search'),
+			array('id, price_tier_id, first_name, last_name, mobile_no, address1, address2, city_id, country_code, email, notes, status, search, employee_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -105,46 +107,46 @@ class Client extends CActiveRecord
 	 * @return CActiveDataProvider the data provider that can return the models
 	 * based on the search/filter conditions.
 	 */
-	public function search($client_id=null)
-	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
+    public function search($client_id = null)
+    {
+        // @todo Please modify the following code to remove attributes that should not be searched.
 
-		$criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
 
-                
-                if ($client_id!==null) {
-                    $criteria->compare('id',$client_id);
-                }
-		
-                //$criteria->compare('first_name',$this->first_name,true);
-		//$criteria->compare('last_name',$this->last_name,true);
-		//$criteria->compare('mobile_no',$this->mobile_no,true);
-		//$criteria->compare('address1',$this->address1,true);
-		//$criteria->compare('address2',$this->address2,true);
-		//$criteria->compare('city_id',$this->city_id);
-		//$criteria->compare('country_code',$this->country_code,true);
-		//$criteria->compare('email',$this->email,true);
-		//$criteria->compare('notes',$this->notes,true);
-		//$criteria->compare('status',$this->status,true);
-                
-                //$criteria->addSearchCondition('status',$this->_active_status);
-                
-                if ($this->search) {
-                
-                    $criteria->condition="(first_name=:first_name or last_name=:last_name or mobile_no=:mobile_no) and status=:status";
-                    $criteria->params = array(
-                                ':first_name'=>$this->search, 
-                                ':last_name'=>$this->search,
-                                ':mobile_no'=>$this->search,
-                                ':status' => '1',
 
-                    );
-                }
+        if ($client_id !== null) {
+            $criteria->compare('id', $client_id);
+        }
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        //$criteria->compare('first_name',$this->first_name,true);
+        //$criteria->compare('last_name',$this->last_name,true);
+        //$criteria->compare('mobile_no',$this->mobile_no,true);
+        //$criteria->compare('address1',$this->address1,true);
+        //$criteria->compare('address2',$this->address2,true);
+        //$criteria->compare('city_id',$this->city_id);
+        //$criteria->compare('country_code',$this->country_code,true);
+        //$criteria->compare('email',$this->email,true);
+        //$criteria->compare('notes',$this->notes,true);
+        //$criteria->compare('status',$this->status,true);
+
+        //$criteria->addSearchCondition('status',$this->_active_status);
+
+        if ($this->search) {
+
+            $criteria->condition = "(first_name=:first_name or last_name=:last_name or mobile_no=:mobile_no) and status=:status";
+            $criteria->params = array(
+                ':first_name' => $this->search,
+                ':last_name' => $this->search,
+                ':mobile_no' => $this->search,
+                ':status' => '1',
+
+            );
+        }
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+        ));
+    }
 
 	/**
 	 * Returns the static model of the specified AR class.

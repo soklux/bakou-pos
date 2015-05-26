@@ -31,7 +31,7 @@ class ClientController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','admin','GetClient','AddCustomer','delete','undodelete','payment'),
+				'actions'=>array('create','update','admin','GetClient','AddCustomer','delete','undodelete','payment','CopyClientInfo'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -91,12 +91,14 @@ class ClientController extends Controller
                                 { 
                                     $client_id=$model->id;
                                     $client_fname=$model->first_name . ' ' . $model->last_name;
+                                    $price_tier_id = $model->price_tier_id;
                                     Account::model()->saveAccount($client_id,$client_fname); 
 
                                     $transaction->commit();
 
                                     if ($sale_mode=='Y') {
                                         Yii::app()->shoppingCart->setCustomer($client_id);
+                                        Yii::app()->shoppingCart->setPriceTier($price_tier_id);
                                         $this->redirect(array('saleItem/index'));
                                     } else {
                                         Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,'<strong>' . ucfirst($model->first_name) . '</strong> have been saved successfully!' );
@@ -244,11 +246,13 @@ class ClientController extends Controller
                                     {
                                         $client_fname=$model->first_name . ' ' . $model->last_name;
                                         Account::model()->saveAccount($model->id,$client_fname);
+                                        $price_tier_id = $model->price_tier_id;
                                         
                                         $transaction->commit(); 
                                         
                                         if ($sale_mode=='Y') {
                                             Yii::app()->shoppingCart->setCustomer($id);
+                                            Yii::app()->shoppingCart->setPriceTier($price_tier_id);
                                             $this->redirect(array('saleItem/index'));
                                         } else {
                                              Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,'<strong>' . ucfirst($model->first_name) . '</strong> have been saved successfully!' );
@@ -296,23 +300,22 @@ class ClientController extends Controller
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete($id)
-	{
-            if (Yii::app()->user->checkAccess('client.delete'))
-            {
-                if(Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest)
-		{
-                        Client::model()->deleteClient($id);
-			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-			if(!isset($_GET['ajax'])) 
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-		} else { 
-                    throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+    public function actionDelete($id)
+    {
+        if (Yii::app()->user->checkAccess('client.delete')) {
+            if (Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest) {
+                Client::model()->deleteClient($id);
+                // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+                if (!isset($_GET['ajax'])) {
+                    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
                 }
             } else {
-                throw new CHttpException(403, 'You are not authorized to perform this action');
+                throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
             }
-	}
+        } else {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
+    }
         
         public function actionUndoDelete($id)
 	{
@@ -336,21 +339,23 @@ class ClientController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionAdmin($client_id=null)
-	{
-            if (Yii::app()->user->checkAccess('client.index') || Yii::app()->user->checkAccess('client.create') || Yii::app()->user->checkAccess('client.update') || Yii::app()->user->checkAccess('client.delete')) {
-                $model=new Client('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Client']))
-			$model->attributes=$_GET['Client'];
-
-		$this->render('admin',array(
-			'model'=>$model,'client_id'=>$client_id
-		));
-            } else {
-                throw new CHttpException(403, 'You are not authorized to perform this action');
+    public function actionAdmin($client_id = null)
+    {
+        if (Yii::app()->user->checkAccess('client.index') || Yii::app()->user->checkAccess('client.create') || Yii::app()->user->checkAccess('client.update') || Yii::app()->user->checkAccess('client.delete')) {
+            $model = new Client('search');
+            $model->unsetAttributes();  // clear any default values
+            if (isset($_GET['Client'])) {
+                $model->attributes = $_GET['Client'];
             }
-	}
+
+            $this->render('admin', array(
+                'model' => $model,
+                'client_id' => $client_id
+            ));
+        } else {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
+    }
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
@@ -412,6 +417,25 @@ class ClientController extends Controller
         Yii::app()->paymentCart->setClientId($client_id);
         $this->redirect(array('salePayment/index'));
 
+    }
+
+    public function actionCopyClientInfo()
+    {
+        if (Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest) {
+
+            $param = (int)$_POST['Client']['employee_id'];
+            $employee = Employee::model()->findByPk($param);
+
+            echo CJSON::encode(array(
+                'status' => 'success',
+                'mobile_no' => $employee->mobile_no,
+                'first_name' => $employee->first_name,
+                'last_name' => $employee->last_name,
+                'address1' => $employee->adddress1,
+                'address2' => $employee->address2,
+                'notes' => $employee->notes,
+            ));
+        }
     }
               
 }

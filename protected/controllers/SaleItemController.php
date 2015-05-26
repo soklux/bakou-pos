@@ -159,7 +159,9 @@ class SaleItemController extends Controller
     {
         if ( Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest ) {
             $client_id = $_POST['SaleItem']['client_id'];
+            $client = Client::model()->findByPk($client_id);
             Yii::app()->shoppingCart->setCustomer($client_id);
+            Yii::app()->shoppingCart->setPriceTier($client->price_tier_id);
             $this->reload();
         } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
@@ -170,6 +172,7 @@ class SaleItemController extends Controller
     {
         if ( Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest ) {
             Yii::app()->shoppingCart->removeCustomer();
+            Yii::app()->shoppingCart->clearPriceTier();
             $this->reload();
         } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
@@ -207,10 +210,13 @@ class SaleItemController extends Controller
 
     public function actionSetPriceTier()
     {
-        $price_tier_id = $_POST['price_tier_id'];
-        Yii::app()->shoppingCart->setPriceTier($price_tier_id);
-        Yii::app()->shoppingCart->f5ItemPriceTier();
-        $this->reload();
+        if ( Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest ) {
+
+            $price_tier_id = $_POST['price_tier_id'];
+            Yii::app()->shoppingCart->setPriceTier($price_tier_id);
+            Yii::app()->shoppingCart->f5ItemPriceTier();
+            $this->reload();
+        }
     }
 
     public function actionSetSaleRep()
