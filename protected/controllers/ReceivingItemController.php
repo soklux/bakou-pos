@@ -207,6 +207,26 @@ class ReceivingItemController extends Controller
         ));
     }
 
+    public function actionSetTotalDiscount()
+    {
+        if (Yii::app()->request->isPostRequest) {
+            $data= array();
+            $model = new SaleItem;
+            $total_discount =$_POST['ReceivingItem']['total_discount'];
+            $model->total_discount=$total_discount;
+
+            if ($model->validate()) {
+                Yii::app()->receivingCart->setTotalDiscount($total_discount);
+            } else {
+                $error=CActiveForm::validate($model);
+                $errors = explode(":", $error);
+                $data['warning']=  str_replace("}","",$errors[1]);
+            }
+
+            $this->reload($data);
+        }
+    }
+
     public function actionSetRecvMode()
     {
         Yii::app()->receivingCart->setMode($_POST['recv_mode']);
@@ -358,7 +378,10 @@ class ReceivingItemController extends Controller
         $data['comment'] = Yii::app()->receivingCart->getComment();
         $data['supplier_id'] = Yii::app()->receivingCart->getSupplier();
         $data['employee_id'] = Yii::app()->session['employeeid'];
-        
+
+        $data['hide_editprice'] = Yii::app()->user->checkAccess('transaction.editprice') ? '' : 'hidden';
+        $data['hide_editcost'] = Yii::app()->user->checkAccess('transaction.disable_editcost') ? '' : 'hidden';
+
         if (Yii::app()->settings->get('item', 'itemExpireDate') == '1') {
             $data['expiredate_class']='';
         } else {

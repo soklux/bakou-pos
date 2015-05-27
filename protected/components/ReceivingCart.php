@@ -300,7 +300,7 @@ class ReceivingCart extends CApplicationComponent
             }
         }
 
-        /* Have to calcuate with tax if there is a tax */
+        /* Have to calculate with tax if there is a tax */
         /*
           foreach($this->getCart() as $tax)
           {
@@ -402,6 +402,27 @@ class ReceivingCart extends CApplicationComponent
         $this->setComment($sale->remark);
     }
 
+    public function getTotalDiscount()
+    {
+        $this->setSession(Yii::app()->session);
+        if (!isset($this->session['totaldiscount'])) {
+            $this->setTotalDiscount(null);
+        }
+        return $this->session['totaldiscount'];
+    }
+
+    public function setTotalDiscount($data)
+    {
+        $this->setSession(Yii::app()->session);
+        $this->session['totaldiscount'] = $data;
+    }
+
+    public function clearTotalDiscount()
+    {
+        $this->setSession(Yii::app()->session);
+        unset($this->session['totaldiscount']);
+    }
+
     public function clearAll()
     {
         $this->emptyCart();
@@ -409,6 +430,7 @@ class ReceivingCart extends CApplicationComponent
         $this->removeSupplier();
         $this->clearComment();
         $this->clearMode();
+        $this->clearTotalDiscount();
     }
 
 }

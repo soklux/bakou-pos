@@ -27,9 +27,9 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr><th><?php echo Yii::t('app','Item Name'); ?></th>
+                    <th><?php echo Yii::t('app','Quantity'); ?></th>
                     <th><?php echo Yii::t('app','Buy Price'); ?></th>
                     <th><?php echo Yii::t('app','Sell Price'); ?></th>
-                    <th><?php echo Yii::t('app','Quantity'); ?></th>
                     <th class="<?php echo Yii::app()->settings->get('sale', 'discount'); ?>"><?php echo Yii::t('app','Discount'); ?></th>
                     <th class='<?php echo $expiredate_class; ?>'><?php echo Yii::t('app','model.receivingitem.expire_date'); ?></th>
                     <th><?php echo Yii::t('app','Total'); ?></th>
@@ -82,13 +82,13 @@
                             </td>
                             <td>
                                 <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
-                                        'method'=>'post',
-                                        'action' => Yii::app()->createUrl('receivingItem/editItem/',array('item_id'=>$item['item_id'])),
-                                        'htmlOptions'=>array('class'=>'line_item_form'),
-                                    ));
+                                    'method'=>'post',
+                                    'action' => Yii::app()->createUrl('receivingItem/editItem/',array('item_id'=>$item['item_id'])),
+                                    'htmlOptions'=>array('class'=>'line_item_form'),
+                                ));
                                 ?>
-                                    <?php echo $form->textField($model,"unit_price",array('value'=>$item['unit_price'],'class'=>'input-small input-grid','id'=>"unit_price_$item_id",'placeholder'=>Yii::t('app','Sell Price'),'maxlength'=>10)); ?>
-                                <?php $this->endWidget(); ?> 
+                                <?php echo $form->textField($model,"quantity",array('value'=>$item['quantity'],'class'=>'input-small quantity','id'=>"quantity_$item_id",'placeholder'=>'Quantity','maxlength'=>10)); ?>
+                                <?php $this->endWidget(); ?>
                             </td>
                             <td>
                                 <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
@@ -97,7 +97,7 @@
                                         'htmlOptions'=>array('class'=>'line_item_form'),
                                     ));
                                 ?>
-                                    <?php echo $form->textField($model,"quantity",array('value'=>$item['quantity'],'class'=>'input-small quantity','id'=>"quantity_$item_id",'placeholder'=>'Quantity','maxlength'=>10)); ?>
+                                    <?php echo $form->textField($model,"unit_price",array('value'=>$item['unit_price'],'class'=>'input-small input-grid','id'=>"unit_price_$item_id",'placeholder'=>Yii::t('app','Sell Price'),'maxlength'=>10)); ?>
                                 <?php $this->endWidget(); ?> 
                             </td>
                             <td class="<?php echo Yii::app()->settings->get('sale', 'discount'); ?>"><?php echo $form->textField($model,"discount",array('value'=>$item['discount'],'class'=>'input-small input-grid','placeholder'=>'Discount','maxlength'=>50)); ?></td>
@@ -149,6 +149,33 @@
         }    
 
         ?> 
+
+        <?php if (!empty($items)) { ?>
+            <div class="widget-toolbox padding-8 clearfix">
+                <div class="col-xs-8"></div>
+                <div class="col-xs-4" id="total_discount_cart">
+                    <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
+                        'method'=>'post',
+                        'action' => Yii::app()->createUrl('receivingItem/setTotalDiscount/'),
+                        'id'=>'total_discount_form'
+                    ));
+                    ?>
+                    <span class="input-icon">
+                    <?php echo $form->textField($model,'total_discount',array(
+                            'id'=>'total_discount_id',
+                            'class'=>'col-xs-12 input-totaldiscount',
+                            'placeholder'=>'Total Discount',
+                            'maxlength'=>25,
+                            'append' => '%',
+                            //'disabled' => $disable_discount
+                        )
+                    ); ?>
+                        <?php $this->endWidget(); ?>
+                        <i class="ace-icon fa fa-minus-square orange"></i>
+                </span>
+                </div>
+            </div>
+        <?php } ?>
 
     </div> <!--/endgridcartdiv-->
 

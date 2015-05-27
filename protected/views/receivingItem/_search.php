@@ -110,8 +110,10 @@ $(document).ready(function()
     // ajaxForm to ensure is submitting as Ajax even user press enter key
     $('#add_item_form').ajaxForm({target: "#register_container", beforeSubmit: receivingsBeforeSubmit, success: itemScannedSuccess});
     
-    $('.line_item_form').ajaxForm({target: "#register_container", beforeSubmit: receivingsBeforeSubmit }); 
-    
+    $('.line_item_form').ajaxForm({target: "#register_container", beforeSubmit: receivingsBeforeSubmit });
+
+    $('#total_discount_form').ajaxForm({target: "#register_container", beforeSubmit: receivingsBeforeSubmit});
+
     $('#cart_contents').on('change','input.input-grid',function(e) {
         e.preventDefault();
         $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit });
@@ -128,6 +130,12 @@ $(document).ready(function()
         e.preventDefault();
         $('#supplier_selected_form').ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit});
     });
+
+    $('#total_discount_cart').on('change','input.input-totaldiscount',function(e) {
+        e.preventDefault();
+        $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: salesBeforeSubmit });
+    });
+
 });
 
 function receivingsBeforeSubmit(formData, jqForm, options)
