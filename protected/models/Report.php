@@ -27,7 +27,8 @@ class Report extends CFormModel
     public $sale_id;
     public $receive_id;
     public $employee_id;
-    
+    public $search_id;
+
     private $item_active = '1';
 
     private $active_status = '1';
@@ -1045,6 +1046,45 @@ class Report extends CFormModel
         }
 
         return $result;
+    }
+
+    /* To view all outstanding invoices */
+    public function oustandingInvoice()
+    {
+
+        if (isset($this->search_id)) {
+
+            $sql = "SELECT t1.client_id,t1.client_name,t1.invoices,t1.balance,MAX(date_paid) last_payment,CONCAT(DATEDIFF(CURDATE(),MAX(date_paid)), ' days ago') days
+                FROM v_outstanding_inv t1 LEFT JOIN payment_history t2 ON t1.client_id = t2.client_id
+                WHERE t1.first_name like :search_id or t1.last_name like :search_id
+                GROUP BY t1.client_id,t1.client_name,t1.invoices,t1.balance";
+
+            $client_name = $this->search_id . '%';
+
+            $rawData = Yii::app()->db->createCommand($sql)->queryAll(true,array(':search_id' => $client_name));
+
+        } else {
+
+            $sql = "SELECT t1.client_id,t1.client_name,t1.invoices,t1.balance,MAX(date_paid) last_payment,CONCAT(DATEDIFF(CURDATE(),MAX(date_paid)), ' days ago') days
+                FROM v_outstanding_inv t1 LEFT JOIN payment_history t2 ON t1.client_id = t2.client_id
+                GROUP BY t1.client_id,t1.client_name,t1.invoices,t1.balance";
+
+            $rawData = Yii::app()->db->createCommand($sql)->queryAll(true);
+
+        }
+
+        $dataProvider = new CArrayDataProvider($rawData, array(
+            //'id'=>'saleinvoice',
+            'keyField' => 'client_id',
+            'sort' => array(
+                'attributes' => array(
+                    'balance',
+                ),
+            ),
+            'pagination' => false,
+        ));
+
+        return $dataProvider; // Return as array object
     }
 
 }

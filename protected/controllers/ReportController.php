@@ -32,7 +32,7 @@ class ReportController extends Controller
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update', 'ReportTab', 'SaleInvoiceItem', 'SaleInvoice', 'SaleInvoiceAlert', 'SaleDaily', 'SaleReportTab', 'SaleSummary', 'Payment', 'TopProduct', 'SaleHourly', 'Inventory', 'ItemExpiry', 'DailyProfit', 'ItemInactive', 'Transaction', 'TransactionItem', 'ItemAsset', 'SaleItemSummary','StockCount','StockCountPrint','UserLogSummary','UserLogDt'),
+                'actions' => array('create', 'update', 'ReportTab', 'SaleInvoiceItem', 'SaleInvoice', 'SaleInvoiceAlert', 'SaleDaily', 'SaleReportTab', 'SaleSummary', 'Payment', 'TopProduct', 'SaleHourly', 'Inventory', 'ItemExpiry', 'DailyProfit', 'ItemInactive', 'Transaction', 'TransactionItem', 'ItemAsset', 'SaleItemSummary','StockCount','StockCountPrint','UserLogSummary','UserLogDt','OutStandingInvoice'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -648,9 +648,9 @@ class ReportController extends Controller
             if (isset($_GET['ajax']) && $_GET['ajax'] == 'inventory-grid') {
                 $this->render('inventory', $data);
             } else {
-                
+
                 $this->renderPartial('inventory_ajax',$data, false, false);
-                
+
                 /*
                 echo CJSON::encode(array(
                     'status' => 'success',
@@ -658,7 +658,7 @@ class ReportController extends Controller
                 ));
 
                 Yii::app()->end();
-                 * 
+                 *
                 */
             }
         } else {
@@ -855,6 +855,34 @@ class ReportController extends Controller
             }
         } else {
             $this->render('user_log_dt', array('model' => $model,'employee_id' => $employee_id,'full_name' => $full_name,));
+        }
+    }
+
+
+    public function actionOutStandingInvoice()
+    {
+        $report = new Report;
+
+        if (!empty($_GET['Report']['search_id'])) {
+            $report->search_id = $_GET['Report']['search_id'];
+        }
+
+        if (Yii::app()->request->isAjaxRequest) {
+
+
+            if (isset($_GET['ajax']) && $_GET['ajax'] == 'outstanding-invoice-grid') {
+                $this->render('outstanding_inv', array('report' => $report));
+
+            } else    {
+                Yii::app()->clientScript->scriptMap['*.js'] = false;
+                Yii::app()->clientScript->scriptMap['*.css'] = false;
+                echo CJSON::encode(array(
+                    'status' => 'success',
+                    'div' => $this->renderPartial('outstanding_inv_ajax', array('report' => $report), true, false),
+                ));
+            }
+        } else {
+            $this->render('outstanding_inv', array('report' => $report));
         }
     }
     

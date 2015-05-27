@@ -50,6 +50,9 @@ $this->widget('bootstrap.widgets.TbNav', array(
                     array('label'=> Yii::t('app','Sales Reports'), 'icon'=> 'menu-icon fa fa-caret-right', 'url'=>Yii::app()->urlManager->createUrl('report/SaleReportTab'),'active'=>$this->id .'/'. $this->action->id =='report/SaleReportTab',
                         'visible'=> Yii::app()->user->checkAccess('report.index') 
                     ),
+                    array('label'=> Yii::t('app','Outstanding Invoice'), 'icon'=> 'menu-icon fa fa-caret-right', 'url'=>Yii::app()->urlManager->createUrl('report/outstandingInvoice'),'active'=>$this->id .'/'. $this->action->id =='report/outstandingInvoice',
+                        'visible'=> Yii::app()->user->checkAccess('report.index')
+                    ),
                     array('label'=> Yii::t('app','Item Expiry'), 'icon'=> 'menu-icon fa fa-caret-right', 'url'=>Yii::app()->urlManager->createUrl('report/itemExpiry'),'active'=>$this->id .'/'. $this->action->id =='report/itemExpiry',
                         'visible'=> Yii::app()->user->checkAccess('report.index')  || Yii::app()->settings->get('item', 'itemExpireDate')=='1' 
                         ),
