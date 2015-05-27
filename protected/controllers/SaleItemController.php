@@ -305,7 +305,7 @@ class SaleItemController extends Controller
             //Save transaction to db
             $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'],
                 $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'],
-                $data['comment'], Yii::app()->params['sale_complete_status'], $data['total_discount'],
+                $data['comment'], Yii::app()->params['sale_complete_status'], $data['discount_amt'],$data['discount_symbol'],
                 $data['salerep_id']);
 
             if (substr($data['sale_id'], 0, 2) == '-1') {
@@ -447,7 +447,12 @@ class SaleItemController extends Controller
         $data['disable_discount'] = Yii::app()->user->checkAccess('sale.discount') ? false : true;
         $data['colspan'] = Yii::app()->settings->get('sale','discount')=='hidden' ? '2' : '3';
         
-        $data['discount_amount'] = $data['sub_total'] * $data['total_discount']/100;
+        //$data['discount_amount'] = $data['sub_total'] * $data['total_discount']/100;
+        $data['discount_amount'] = Common::calDiscountAmount($data['total_discount'],$data['sub_total']);
+
+        $discount_arr=Common::Discount($data['total_discount']);
+        $data['discount_amt']=$discount_arr[0];
+        $data['discount_symbol']=$discount_arr[1];
 
         /** Rounding a numbere to a nearest 10 or 100 (Floor : round down, Ceil : round up , Round : standard round 
          *  Ref: http://stackoverflow.com/questions/1619265/how-to-round-up-a-number-to-nearest-10

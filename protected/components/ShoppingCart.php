@@ -426,11 +426,12 @@ class ShoppingCart extends CApplicationComponent
         $subtotal = 0;
         $items = $this->getCart();
         foreach ($items as $id => $item) {
-            if (substr($item['discount'], 0, 1) == '$') {
+            /*if (substr($item['discount'], 0, 1) == '$') {
                 $subtotal+=round($item['price'] * $item['quantity'] - substr($item['discount'], 1), Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
             } else {
                 $subtotal+=round($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100, Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
-            }
+            }*/
+            $subtotal+= Common::calTotalAfterDiscount($item['discount'],$item['price'],$item['quantity']);
         }
         
         return round($subtotal, $this->getDecimalPlace());
@@ -446,19 +447,22 @@ class ShoppingCart extends CApplicationComponent
     {
         $total = 0;
         foreach ($this->getCart() as $item) {
-            if (substr($item['discount'], 0, 1) == '$') {
+           /* if (substr($item['discount'], 0, 1) == '$') {
                 $total += round($item['price'] * $item['quantity'] - substr($item['discount'], 1),
                     Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
             } else {
                 $total += round($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100,
                     Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
-            }
+            }*/
+
+            $total+= Common::calTotalAfterDiscount($item['discount'],$item['price'],$item['quantity']);
         }
 
-        $total = $total - ($total * $this->getTotalDiscount()) / 100;
+        //$total = $total - ($total * $this->getTotalDiscount()) / 100;
 
-       return round($total, $this->getDecimalPlace());
-       //return $total;
+        $total = $total - Common::calDiscountAmount($this->getTotalDiscount(),$total);
+
+        return round($total, $this->getDecimalPlace());
     }
 
     //Alain Multiple Payments

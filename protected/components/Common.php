@@ -12,12 +12,29 @@ Class Common
         
         return array($discount_amount, $discount_type);
     }
-    
-    public static function calDiscount($discount) {
+
+    /*
+   * To Calculate Total Amount after discount
+   */
+    public static function calTotalAfterDiscount($discount,$price,$qty=1) {
+        $total = 0;
         if (substr($discount, 0, 1) == '$') {
-            $total+=round($item['price'] * $item['quantity'] - substr($discount, 1), Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
+            $total+=round($price * $qty - substr($discount, 1), Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
         } else {
-            $total+=round($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $discount / 100, Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
+            $total+=round($price * $qty - $price * $qty * $discount / 100, Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
+        }
+        return $total;
+    }
+
+    /*
+     * To Calculate actual discount amount comparing to Total Value
+     */
+    public static function calDiscountAmount($discount,$price) {
+        //$total = 0;
+        if (substr($discount, 0, 1) == '$') {
+            $total=round(substr($discount, 1), Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
+        } else {
+            $total=round($price * $discount / 100, Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
         }
         return $total;
     }

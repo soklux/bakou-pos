@@ -1079,6 +1079,7 @@ class Report extends CFormModel
             'sort' => array(
                 'attributes' => array(
                     'balance',
+                    'last_payment',
                 ),
             ),
             'pagination' => false,

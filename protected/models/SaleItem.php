@@ -64,7 +64,7 @@ class SaleItem extends CActiveRecord
 			//array('sale_id, item_id, unit_price, quantity', 'required'),
                         //array('quantity', 'required'),
 			array('sale_id, item_id, line', 'numerical', 'integerOnly'=>true),
-			array('quantity, cost_price, unit_price, price, discount_amount, discount,total_discount', 'numerical'),
+			array('quantity, cost_price, unit_price, price, discount_amount', 'numerical'),
 			array('description, discount_type', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
