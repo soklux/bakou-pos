@@ -52,34 +52,34 @@ class ReceivingCart extends CApplicationComponent
     public function getPayments()
     {
         $this->setSession(Yii::app()->session);
-        if (!isset($this->session['payments'])) {
+        if (!isset($this->session['recv_payments'])) {
             $this->setPayments(array());
         }
-        return $this->session['payments'];
+        return $this->session['recv_payments'];
     }
 
     public function setPayments($payments_data)
     {
         $this->setSession(Yii::app()->session);
-        $this->session['payments'] = $payments_data;
+        $this->session['recv_payments'] = $payments_data;
     }
 
     public function getComment()
     {
         $this->setSession(Yii::app()->session);
-        return $this->session['comment'];
+        return $this->session['recv_comment'];
     }
 
     public function setComment($comment)
     {
         $this->setSession(Yii::app()->session);
-        $this->session['comment'] = $comment;
+        $this->session['recv_comment'] = $comment;
     }
 
     public function clearComment()
     {
         $this->setSession(Yii::app()->session);
-        unset($this->session['comment']);
+        unset($this->session['recv_comment']);
     }
 
     public function clearMode()
@@ -91,22 +91,22 @@ class ReceivingCart extends CApplicationComponent
     public function getSupplier()
     {
         $this->setSession(Yii::app()->session);
-        if (!isset($this->session['supplier'])) {
+        if (!isset($this->session['recv_supplier'])) {
             $this->setSupplier(null);
         }
-        return $this->session['supplier'];
+        return $this->session['recv_supplier'];
     }
 
     public function setSupplier($supplier_data)
     {
         $this->setSession(Yii::app()->session);
-        $this->session['supplier'] = $supplier_data;
+        $this->session['recv_supplier'] = $supplier_data;
     }
 
     public function removeSupplier()
     {
         $this->setSession(Yii::app()->session);
-        unset($this->session['supplier']);
+        unset($this->session['recv_supplier']);
     }
 
     function getMode()
@@ -274,11 +274,12 @@ class ReceivingCart extends CApplicationComponent
         $subtotal = 0;
         $items = $this->getCart();
         foreach ($items as $id => $item) {
-            if (substr($item['discount'], 0, 1) == '$') {
+            /*if (substr($item['discount'], 0, 1) == '$') {
                 $subtotal+=($item['cost_price'] * $item['quantity'] - substr($item['discount'], 1));
             } else {
                 $subtotal+=($item['cost_price'] * $item['quantity'] - $item['cost_price'] * $item['quantity'] * $item['discount'] / 100);
-            }
+            }*/
+            $subtotal+= Common::calTotalAfterDiscount($item['discount'],$item['cost_price'],$item['quantity']);
         }
         return round($subtotal, $this->getDecimalPlace());
     }
@@ -293,12 +294,15 @@ class ReceivingCart extends CApplicationComponent
     {
         $total = 0;
         foreach ($this->getCart() as $item) {
-            if (substr($item['discount'], 0, 1) == '$') {
+            /*if (substr($item['discount'], 0, 1) == '$') {
                 $total+=round($item['cost_price'] * $item['quantity'] - substr($item['discount'], 1), Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
             } else {
                 $total+=round($item['cost_price'] * $item['quantity'] - $item['cost_price'] * $item['quantity'] * $item['discount'] / 100, Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
-            }
+            }*/
+            $total+= Common::calTotalAfterDiscount($item['discount'],$item['cost_price'],$item['quantity']);
         }
+
+        $total = $total - Common::calDiscountAmount($this->getTotalDiscount(),$total);
 
         /* Have to calculate with tax if there is a tax */
         /*
@@ -309,7 +313,6 @@ class ReceivingCart extends CApplicationComponent
          * 
          */
 
-        //return number_format((float)$total,2);
         return round($total, $this->getDecimalPlace());
     }
 
@@ -405,22 +408,22 @@ class ReceivingCart extends CApplicationComponent
     public function getTotalDiscount()
     {
         $this->setSession(Yii::app()->session);
-        if (!isset($this->session['totaldiscount'])) {
+        if (!isset($this->session['recv_totaldiscount'])) {
             $this->setTotalDiscount(null);
         }
-        return $this->session['totaldiscount'];
+        return $this->session['recv_totaldiscount'];
     }
 
     public function setTotalDiscount($data)
     {
         $this->setSession(Yii::app()->session);
-        $this->session['totaldiscount'] = $data;
+        $this->session['recv_totaldiscount'] = $data;
     }
 
     public function clearTotalDiscount()
     {
         $this->setSession(Yii::app()->session);
-        unset($this->session['totaldiscount']);
+        unset($this->session['recv_totaldiscount']);
     }
 
     public function clearAll()

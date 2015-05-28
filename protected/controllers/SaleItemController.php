@@ -304,7 +304,7 @@ class SaleItemController extends Controller
         } else {
             //Save transaction to db
             $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'],
-                $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'],
+                $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'], $data['total'],
                 $data['comment'], Yii::app()->params['sale_complete_status'], $data['discount_amt'],$data['discount_symbol'],
                 $data['salerep_id']);
 

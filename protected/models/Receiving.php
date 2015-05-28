@@ -12,6 +12,8 @@
  * @property string $payment_type
  * @property string $status
  * @property string $remark
+ * @property double $discount_amount
+ * @property integer $discount_percent
  *
  * The followings are the available model relations:
  * @property Item[] $items
@@ -36,7 +38,7 @@ class Receiving extends CActiveRecord
         return array(
             //array('receive_time', 'required'),
             array('supplier_id, employee_id', 'numerical', 'integerOnly' => true),
-            array('sub_total', 'numerical'),
+            array('sub_total, discount_amount', 'numerical'),
             array('payment_type', 'length', 'max' => 255),
             array('status', 'length', 'max' => 30),
             array(
@@ -46,11 +48,11 @@ class Receiving extends CActiveRecord
                 'setOnEmpty' => true,
                 'on' => 'insert'
             ),
-            array('remark', 'safe'),
+            array('remark, discount_type', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array(
-                'id, receive_time, supplier_id, employee_id, sub_total, payment_type, status, remark',
+                'id, receive_time, supplier_id, employee_id, sub_total, payment_type, status, remark, discount_amount, discount_type',
                 'safe',
                 'on' => 'search'
             ),
@@ -129,7 +131,7 @@ class Receiving extends CActiveRecord
         return parent::model($className);
     }
 
-    public function saveRevc($items, $payments, $supplier_id, $employee_id, $sub_total, $comment, $trans_mode)
+    public function saveRevc($items, $payments, $supplier_id, $employee_id, $sub_total, $total, $comment, $trans_mode, $discount_amount,$discount_type)
     {
         if (count($items) == 0) {
             return '-1';
@@ -150,13 +152,15 @@ class Receiving extends CActiveRecord
             $model->remark = $comment;
             $model->sub_total = $sub_total;
             $model->status = $this->transactionHeader();
+            $model->discount_amount = $discount_amount === null ? 0 : $discount_amount;
+            $model->discount_type = $discount_type === null ? '%' : $discount_type;
 
             if ($model->save()) {
                 $receiving_id = $model->id;
                 $trans_date = date('Y-m-d H:i:s');
 
                 // Saving & Updating Account and Account Receivable either transaction 'receive' or 'return'
-                $this->saveAccountAR($employee_id, $receiving_id, $supplier_id, $sub_total, $trans_date, $trans_mode);
+                $this->saveAccountAR($employee_id, $receiving_id, $supplier_id, $total, $trans_date, $trans_mode);
 
                 // Saving receiving item to receiving_item table
                 $this->saveReceiveItem($items, $receiving_id, $employee_id, $trans_date);
@@ -174,17 +178,17 @@ class Receiving extends CActiveRecord
     }
 
     // Updating [account_supplier] table & saving to [account_receivable_supplier] only for either 'receiv' or 'return' transaction
-    protected function saveAccountAR($employee_id, $receiving_id, $supplier_id, $sub_total, $trans_date, $trans_mode)
+    protected function saveAccountAR($employee_id, $receiving_id, $supplier_id, $total, $trans_date, $trans_mode)
     {
         if ($trans_mode == 'receive' || $trans_mode == 'return') {
 
-            $sub_total = $trans_mode == 'receive' ? $sub_total : -$sub_total;
+            $sub_total = $trans_mode == 'receive' ? $total : -$total;
             // Updating current_balance in account table
-            $account = $this->updateAccount($supplier_id, $sub_total);
+            $account = $this->updateAccount($supplier_id, $total);
             if ($account) {
                 // Saving to Account Receivable (Payment, Sale Transaction ..)
                 $trans_code = $this->transactionCode($trans_mode);
-                $this->saveAR($account->id, $employee_id, $receiving_id, $sub_total, $trans_date, $trans_code);
+                $this->saveAR($account->id, $employee_id, $receiving_id, $total, $trans_date, $trans_code);
             }
         }
     }

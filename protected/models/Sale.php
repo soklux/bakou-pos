@@ -134,7 +134,7 @@ class Sale extends CActiveRecord
         ));
     }
 
-    public function saveSale($in_sale_id, $items, $payments, $payment_received, $customer_id, $employee_id, $sub_total, $comment, $status = self::sale_complete_status, $discount_amount,$discount_symbol,$sale_rep_id)
+    public function saveSale($in_sale_id, $items, $payments, $payment_received, $customer_id, $employee_id, $sub_total, $total, $comment, $status = self::sale_complete_status, $discount_amount,$discount_symbol,$sale_rep_id)
     {
         if (count($items) == 0) {
             return '-1';
@@ -180,8 +180,8 @@ class Sale extends CActiveRecord
                 if ( $status == self::sale_complete_status ) {
                 
                     //These two statement need to place in order $actual_paid has to place first
-                    $actual_paid = ($payment_received > $sub_total) ? $sub_total : $payment_received;
-                    $sale_amount = $model->sub_total - ($model->sub_total*$discount_amount)/100; // Net Sale Amount after discount
+                    $actual_paid = ($payment_received > $total) ? $total : $payment_received;
+                    $sale_amount = $total; //$model->sub_total - ($model->sub_total*$discount_amount)/100; // Net Sale Amount after discount
                     $hot_bill = $sale_amount - $actual_paid;
                     
                      // Saving Payment History

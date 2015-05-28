@@ -22,7 +22,7 @@ class ReceivingItemController extends Controller
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('RemoveSupplier','SetComment', 'DeleteItem', 'Add', 'EditItem', 'EditItemPrice', 'Index', 'IndexPara', 'AddPayment', 'CancelRecv', 'CompleteRecv', 'Complete', 'SuspendSale', 'DeletePayment', 'SelectSupplier', 'AddSupplier', 'Receipt', 'SetRecvMode', 'EditReceiving'),
+                'actions' => array('RemoveSupplier','SetComment', 'DeleteItem', 'Add', 'EditItem', 'EditItemPrice', 'Index', 'IndexPara', 'AddPayment', 'CancelRecv', 'CompleteRecv', 'Complete', 'SuspendSale', 'DeletePayment', 'SelectSupplier', 'AddSupplier', 'Receipt', 'SetRecvMode', 'EditReceiving','SetTotalDiscount'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -211,7 +211,7 @@ class ReceivingItemController extends Controller
     {
         if (Yii::app()->request->isPostRequest) {
             $data= array();
-            $model = new SaleItem;
+            $model = new ReceivingItem;
             $total_discount =$_POST['ReceivingItem']['total_discount'];
             $model->total_discount=$total_discount;
 
@@ -250,6 +250,7 @@ class ReceivingItemController extends Controller
         //$data['n_item_expire']=ItemExpir::model()->count('item_id=:item_id and quantity>0',array('item_id'=>(int)$item_id));
         
         $model->comment = $data['comment'];
+        $model->total_discount= $data['total_discount'];
         
         if ($data['supplier_id'] != null) {
             $supplier = Supplier::model()->findbyPk($data['supplier_id']);
@@ -293,21 +294,24 @@ class ReceivingItemController extends Controller
 
     public function actionCompleteRecv()
     {
-        $data=$this->sessionInfo();
+        $data = $this->sessionInfo();
 
-        //Save transaction to db
-        $data['receiving_id'] = Receiving::model()->saveRevc($data['items'], $data['payments'], $data['supplier_id'], $data['employee_id'], $data['sub_total'], $data['comment'],$data['trans_mode']);
-      
         if (empty($data['items'])) {
             $this->redirect(array('receivingItem/index'));
-        }
-        
-        if (substr($data['receiving_id'],0,2) == '-1') {
-            $data['error_message'] = $data['sale_id'];
         } else {
-            $trans_mode = Yii::app()->receivingCart->getMode();
-            Yii::app()->receivingCart->clearAll();
-            $this->redirect(array('receivingItem/index','trans_mode'=>$data['trans_mode']));
+            //Save transaction to db
+            $data['receiving_id'] = Receiving::model()->saveRevc($data['items'], $data['payments'],
+                $data['supplier_id'], $data['employee_id'], $data['sub_total'], $data['total'], $data['comment'], $data['trans_mode'],
+                $data['discount_amt'],$data['discount_symbol']
+            );
+
+            if (substr($data['receiving_id'], 0, 2) == '-1') {
+                $data['warning'] = $data['receiving_id'];
+            } else {
+                $trans_mode = Yii::app()->receivingCart->getMode();
+                Yii::app()->receivingCart->clearAll();
+                $this->redirect(array('receivingItem/index', 'trans_mode' => $data['trans_mode']));
+            }
         }
     }
 
@@ -378,9 +382,18 @@ class ReceivingItemController extends Controller
         $data['comment'] = Yii::app()->receivingCart->getComment();
         $data['supplier_id'] = Yii::app()->receivingCart->getSupplier();
         $data['employee_id'] = Yii::app()->session['employeeid'];
+        $data['total_discount'] = Yii::app()->receivingCart->getTotalDiscount();
+        $data['discount_amount'] = Common::calDiscountAmount($data['total_discount'],$data['sub_total']);
+
+        $discount_arr=Common::Discount($data['total_discount']);
+        $data['discount_amt']=$discount_arr[0];
+        $data['discount_symbol']=$discount_arr[1];
 
         $data['hide_editprice'] = Yii::app()->user->checkAccess('transaction.editprice') ? '' : 'hidden';
-        $data['hide_editcost'] = Yii::app()->user->checkAccess('transaction.disable_editcost') ? '' : 'hidden';
+        $data['hide_editcost'] = Yii::app()->user->checkAccess('transaction.editcost') ? '' : 'hidden';
+
+        $data['disable_discount'] = Yii::app()->user->checkAccess('sale.discount') ? false : true;
+
 
         if (Yii::app()->settings->get('item', 'itemExpireDate') == '1') {
             $data['expiredate_class']='';

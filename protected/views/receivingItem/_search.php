@@ -131,9 +131,9 @@ $(document).ready(function()
         $('#supplier_selected_form').ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit});
     });
 
-    $('#total_discount_cart').on('change','input.input-totaldiscount',function(e) {
+    $('#total_discount_cart').on('change','input.ninput-totaldiscout',function(e) {
         e.preventDefault();
-        $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: salesBeforeSubmit });
+        $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit });
     });
 
 });

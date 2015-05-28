@@ -88,23 +88,23 @@ class SaleItem extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
-		return array(
-			'sale_id' => Yii::t('app','model.saleitem.sale_id'), //'Sale',
-			'item_id' => Yii::t('app','model.saleitem.item_id'), //'Item',
-			'description' => Yii::t('app','model.saleitem.description'), //'Description',
-			'line' => Yii::t('app','model.saleitem.line'), //'Line',
-			'quantity' => 'Quantity', //'Quantity',
-			'cost_price' => Yii::t('app','model.saleitem.cost_price'), //'Cost Price',
-			'unit_price' => Yii::t('app','model.saleitem.unit_price'), // 'Unit Price',
-			'price' => 'Price', // Yii::t('app','model.saleitem.price'), //
-			'discount_amount' => Yii::t('app','model.saleitem.discount_amount'), // 'Discount Amount',
-			'discount_type' => Yii::t('app','model.saleitem.discount_type'),//'Discount Type',
-                        'name' => Yii::t('app','model.saleitem.name'),
-                        'payment_type' => Yii::t('app','model.saleitem.paymentype'),
-		);
-	}
+    public function attributeLabels()
+    {
+        return array(
+            'sale_id' => Yii::t('app', 'model.saleitem.sale_id'), //'Sale',
+            'item_id' => Yii::t('app', 'model.saleitem.item_id'), //'Item',
+            'description' => Yii::t('app', 'model.saleitem.description'), //'Description',
+            'line' => Yii::t('app', 'model.saleitem.line'), //'Line',
+            'quantity' => 'Quantity', //'Quantity',
+            'cost_price' => Yii::t('app', 'model.saleitem.cost_price'), //'Cost Price',
+            'unit_price' => Yii::t('app', 'model.saleitem.unit_price'), // 'Unit Price',
+            'price' => 'Price', // Yii::t('app','model.saleitem.price'), //
+            'discount_amount' => Yii::t('app', 'model.saleitem.discount_amount'), // 'Discount Amount',
+            'discount_type' => Yii::t('app', 'model.saleitem.discount_type'),//'Discount Type',
+            'name' => Yii::t('app', 'model.saleitem.name'),
+            'payment_type' => Yii::t('app', 'model.saleitem.paymentype'),
+        );
+    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

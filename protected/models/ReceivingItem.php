@@ -17,14 +17,15 @@
  */
 class ReceivingItem extends CActiveRecord
 {
-	public $supplier_id;
-        public $payment_type;
-        public $comment;
-        public $payment_amount;
-        public $name;
-        public $discount;
-        public $sub_total;
-        public $expire_date;
+    public $supplier_id;
+    public $payment_type;
+    public $comment;
+    public $payment_amount;
+    public $name;
+    public $discount;
+    public $sub_total;
+    public $expire_date;
+    public $total_discount;
         
         /**
 	 * @return string the associated database table name
@@ -50,7 +51,7 @@ class ReceivingItem extends CActiveRecord
 			array('description', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('receive_id, item_id, description, line, quantity, cost_price, unit_price, price, discount_amount, discount_type, expire_date', 'safe', 'on'=>'search'),
+			array('receive_id, item_id, description, line, quantity, cost_price, unit_price, price, discount_amount, discount_type, expire_date, total_discount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -72,20 +73,6 @@ class ReceivingItem extends CActiveRecord
 	 */
     public function attributeLabels()
     {
-        /*
-                return array(
-            'receive_id' => 'Receive',
-            'item_id' => 'Item',
-            'description' => 'Description',
-            'line' => 'Line',
-            'quantity' => 'Quantity',
-            'cost_price' => 'Cost Price',
-            'unit_price' => 'Unit Price',
-            'price' => 'Price',
-            'discount_amount' => 'Discount Amount',
-            'discount_type' => 'Discount Type',
-        );
-                */
         return array(
             'receive_id' => Yii::t('app', 'Receiving'), //'Sale',
             'item_id' => Yii::t('app', 'Item'), //'Item',
@@ -149,10 +136,11 @@ class ReceivingItem extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-        
-        public function getReceivingItem($receiving_id)
-        {
-            $model = ReceivingItem::model()->findAll('receive_id=:receivingId',array(':receivingId'=>$receiving_id));
-            return $model;
-        } 
+
+    public function getReceivingItem($receiving_id)
+    {
+        $model = ReceivingItem::model()->findAll('receive_id=:receivingId', array(':receivingId' => $receiving_id));
+
+        return $model;
+    }
 }
