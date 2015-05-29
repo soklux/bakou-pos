@@ -32,7 +32,7 @@ class ReportController extends Controller
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update', 'ReportTab', 'SaleInvoiceItem', 'SaleInvoice', 'SaleInvoiceAlert', 'SaleDaily', 'SaleReportTab', 'SaleSummary', 'Payment', 'TopProduct', 'SaleHourly', 'Inventory', 'ItemExpiry', 'DailyProfit', 'ItemInactive', 'Transaction', 'TransactionItem', 'ItemAsset', 'SaleItemSummary','StockCount','StockCountPrint','UserLogSummary','UserLogDt','OutStandingInvoice'),
+                'actions' => array('create', 'update', 'ReportTab', 'SaleInvoiceItem', 'SaleInvoice', 'SaleInvoiceAlert', 'SaleDaily', 'SaleReportTab', 'SaleSummary', 'Payment', 'TopProduct', 'SaleHourly', 'Inventory', 'ItemExpiry', 'DailyProfit', 'ItemInactive', 'Transaction', 'TransactionItem', 'ItemAsset', 'SaleItemSummary','StockCount','StockCountPrint','UserLogSummary','UserLogDt','OutStandingInvoice','SaleSummarybySaleRep'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -883,6 +883,36 @@ class ReportController extends Controller
             }
         } else {
             $this->render('outstanding_inv', array('report' => $report));
+        }
+    }
+
+    public function actionSaleSummarybySaleRep()
+    {
+
+        $report = new Report;
+        //$report->unsetAttributes();  // clear any default values
+
+        if (isset($_GET['Report'])) {
+            $report->attributes = $_GET['Report'];
+            $from_date = $_GET['Report']['from_date'];
+            $to_date = $_GET['Report']['to_date'];
+        } else {
+            $from_date = date('d-m-Y');
+            $to_date = date('d-m-Y');
+        }
+
+        $report->from_date = $from_date;
+        $report->to_date = $to_date;
+
+        if (Yii::app()->request->isAjaxRequest) {
+            Yii::app()->clientScript->scriptMap['*.js'] = false;
+            Yii::app()->clientScript->scriptMap['*.css'] = false;
+            echo CJSON::encode(array(
+                'status' => 'success',
+                'div' => $this->renderPartial('sale_summary_by_salerep_ajax', array('report' => $report, 'from_date' => $from_date, 'to_date' => $to_date), true, false),
+            ));
+        } else {
+            $this->render('sale_summary_by_salerep', array('report' => $report, 'from_date' => $from_date, 'to_date' => $to_date));
         }
     }
     

@@ -1088,4 +1088,27 @@ class Report extends CFormModel
         return $dataProvider; // Return as array object
     }
 
+    public function saleSummaryBySaleRep()
+    {
+
+        $sql = "SELECT CONCAT(e.`first_name`,' - ',e.`last_name`)  sale_rep,
+                  COUNT(s.id) no_of_invoice,SUM(sm.quantity) quantity,SUM(s.sub_total) sub_total,SUM(s.discount_amount) discount_amount,SUM(s.sub_total-s.discount_amount) total
+                FROM v_sale s , v_sale_item_sum sm , employee e
+                WHERE s.id=sm.sale_id
+                AND  e.id = s.`employee_id`
+                AND s.sale_time>=STR_TO_DATE(:from_date,'%d-%m-%Y')
+                AND s.sale_time<=DATE_ADD(STR_TO_DATE(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
+                AND s.status=:status
+                GROUP BY CONCAT(e.`first_name`,' - ',e.`last_name`)";
+
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+
+        $dataProvider = new CArrayDataProvider($rawData, array(
+            'keyField' => 'sale_rep',
+            'pagination' => false,
+        ));
+
+        return $dataProvider; // Return as array object
+    }
+
 }

@@ -3,7 +3,8 @@
     'placement'=>'above', // 'above', 'right', 'below' or 'left'
     'tabs'=>array(
         array('label'=>Yii::t('app','Sales Summary'),'id'=>'tab_2_1', 'content'=>$this->renderPartial('sale_summary', array('report'=>$report,'from_date'=>$from_date,'to_date'=>$to_date),true), 'active'=>true),
-        array('label'=>Yii::t('app','Top Product'),'id'=>'tab_2_2', 'content'=>$this->renderPartial('topproduct', array('report'=>$report,'from_date'=>$from_date,'to_date'=>$to_date),true)),
+        array('label'=>Yii::t('app','Sales Summary by Sale Rep'),'id'=>'tab_2_2', 'content'=>$this->renderPartial('sale_summary_by_salerep', array('report'=>$report,'from_date'=>$from_date,'to_date'=>$to_date),true)),
+        array('label'=>Yii::t('app','Top Product'),'id'=>'tab_2_3', 'content'=>$this->renderPartial('topproduct', array('report'=>$report,'from_date'=>$from_date,'to_date'=>$to_date),true)),
         ////array('label'=>Yii::t('app','Monthly Sales'),'id'=>'tab_2_3', 'content'=>'Loading, please wait..'),
         array('label'=>Yii::t('app','Daily Sales'),'id'=>'tab_2_4', 'content'=>$this->renderPartial('sale_daily', array('report'=>$report,'from_date'=>$from_date,'to_date'=>$to_date),true)),
         ////array('label'=>Yii::t('app','Hourly Sales'),'id'=>'tab_2_5', 'content'=>$this->renderPartial('sale_hourly', array('report'=>$report,'to_date'=>$to_date),true)),
