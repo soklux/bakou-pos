@@ -176,10 +176,12 @@ class Sale extends CActiveRecord
                 // Saving Sale Item (Sale & Sale Item gotta save firstly even for Suspended Sale)
                 $this->saveSaleItem($items, $sale_id, $employee_id);
                 
-                // We only save Sale Payment, Account Receivable transaction and update Account (oustanding balance) of completed sale transaction
+                // We only save Sale Payment, Account Receivable transaction and update Account (outstanding balance) of completed sale transaction
                 if ( $status == self::sale_complete_status ) {
-                
-                    //These two statement need to place in order $actual_paid has to place first
+
+                    /* This is only work for current invoice */
+
+                    /*//These two statement need to place in order $actual_paid has to place first
                     $actual_paid = ($payment_received > $total) ? $total : $payment_received;
                     $sale_amount = $total; //$model->sub_total - ($model->sub_total*$discount_amount)/100; // Net Sale Amount after discount
                     $hot_bill = $sale_amount - $actual_paid;
@@ -197,6 +199,16 @@ class Sale extends CActiveRecord
                     if ($account) {
                         Account::model()->updateAccountBal($account, -$hot_bill);
                         $this->saveAR($account->id, $employee_id, $sale_id, $sale_amount,$actual_paid,$trans_date);
+                    }*/
+
+                    $account= Account::model()->getAccountInfo($customer_id);
+
+                    if ($account) {
+                        // Add hot bill before proceed payment
+                        $this->updateAccount($customer_id,$total);
+                        $sale_id = SalePayment::model()->batchPayment($customer_id,$employee_id,$account,$payment_received,$date_paid,$comment);
+                    } else {
+                        PaymentHistory::model()->savePaymentHistory($customer_id,$payment_received, $date_paid, $employee_id, $comment);
                     }
                 }
                 
@@ -285,7 +297,7 @@ class Sale extends CActiveRecord
     }
 
     //Saving invoice / sale transaction payment
-    protected function saveAR($account_id,$employee_id,$sale_id,$sale_amount,$actual_paid,$trans_date,$trans_code = 'CHSALE', $trans_status = 'N') 
+    /*protected function saveAR($account_id,$employee_id,$sale_id,$sale_amount,$actual_paid,$trans_date,$trans_code = 'CHSALE', $trans_status = 'N')
     {  
         // Save payment transaction
         if ($actual_paid>0) {
@@ -311,10 +323,9 @@ class Sale extends CActiveRecord
         $ar_sale->trans_status=$trans_status;
         $ar_sale->save();
  
-    }
+    }*/
 
-
-    protected function saveSalePayment($sale_id, $payments, $payment_received, $date_paid,$payment_id)
+   /* protected function saveSalePayment($sale_id, $payments, $payment_received, $date_paid,$payment_id)
     {
         if ($payment_received > 0) {
             // Saving payment items to sale_payment table
@@ -329,7 +340,7 @@ class Sale extends CActiveRecord
                 $sale_payment->save();
             }
         }
-    }
+    }*/
 
     // Saving into Sale_Item table for each item purchased
     protected function saveSaleItem($items, $sale_id, $employee_id)
@@ -385,15 +396,15 @@ class Sale extends CActiveRecord
             //$this->updateStockExpire($item['item_id'], $item['quantity'], $sale_id);
         }
     }
-    
-    protected function updateAccount($client_id,$hot_bill)
+
+    protected function updateAccount($client_id, $hot_bill)
     {
-        $account = Account::model()->find('client_id=:client_id',array(':client_id'=>(int)$client_id));
+        $account = Account::model()->find('client_id=:client_id', array(':client_id' => (int)$client_id));
         if ($account) {
-            $account->current_balance=$account->current_balance + $hot_bill;
+            $account->current_balance = $account->current_balance + $hot_bill;
             $account->save();
         }
-        
+
         return $account;
     }
 
@@ -540,139 +551,6 @@ class Sale extends CActiveRecord
             return isset($_items[$type]) ? $_items[$type] : false;
     }
 
-    public function saleInvoice($client_id = 0, $search_text)
-    {
-
-        if ($client_id == 0) {
-            $sql = "SELECT CASE 
-                                WHEN paid=0 THEN 'not yet paid'
-                                WHEN (amount-paid)=0 THEN 'fully paid'
-                                ELSE 'paid some'
-                            END status,
-                            sale_id,sale_time,client_id,employee_id,amount,(amount-paid) amount_to_paid,paid,balance
-                        FROM (
-                        SELECT s.id sale_id,date_format(s.sale_time,'%d-%m-%Y %H:%i') sale_time,s.employee_id,CONCAT_WS(' ',first_name,last_name) client_id,IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                        FROM sale s LEFT JOIN sale_amount sa ON sa.`sale_id`=s.`id`
-                                        LEFT JOIN `client` c ON c.`id`=s.`client_id`
-                        WHERE s.status IS NULL                
-                        ) AS t 
-                       WHERE paid=0 and balance>0";
-
-            if ($search_text === '0') {
-                $sql = "SELECT
-                        CASE 
-                            WHEN paid=0 THEN '0' --'not yet paid'
-                            WHEN (amount-paid)<=0 THEN '1' --'fully paid'
-                            ELSE '2' --'paid some'
-                        END status,
-                        sale_id,sale_time,client_id,employee_id,amount,(amount-paid) amount_to_paid,paid,balance
-                    FROM (
-                    SELECT s.id sale_id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H:%i') sale_time,s.employee_id,CONCAT_WS(' ',first_name,last_name) client_id,
-                            IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                    FROM sale s LEFT JOIN (SELECT sale_id,SUM(payment_amount) paid FROM sale_payment GROUP BY sale_id) sa ON sa.`sale_id`=s.`id`
-                                    LEFT JOIN `client` c ON c.`id`=s.`client_id`              
-                    ) AS inv
-                    Order by sale_time";
-                $rawData = Yii::app()->db->createCommand($sql)->queryAll(true);
-            } else {
-                $sql = "SELECT
-                        CASE 
-                            WHEN paid=0 THEN '0' --'not yet paid'
-                            WHEN (amount-paid)<=0 THEN '1' --'fully paid'
-                            ELSE '2' --'paid some'
-                        END status,
-                        sale_id,sale_time,client_id,employee_id,amount,(amount-paid) amount_to_paid,paid,balance
-                    FROM (
-                    SELECT s.id sale_id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H:%i') sale_time,s.employee_id,CONCAT_WS(' ',first_name,last_name) client_id,
-                            IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                    FROM sale s LEFT JOIN (SELECT sale_id,SUM(payment_amount) paid FROM sale_payment GROUP BY sale_id) sa ON sa.`sale_id`=s.`id`
-                                    LEFT JOIN `client` c ON c.`id`=s.`client_id`
-                    WHERE s.id=:search_text
-                    ) AS inv
-                    UNION ALL
-                    SElECT status,sale_id,sale_time,client_id,employee_id,amount,(amount-paid) amount_to_paid,paid
-                    FROM (
-                        SELECT
-                            CASE 
-                                WHEN paid=0 THEN '0' --'not yet paid'
-                                WHEN (amount-paid)<=0 THEN '1' --'fully paid'
-                                ELSE '2' --'paid some'
-                            END status,
-                            sale_id,sale_time,client_id,employee_id,amount,(amount-paid) amount_to_paid,paid,balance
-                        FROM (
-                        SELECT s.id sale_id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H:%i') sale_time,s.employee_id,CONCAT_WS(' ',first_name,last_name) client_id,
-                                IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                        FROM sale s LEFT JOIN (SELECT sale_id,SUM(payment_amount) paid FROM sale_payment GROUP BY sale_id) sa ON sa.`sale_id`=s.`id`
-                                        LEFT JOIN `client` c ON c.`id`=s.`client_id`
-                        ) AS inv
-                    ) as T
-                    WHERE client_id like :client_name
-                    ";
-
-                $client_name = '%' . $search_text . '%';
-                $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(":search_text" => $search_text, ':client_name' => $client_name));
-            }
-        } elseif (isset($this->sale_id)) {
-            $sql = "SELECT
-                            CASE 
-                                WHEN paid=0 THEN 'not yet paid'
-                                WHEN (amount-paid)=0 THEN 'fully paid'
-                                ELSE 'paid some'
-                            END status,
-                            sale_id,sale_time,client_id,amount,(amount-paid) amount_to_paid,paid,balance
-                        FROM (
-                        SELECT s.id sale_id,date_format(s.sale_time,'%d-%m-%Y %H:%i') sale_time,CONCAT_WS(' ',first_name,last_name) client_id,
-                            IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                        FROM sale s INNER JOIN sale_amount sa ON sa.`sale_id`=s.`id`
-                                        INNER JOIN `client` c ON c.`id`=s.`client_id`
-                                            AND c.id=:client_id     
-                        WHERE s.id=:sale_id
-                        -- AND s.status IS NULL
-                        ) AS t
-                        WHERE balance<>0
-                        ORDER BY sale_time";
-            
-             $sql = "SELECT sale_id,sale_time,client_id,amount,(amount-paid) amount_to_paid,paid,balance
-                    FROM v_cust_invoice
-                    WHERE client_id=:client_id
-                    and sale_id=:sale_Id";
-             
-            $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => (int) $client_id, ':sale_id' => (int) $this->sale_id));
-        } else {
-            $sql = "SELECT
-                            CASE 
-                                WHEN paid=0 THEN 'not yet paid'
-                                WHEN (amount-paid)=0 THEN 'fully paid'
-                                ELSE 'paid some'
-                            END status,
-                            sale_id,sale_time,client_id,amount,(amount-paid) amount_to_paid,paid,balance
-                    FROM (
-                    SELECT s.id sale_id,date_format(s.sale_time,'%d-%m-%Y %H:%i') sale_time,CONCAT_WS(' ',first_name,last_name) client_id,IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                    FROM sale s INNER JOIN sale_amount sa ON sa.`sale_id`=s.`id`
-                                    INNER JOIN `client` c ON c.`id`=s.`client_id`
-                                        AND c.id=:client_id     
-                    -- WHERE s.status IS NULL                    
-                    ) AS t
-                    WHERE balance<>0
-                    ORDER BY sale_time";
-            
-            $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => (int) $client_id));
-        }
-
-        $dataProvider = new CArrayDataProvider($rawData, array(
-            //'id'=>'saleinvoice',
-            'keyField' => 'sale_id',
-            'sort' => array(
-                'attributes' => array(
-                    'sale_time',
-                ),
-            ),
-            'pagination' => false,
-        ));
-
-        return $dataProvider; // Return as array object
-    }
-
     public function Invoice($client_id = 0)
     {
 
@@ -723,64 +601,6 @@ class Sale extends CActiveRecord
         return $amount;
     }
 
-    public function batchPayment($client_id, $paid_amount, $paid_date, $note)
-    {
-        $sql = "SELECT sale_id,(amount-paid) amount_to_paid
-                    FROM (
-                    SELECT s.id sale_id,s.`sale_time`,CONCAT_WS(' ',first_name,last_name) client_id,IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                    FROM sale s INNER JOIN sale_amount sa ON sa.`sale_id`=s.`id` AND balance>0
-                                    INNER JOIN `client` c ON c.`id`=s.`client_id`
-                                            AND c.id=:client_id
-                    -- WHERE s.status IS NULL                        
-                    ) AS t
-                    GROUP BY sale_id
-                    ORDER BY sale_time";
-
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id));
-
-        foreach ($result as $record) {
-            $sale_amount = SaleAmount::model()->find('sale_id=:sale_id', array(':sale_id' => $record["sale_id"]));
-            $transaction = Yii::app()->db->beginTransaction();
-            try {
-
-                if ($paid_amount <= $record["amount_to_paid"]) {
-                    $payment_amount = $paid_amount;
-                    $sale_amount->paid = $sale_amount->paid + $paid_amount;
-                    $sale_amount->balance = $sale_amount->total - ($sale_amount->paid);
-                    $sale_amount->save();
-
-                    $sale_payment = new SalePayment;
-                    $sale_payment->sale_id = $record["sale_id"];
-                    $sale_payment->payment_type = 'Cash';
-                    $sale_payment->payment_amount = $payment_amount;
-                    $sale_payment->date_paid = $paid_date;
-                    $sale_payment->note = $note;
-                    $sale_payment->save();
-
-                    $transaction->commit();
-                    break;
-                } else {
-                    $sale_amount->paid = $sale_amount->paid + $record["amount_to_paid"];
-                    $sale_amount->balance = $sale_amount->total - ($sale_amount->paid);
-                    $sale_amount->save();
-                    $paid_amount = $paid_amount - $record["amount_to_paid"];
-                    $payment_amount = $record["amount_to_paid"];
-
-                    $sale_payment = new SalePayment;
-                    $sale_payment->sale_id = $record["sale_id"];
-                    $sale_payment->payment_type = 'Cash';
-                    $sale_payment->payment_amount = $payment_amount;
-                    $sale_payment->date_paid = $paid_date;
-                    $sale_payment->note = $note;
-                    $sale_payment->save();
-                    $transaction->commit();
-                }
-            } catch (Exception $e) {
-                $transaction->rollback();
-                return $e->getMessage();
-            }
-        }
-    }
 
     public function datePaid($sale_id)
     {

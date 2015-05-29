@@ -147,7 +147,7 @@ class SalePaymentController extends Controller
                     $note = $_POST['SalePayment']['note'];
   
                     if ( $paid_amount <= $data['balance'] ) {
-                        $data['payment_id'] = Salepayment::model()->batchPayment($data['client_id'],$data['employee_id'],$data['account'],$paid_amount, $paid_date, $note);
+                        $data['payment_id'] = SalePayment::model()->batchPayment($data['client_id'],$data['employee_id'],$data['account'],$paid_amount, $paid_date, $note);
                         if (substr($data['payment_id'],0,2) == '-1') {
                             $data['warning'] = $data['payment_id'];
                         } else {

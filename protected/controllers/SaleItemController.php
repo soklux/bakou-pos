@@ -431,8 +431,10 @@ class SaleItemController extends Controller
         $data['payment_received'] = Yii::app()->shoppingCart->getPaymentsTotal();
         $data['sub_total'] = Yii::app()->shoppingCart->getSubTotal();
         $data['total'] = Yii::app()->shoppingCart->getTotal();
+        $data['total_due'] = Yii::app()->shoppingCart->getTotalDue();
         $data['qtytotal'] = Yii::app()->shoppingCart->getQuantityTotal();
-        $data['amount_change'] = Yii::app()->shoppingCart->getAmountDue();
+        $data['amount_change'] = Yii::app()->shoppingCart->getAmountDue(); // This is only work for current invoice
+        $data['amount_change'] = Yii::app()->shoppingCart->getTotalDue(); // Outstanding + Current Invoice / Hot Bill - Total Payment
         $data['customer_id'] = Yii::app()->shoppingCart->getCustomer();
         $data['comment'] = Yii::app()->shoppingCart->getComment();
         $data['employee_id'] = Yii::app()->session['employeeid'];

@@ -465,6 +465,17 @@ class ShoppingCart extends CApplicationComponent
         return round($total, $this->getDecimalPlace());
     }
 
+    /*
+    * TotalDue = Outstanding + Hot Bill
+    */
+    public function getTotalDue()
+    {
+        $outstanding_bal = Account::model()->getAccountBalance($this->getCustomer());
+        $total_due = $outstanding_bal + $this->getTotal() - $this->getPaymentsTotal();
+
+        return round($total_due, $this->getDecimalPlace());
+    }
+
     //Alain Multiple Payments
     public function getPaymentsTotal()
     {
@@ -486,7 +497,7 @@ class ShoppingCart extends CApplicationComponent
         return $amount_due;
     }
 
-    //get Total Quatity
+    //get Total Quantity
     public function getQuantityTotal()
     {
         $qtytotal = 0;

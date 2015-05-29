@@ -126,40 +126,41 @@ class SalePayment extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-        
-        public function getPaidAmount($sale_id)
-        {
-            $sql="SELECT SUM(payment_amount) amount 
+
+    public function getPaidAmount($sale_id)
+    {
+        $sql = "SELECT SUM(payment_amount) amount
                   FROM sale_payment 
                   WHERE sale_id=:sale_id
-                  "; 
-            
-            $result=Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => (int)$sale_id));
-            
-            foreach($result as $record) {
-                $amount = $record['amount'];
-            }
-            
-            return $amount;
-        }
-        
-        public function getPayment($sale_id)
-        {
-            $model = SalePayment::model()->findAll('sale_id=:saleId',array(':saleId'=>(int)$sale_id));
-            return $model;
-        } 
-        
-        /*
-        protected function beforeValidate ()
-        {
-            // convert to storage format
-            $this->date_paid = strtotime ($this->date_paid);
-            $this->date_paid = date ('Y-m-d H:i:s', $this->date_paid);
+                  ";
 
-            return parent::beforeValidate ();
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => (int)$sale_id));
+
+        foreach ($result as $record) {
+            $amount = $record['amount'];
         }
-         * 
-        */
+
+        return $amount;
+    }
+
+    public function getPayment($sale_id)
+    {
+        $model = SalePayment::model()->findAll('sale_id=:saleId', array(':saleId' => (int)$sale_id));
+
+        return $model;
+    }
+
+    /*
+    protected function beforeValidate ()
+    {
+        // convert to storage format
+        $this->date_paid = strtotime ($this->date_paid);
+        $this->date_paid = date ('Y-m-d H:i:s', $this->date_paid);
+
+        return parent::beforeValidate ();
+    }
+     *
+    */
 
     public function invoice($client_id)
     {
@@ -272,18 +273,6 @@ class SalePayment extends CActiveRecord
 
     public function batchPayment($client_id, $employee_id, $account, $total_paid, $paid_date, $note)
     {
-        $sql = "SELECT sale_id,sale_time,client_name,amount_to_paid
-                  FROM (
-                    SELECT s.sale_id,sale_time,client_name,(s.`sub_total`-IFNULL(sp.payment_amount,0)) amount_to_paid
-                    FROM
-                    (SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',last_name) client_name,s.`sub_total`
-                     FROM sale s, `client` c
-                     WHERE s.`client_id` = c.id
-                     AND c.id=:client_id) s LEFT JOIN v_sale_payment sp ON sp.sale_id=s.sale_id
-                    ) AS t
-                  WHERE amount_to_paid>0
-                  ORDER BY sale_time";
-
         $sql="SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',c.last_name) client_name
               ,(s.total - IFNULL(sp.payment_amount,0)) amount_to_paid
             FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
@@ -311,7 +300,7 @@ class SalePayment extends CActiveRecord
                     $paid_amount = $paid_amount - $record["amount_to_paid"];
                     $payment_amount = $record["amount_to_paid"];
                     $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
-                    $this->saveAccuntRecv($account->id, $employee_id, $record["sale_id"], $payment_amount, $paid_date,
+                    $this->saveAccountRecv($account->id, $employee_id, $record["sale_id"], $payment_amount, $paid_date,
                         $note);
                 }
             }
@@ -327,7 +316,6 @@ class SalePayment extends CActiveRecord
         return $message;
     }
 
-
     protected function saveSalePayment($sale_id, $payment_id, $payment_amount, $paid_date, $note, $payment_type = 'Cash')
     {
         $sale_payment = new SalePayment;
@@ -341,7 +329,7 @@ class SalePayment extends CActiveRecord
         $sale_payment->save();
     }
 
-    protected function saveAccuntRecv($account_id, $employee_id, $sale_id, $amount, $trans_date, $note)
+    protected function saveAccountRecv($account_id, $employee_id, $sale_id, $amount, $trans_date, $note)
     {
         $account_recv = new AccountReceivable;
 

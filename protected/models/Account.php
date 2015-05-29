@@ -143,6 +143,18 @@ class Account extends CActiveRecord
         $account->current_balance = $account->current_balance - $amount;
         $account->save();
     }
+
+    public static function getAccountBalance($client_id)
+    {
+        $outstanding_bal = 0;
+        $account = Account::model()->getAccountInfo($client_id);
+
+        if ($account) {
+            $outstanding_bal = $account->current_balance;
+        }
+
+        return $outstanding_bal;
+    }
         
         
 }
