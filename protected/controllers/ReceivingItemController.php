@@ -121,32 +121,33 @@ class ReceivingItemController extends Controller
 
     public function actionEditItem($item_id)
     {
-        if ( Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest ) {
+        if (Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest) {
 
-            $data= array();
+            $data = array();
             $model = new ReceivingItem;
-            
+
             $quantity = isset($_POST['ReceivingItem']['quantity']) ? $_POST['ReceivingItem']['quantity'] : null;
-            $unit_price =isset($_POST['ReceivingItem']['unit_price']) ? $_POST['ReceivingItem']['unit_price'] : null;
-            $cost_price =isset($_POST['ReceivingItem']['cost_price']) ? $_POST['ReceivingItem']['cost_price'] : null;
-            $discount =isset($_POST['ReceivingItem']['discount']) ? $_POST['ReceivingItem']['discount'] : null;
-            $expire_date =isset($_POST['ReceivingItem']['expire_date']) ? $_POST['ReceivingItem']['expire_date'] : null;
+            $unit_price = isset($_POST['ReceivingItem']['unit_price']) ? $_POST['ReceivingItem']['unit_price'] : null;
+            $cost_price = isset($_POST['ReceivingItem']['cost_price']) ? $_POST['ReceivingItem']['cost_price'] : null;
+            $discount = isset($_POST['ReceivingItem']['discount']) ? $_POST['ReceivingItem']['discount'] : null;
+            $expire_date = isset($_POST['ReceivingItem']['expire_date']) ? $_POST['ReceivingItem']['expire_date'] : null;
             $description = 'test';
-            
+
             $model->quantity = $quantity;
             $model->unit_price = $unit_price;
             $model->cost_price = $cost_price;
             $model->discount = $discount;
             $model->expire_date = $expire_date;
-            
+
             if ($model->validate()) {
-                Yii::app()->receivingCart->editItem($item_id, $quantity, $discount, $cost_price, $unit_price, $description, $expire_date);
+                Yii::app()->receivingCart->editItem($item_id, $quantity, $discount, $cost_price, $unit_price,
+                    $description, $expire_date);
             } else {
-                $error=CActiveForm::validate($model);
+                $error = CActiveForm::validate($model);
                 $errors = explode(":", $error);
-                $data['warning']=  str_replace("}","",$errors[1]);
-                $data['warning'] = Yii::t('app','Input data type is invalid');
-            }     
+                $data['warning'] = str_replace("}", "", $errors[1]);
+                $data['warning'] = Yii::t('app', 'Input data type is invalid');
+            }
             $this->reload($data);
         } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
@@ -270,7 +271,7 @@ class ReceivingItemController extends Controller
                 'bootstrap.bootbox.min.js' => false,
                 'bootstrap.min.js' => false,
                 'jquery-ui.min.js' => false,
-                //'jquery.mask.js' => false,
+                'jquery.mask.js' => false,
                 'EModalDlg.js'=>false,
             );
 

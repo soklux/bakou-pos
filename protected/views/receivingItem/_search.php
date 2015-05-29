@@ -35,7 +35,7 @@
                     'select'=>'js:function(event, ui) {
                         event.preventDefault();
                         $("#ReceivingItem_item_id").val(ui.item.id);
-                        $("#add_item_form").ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit, success: itemScannedSuccess});
+                        $("#add_item_form").ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit, success: itemScannedSuccess(ui.item.id)});
                     }',
                 ),
             ));
@@ -131,7 +131,7 @@ $(document).ready(function()
         $('#supplier_selected_form').ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit});
     });
 
-    $('#total_discount_cart').on('change','input.ninput-totaldiscout',function(e) {
+    $('#total_discount_cart').on('change','input.input-totaldiscout',function(e) {
         e.preventDefault();
         $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit });
     });
@@ -146,11 +146,19 @@ function receivingsBeforeSubmit(formData, jqForm, options)
     }
     submitting = true;
     $('.waiting').show();
-}   
+}
 
-function itemScannedSuccess(responseText, statusText, xhr, $form)
+function itemScannedSuccess(itemId)
+{
+    return function (responseText, statusText, xhr, $form ) {
+        setTimeout(function(){$('#quantity_' + itemId).select();}, 10);
+    }
+}
+
+
+/*function itemScannedSuccess(responseText, statusText, xhr, $form)
 {
     setTimeout(function(){$('#ReceivingItem_item_id').focus();}, 10);
-} 
+}*/
 
 </script>
