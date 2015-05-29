@@ -3,15 +3,13 @@
     'fixedHeader' => true,
     'responsiveTable' => true,
     'type' => TbHtml::GRID_TYPE_BORDERED,
-    'dataProvider' => $report->oustandingInvoice(),
-    //'filter'=>$filtersForm,
-    /*'summaryText' => '<p class="text-info" align="left">' . Yii::t('app', 'Sales Summary') . Yii::t('app',
-            'From') . ':  ' . $from_date . '  ' . Yii::t('app', 'To') . ':  ' . $to_date . '</p>',*/
+    'dataProvider' => $report->outstandingInvoice(),
+    'summaryText' => '',
     'template' => "{summary}\n{items}\n{exportbuttons}\n{pager}",
     'columns' => array(
         array(
             'name' => 'client_name',
-            'header' => Yii::t('app', 'Client'),
+            'header' => Yii::t('app', 'Customer Name'),
             'value' => '$data["client_name"]',
         ),
         array(

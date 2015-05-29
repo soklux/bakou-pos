@@ -14,12 +14,14 @@
             'layout' => TbHtml::FORM_LAYOUT_INLINE,
         )); ?>
 
+            <?php //echo $form->textField($report,'search_id',array('class'=>'input-xxlarge','maxlength'=>50,'id'=>'search_id_id','placeholder'=>'Customer Name')); ?>
 
-            <?php echo $form->textFieldControlGroup($report,'search_id',array('class'=>'input-medium','maxlength'=>100,'id'=>'search_id_id','placeholder'=>'Customer Name')); ?>
+            <?php echo CHtml::activeTelField($report,'search_id', array('class' => 'col-xs-10 col-sm-4','placeholder'=>'Customer Name')); ?>
+
 
             <?php echo TbHtml::button(Yii::t('app','Go'),array(
                     //'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
-                    'size'=>TbHtml::BUTTON_SIZE_MINI,
+                    'size'=>TbHtml::BUTTON_SIZE_SM,
                     'title' => Yii::t( 'app', 'Go' ),
                     'ajax'=>array(
                         'type'=>'get',
@@ -50,13 +52,13 @@
                 'fixedHeader' => true,
                 'responsiveTable' => true,
                 'type' => TbHtml::GRID_TYPE_BORDERED,
-                'dataProvider' => $report->oustandingInvoice(),
+                'dataProvider' => $report->outstandingInvoice(),
                 'summaryText' => '',
                 'template' => "{summary}\n{items}\n{exportbuttons}\n{pager}",
                 'columns' => array(
                     array(
                         'name' => 'client_name',
-                        'header' => Yii::t('app', 'Client'),
+                        'header' => Yii::t('app', 'Customer Name'),
                         'value' => '$data["client_name"]',
                     ),
                     array(

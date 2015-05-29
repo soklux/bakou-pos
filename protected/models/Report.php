@@ -1049,7 +1049,7 @@ class Report extends CFormModel
     }
 
     /* To view all outstanding invoices */
-    public function oustandingInvoice()
+    public function outstandingInvoice()
     {
 
         if (isset($this->search_id)) {
