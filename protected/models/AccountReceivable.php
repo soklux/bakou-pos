@@ -117,7 +117,7 @@ class AccountReceivable extends CActiveRecord
 		return parent::model($className);
 	}
 
-    public function saveAccount($supplier_id, $supplier_name)
+   /* public function saveAccount($supplier_id, $supplier_name)
     {
         $account_supplier = new AccountSupplier;
         $account_supplier->supplier_id = $supplier_id;
@@ -125,65 +125,21 @@ class AccountReceivable extends CActiveRecord
         $account_supplier->status = Yii::app()->params['_active_status'];
         $account_supplier->date_created = date('Y-m-d H:i:s');
         $account_supplier->save();
-    }
+    }*/
 
-    public function batchPayment($client_id, $paid_amount, $paid_date, $note)
+    public function saveAccountRecv($account_id, $employee_id, $sale_id, $amount, $trans_date, $note,$trans_code = 'CHSALE', $trans_status = 'N')
     {
-        $sql = "SELECT sale_id,(amount-paid) amount_to_paid
-                        FROM (
-                        SELECT s.id sale_id,s.`sale_time`,CONCAT_WS(' ',first_name,last_name) client_id,IFNULL(s.`sub_total`,0) amount,IFNULL(sa.`paid`,0) paid,IFNULL(sa.`balance`,0) balance
-                        FROM sale s INNER JOIN sale_amount sa ON sa.`sale_id`=s.`id` AND balance>0
-                                        INNER JOIN `client` c ON c.`id`=s.`client_id`
-                                                AND c.id=:client_id
-                        -- WHERE s.status IS NULL                        
-                        ) AS t
-                        GROUP BY sale_id
-                        ORDER BY sale_time";
+        $account_recv = new AccountReceivable;
+        $account_recv->account_id = $account_id;
+        $account_recv->employee_id = $employee_id;
+        $account_recv->trans_id = $sale_id;
+        $account_recv->trans_amount = -$amount;
+        $account_recv->trans_code = $trans_code;
+        $account_recv->trans_datetime = $trans_date;
+        $account_recv->trans_status = $trans_status;
+        $account_recv->note = $note;
+        $account_recv->save();
 
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id));
-
-        foreach ($result as $record) {
-            $sale_amount = SaleAmount::model()->find('sale_id=:sale_id', array(':sale_id' => $record["sale_id"]));
-            $transaction = Yii::app()->db->beginTransaction();
-            try {
-
-                if ($paid_amount <= $record["amount_to_paid"]) {
-                    $payment_amount = $paid_amount;
-                    $sale_amount->paid = $sale_amount->paid + $paid_amount;
-                    $sale_amount->balance = $sale_amount->total - ($sale_amount->paid);
-                    $sale_amount->save();
-
-                    $sale_payment = new SalePayment;
-                    $sale_payment->sale_id = $record["sale_id"];
-                    $sale_payment->payment_type = 'Cash';
-                    $sale_payment->payment_amount = $payment_amount;
-                    $sale_payment->date_paid = $paid_date;
-                    $sale_payment->note = $note;
-                    $sale_payment->save();
-
-                    $transaction->commit();
-                    break;
-                } else {
-                    $sale_amount->paid = $sale_amount->paid + $record["amount_to_paid"];
-                    $sale_amount->balance = $sale_amount->total - ($sale_amount->paid);
-                    $sale_amount->save();
-                    $paid_amount = $paid_amount - $record["amount_to_paid"];
-                    $payment_amount = $record["amount_to_paid"];
-
-                    $sale_payment = new SalePayment;
-                    $sale_payment->sale_id = $record["sale_id"];
-                    $sale_payment->payment_type = 'Cash';
-                    $sale_payment->payment_amount = $payment_amount;
-                    $sale_payment->date_paid = $paid_date;
-                    $sale_payment->note = $note;
-                    $sale_payment->save();
-                    $transaction->commit();
-                }
-            } catch (Exception $e) {
-                $transaction->rollback();
-
-                return $e->getMessage();
-            }
-        }
     }
+
 }

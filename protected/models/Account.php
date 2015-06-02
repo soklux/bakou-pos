@@ -137,10 +137,22 @@ class Account extends CActiveRecord
 
     }
 
-    public function updateAccountBal($account, $amount)
+    /*
+     * To Withdraw Customer Account Balance
+     */
+    public function withdrawAccountBal($account, $amount)
     {
         // Update Account balance of the Client
         $account->current_balance = $account->current_balance - $amount;
+        $account->save();
+    }
+
+    /*
+     * To Deposit Customer Account Balance
+     */
+    public function depositAccountBal($account, $amount)
+    {
+        $account->current_balance = $account->current_balance + $amount;
         $account->save();
     }
 
