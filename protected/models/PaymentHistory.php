@@ -116,7 +116,7 @@ class PaymentHistory extends CActiveRecord
     public function savePaymentHistory($client_id, $payment_amount, $paid_date, $employee_id, $note)
     {
         $payment_id = 0;
-        if ($payment_amount > 0) {
+        if ($payment_amount <> 0) {
             $payment_history = new PaymentHistory;
             $payment_history->client_id = $client_id;
             $payment_history->payment_amount = $payment_amount;

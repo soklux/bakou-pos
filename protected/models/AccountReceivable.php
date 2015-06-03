@@ -133,7 +133,7 @@ class AccountReceivable extends CActiveRecord
         $account_recv->account_id = $account_id;
         $account_recv->employee_id = $employee_id;
         $account_recv->trans_id = $sale_id;
-        $account_recv->trans_amount = -$amount;
+        $account_recv->trans_amount = $amount;
         $account_recv->trans_code = $trans_code;
         $account_recv->trans_datetime = $trans_date;
         $account_recv->trans_status = $trans_status;

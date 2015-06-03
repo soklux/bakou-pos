@@ -362,6 +362,8 @@ $(document).ready(function()
         $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: salesBeforeSubmit });
     });
 
+    $("#payment_amount_id").focus(function() { $(this).select(); } );
+
 });
 
 function salesBeforeSubmit(formData, jqForm, options)

@@ -153,7 +153,7 @@ class Sale extends CActiveRecord
         $transaction = Yii::app()->db->beginTransaction();
         try {
 
-            // Transaction Date for Inventory, Payement and sale trans date
+            // Transaction Date for Inventory, Payment and sale trans date
             $trans_date = date('Y-m-d H:i:s'); 
             
             //Saving existing Sale Item to Inventory table and removing it out
@@ -173,7 +173,7 @@ class Sale extends CActiveRecord
                 $sale_id = $model->id;
                 $date_paid = $trans_date;
                 $trans_code = 'CHSALE';
-                $trans_status = $total<0 ? 'N' : 'R'; // If Return Sale Transaction Type = 'CHSALE' same but Transaction Status = 'R' reverse
+                $trans_status = $total > 0 ? 'N' : 'R'; // If Return Sale Transaction Type = 'CHSALE' same but Transaction Status = 'R' reverse
                 
                 // Saving Sale Item (Sale & Sale Item gotta save firstly even for Suspended Sale)
                 $this->saveSaleItem($items, $sale_id, $employee_id);
@@ -181,38 +181,14 @@ class Sale extends CActiveRecord
                 // We only save Sale Payment, Account Receivable transaction and update Account (outstanding balance) of completed sale transaction
                 if ( $status == self::sale_complete_status ) {
 
-                    /* This is only work for current invoice */
-
-                    /*//These two statement need to place in order $actual_paid has to place first
-                    $actual_paid = ($payment_received > $total) ? $total : $payment_received;
-                    $sale_amount = $total; //$model->sub_total - ($model->sub_total*$discount_amount)/100; // Net Sale Amount after discount
-                    $hot_bill = $sale_amount - $actual_paid;
-                    
-                     // Saving Payment History
-                    $payment_id = PaymentHistory::model()->savePaymentHistory($customer_id,$payment_received, $date_paid, $employee_id, $comment);
-
-                    if ($payment_id>0) {
-                        $this->saveSalePayment($sale_id, $payments, $sale_amount, $date_paid,$payment_id);
-                    }    
-                    
-                    // Getting Account Model
-                    $account= Account::model()->getAccountInfo($customer_id);
-
-                    if ($account) {
-                        Account::model()->withdrawAccountBal($account, -$hot_bill);
-                        $this->saveAR($account->id, $employee_id, $sale_id, $sale_amount,$actual_paid,$trans_date);
-                    }*/
-
                     $account = Account::model()->getAccountInfo($customer_id);
 
                     if ($account) {
                         // Add hot bill before proceed payment
                         Account::model()->depositAccountBal($account,$total);
-
                         SalePayment::model()->batchPayment($customer_id,$employee_id,$account,$payment_received,$date_paid,$comment);
-                        //$sale_id = $this->batchPayment($customer_id,$employee_id,$account,$payment_received,$date_paid,$comment);
-                        //Saving Account Receivable for Sale transaction CHSALE
-                        AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $sale_id, $total,$payment_received,$trans_date,$comment, $trans_code, $trans_status);
+                        //Saving Account Receivable for Sale transaction code = 'CHSALE'
+                        AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $sale_id, $total,$trans_date,$comment, $trans_code, $trans_status);
                     } else {
                         // If no customer selected only Sale Payment History
                         PaymentHistory::model()->savePaymentHistory($customer_id,$payment_received, $date_paid, $employee_id, $comment);
@@ -239,8 +215,7 @@ class Sale extends CActiveRecord
         }
         return $model;
     }
-    
-    
+
     // If Sale ID already exist in DB, this is consider as a change sale transaction
     protected function updateSale($in_sale_id,$employee_id,$trans_date)
     {
@@ -358,52 +333,6 @@ class Sale extends CActiveRecord
         }
     }
 
-    /*public function batchPayment($client_id, $employee_id, $account, $total_paid, $paid_date, $note)
-    {
-        $sql = "SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',c.last_name) client_name
-              ,(s.total - IFNULL(sp.payment_amount,0)) amount_to_paid
-            FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
-                    LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
-            WHERE s.status=:status
-            AND (s.total - IFNULL(sp.payment_amount,0))>0
-            ORDER BY sale_time";
-
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id, ':status' => '1'));
-
-        $paid_amount = $total_paid;
-
-        $payment_id = PaymentHistory::model()->savePaymentHistory($client_id, $total_paid, $paid_date, $employee_id,
-            $note);
-
-        if ($payment_id <> 0 ) {
-            foreach ($result as $record) {
-                if ($paid_amount <= $record["amount_to_paid"]) {
-                    $payment_amount = $paid_amount;
-                    SalePayment::model()->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date,
-                        $note);
-                    AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"],
-                        $payment_amount, $paid_date,
-                        $note, 'PAY', 'N');
-                    break;
-                } else {
-                    $paid_amount = $paid_amount - $record["amount_to_paid"];
-                    $payment_amount = $record["amount_to_paid"];
-                    SalePayment::model()->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date,
-                        $note);
-                    AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"],
-                        $payment_amount, $paid_date,
-                        $note, 'PAY', 'N');
-                }
-            }
-
-            Account::model()->withdrawAccountBal($account, $total_paid);
-        }
-
-        $message = $payment_id;
-
-        return $message;
-    }*/
-
     public function updateStockExpire($item_id, $quantity, $sale_id)
     {
         $sql = "SELECT `id`,`item_id`,`expire_date`,`quantity`
@@ -442,6 +371,46 @@ class Sale extends CActiveRecord
                 }
             }
         }
+    }
+
+    public function deleteSale($sale_id, $remark, $employee_id, $status = self::sale_cancel_status)
+    {
+
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+
+            $trans_date = date('Y-m-d H:i:s');
+            $trans_comment='Cancel Sale';
+
+            $this->updateItemInventory($sale_id,$trans_date,$trans_comment,$employee_id);
+
+            $sale = $this->findByPk($sale_id);
+
+            $sale_amount = -($sale->sub_total - ($sale->sub_total*$sale->discount_amount)/100);
+            $customer_id = $sale->client_id;
+
+            $sale->status=$status;
+            $sale->remark=$remark;
+            $sale->save();
+
+            // Updating current_balance in account table
+            $account=$this->updateAccount($customer_id, $sale_amount);
+
+            if ($account) {
+                // Saving to Account Receivable where trans_cod='R' reverse (Payment, Sale Transaction ..)
+                $this->saveAR($account->id, $employee_id, $sale_id, $sale_amount, 0, $trans_date,'CHSALE','R');
+            }
+
+            $transaction->commit();
+
+        } catch (Exception $e) {
+            $transaction->rollback();
+            return -1;
+        }
+
+        //2nd Way using store procedure in mysql database
+        //$sql = "CALL pro_cancelsale(:sale_id,:remark)";
+        //return Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => $sale_id, ':remark' => $remark));
     }
 
     public function saveSaleCookie($items, $customer_id, $employee_id, $comment)
@@ -489,46 +458,6 @@ class Sale extends CActiveRecord
             return -1;
         }
         //return $sale_id;
-    }
-
-    public function deleteSale($sale_id, $remark, $employee_id, $status = self::sale_cancel_status)
-    {
-
-        $transaction = Yii::app()->db->beginTransaction();
-        try {
-            
-            $trans_date = date('Y-m-d H:i:s'); 
-            $trans_comment='Cancel Sale';
-            
-            $this->updateItemInventory($sale_id,$trans_date,$trans_comment,$employee_id);
-  
-            $sale = $this->findByPk($sale_id);
-            
-            $sale_amount = -($sale->sub_total - ($sale->sub_total*$sale->discount_amount)/100);
-            $customer_id = $sale->client_id;
-             
-            $sale->status=$status;
-            $sale->remark=$remark;
-            $sale->save();
-                 
-            // Updating current_balance in account table
-            $account=$this->updateAccount($customer_id, $sale_amount);
-
-            if ($account) {
-                // Saving to Account Receivable where trans_cod='R' reverse (Payment, Sale Transaction ..) 
-                $this->saveAR($account->id, $employee_id, $sale_id, $sale_amount, 0, $trans_date,'CHSALE','R');
-            }
-       
-            $transaction->commit();
-            
-        } catch (Exception $e) {
-            $transaction->rollback();
-            return -1;
-        }
-
-        //2nd Way using store procedure in mysql database
-        //$sql = "CALL pro_cancelsale(:sale_id,:remark)";
-        //return Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => $sale_id, ':remark' => $remark));
     }
 
     public static function itemAlias($type, $code = NULL)

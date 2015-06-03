@@ -134,7 +134,7 @@
                                             'title'=>Yii::t('app','Edit Invoice'),
                                             'class'=>'btn btn-xs btn-warning',
                                         ),
-                                        'visible'=>'Yii::app()->user->checkAccess("invoice.edit")',  
+                                        'visible'=>'Yii::app()->user->checkAccess("invoice.update")',
                                       ),
                                    ),
                              ),
