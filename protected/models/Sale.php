@@ -216,6 +216,13 @@ class Sale extends CActiveRecord
         return $model;
     }
 
+    // Rolling back Account & Account Receivable for Edit Sale
+    protected function rollbackAccount($account,$sale_id)
+    {
+        Account::model()->depositAccountBal($account,$total);
+
+    }
+
     // If Sale ID already exist in DB, this is consider as a change sale transaction
     protected function updateSale($in_sale_id,$employee_id,$trans_date)
     {
@@ -238,7 +245,7 @@ class Sale extends CActiveRecord
             $command2->execute();
         }
     }
-    
+
     // In Sale Update Transaction
     protected function updateItemInventory($in_sale_id,$trans_date,$trans_comment,$employee_id)
     {
