@@ -172,7 +172,7 @@ class SalePayment extends CActiveRecord
                 LEFT JOIN employee e ON e.id=s.employee_id
                     LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
             WHERE s.status=:status
-            AND (s.total - IFNULL(sp.payment_amount,0))>0
+            AND (s.total - IFNULL(sp.payment_amount,0))<>0
             ORDER BY sale_time";
 
         $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
@@ -268,7 +268,7 @@ class SalePayment extends CActiveRecord
 
         $paid_amount = $total_paid;
         $trans_code = 'PAY';
-        $trans_status = 'N'
+        $trans_status = $total_paid > 0 ? 'N' : 'R'; // If [Payment Amount] > 0 then Paid else Return to Customer
 
         $payment_id = PaymentHistory::model()->savePaymentHistory($client_id, $total_paid, $paid_date, $employee_id, $note);
 
@@ -278,14 +278,14 @@ class SalePayment extends CActiveRecord
                     $payment_amount = $paid_amount;
                     $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
                     AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"],
-                        $payment_amount, $paid_date, $note, $trans_code, $trans_status);
+                        -$payment_amount, $paid_date, $note, $trans_code, $trans_status);
                     break;
                 } else {
                     $paid_amount = $paid_amount - $record["amount_to_paid"];
                     $payment_amount = $record["amount_to_paid"];
                     $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
                     AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"],
-                        $payment_amount, $paid_date, $note, $trans_code, $trans_status);
+                        -$payment_amount, $paid_date, $note, $trans_code, $trans_status);
                 }
             }
 
@@ -296,50 +296,6 @@ class SalePayment extends CActiveRecord
 
         return $message;
     }
-
-    /*public function batchPayment($client_id, $employee_id, $account, $total_paid, $paid_date, $note)
-    {
-        $sql="SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',c.last_name) client_name
-              ,(s.total - IFNULL(sp.payment_amount,0)) amount_to_paid
-            FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
-                    LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
-            WHERE s.status=:status
-            AND (s.total - IFNULL(sp.payment_amount,0))>0
-            ORDER BY sale_time";
-
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
-
-        $paid_amount = $total_paid;
-
-        $transaction = Yii::app()->db->beginTransaction();
-        try {
-
-            $payment_id = PaymentHistory::model()->savePaymentHistory($client_id, $total_paid, $paid_date, $employee_id, $note);
-
-            foreach ($result as $record) {
-                if ($paid_amount <= $record["amount_to_paid"]) {
-                    $payment_amount = $paid_amount;
-                    $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
-                    AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"], $payment_amount, $paid_date, $note);
-                    break;
-                } else {
-                    $paid_amount = $paid_amount - $record["amount_to_paid"];
-                    $payment_amount = $record["amount_to_paid"];
-                    $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
-                    AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"], $payment_amount, $paid_date, $note);
-                }
-            }
-            Account::model()->withdrawAccountBal($account, $total_paid);
-            $transaction->commit();
-            $message = $payment_id;
-        } catch (Exception $e) {
-            $transaction->rollback();
-            //return $e->getMessage();
-            $message = '-1' . $e->getMessage();
-        }
-
-        return $message;
-    }*/
 
     public function saveSalePayment($sale_id, $payment_id, $payment_amount, $paid_date, $note, $payment_type = 'Cash')
     {
