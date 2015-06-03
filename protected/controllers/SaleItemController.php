@@ -398,7 +398,7 @@ class SaleItemController extends Controller
     }
 
     /* 
-     * List all of Suspened Sale (Query from [Sale] model where status='2')
+     * List all of Suspended Sale (Query from [Sale] model where status='2')
      */
     public function actionListSuspendedSale()
     {

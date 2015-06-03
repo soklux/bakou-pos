@@ -267,6 +267,49 @@ class SalePayment extends CActiveRecord
         $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
 
         $paid_amount = $total_paid;
+        $trans_code = 'PAY';
+        $trans_status = 'N'
+
+        $payment_id = PaymentHistory::model()->savePaymentHistory($client_id, $total_paid, $paid_date, $employee_id, $note);
+
+        if ($payment_id <> 0 ) {
+            foreach ($result as $record) {
+                if ($paid_amount <= $record["amount_to_paid"]) {
+                    $payment_amount = $paid_amount;
+                    $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
+                    AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"],
+                        $payment_amount, $paid_date, $note, $trans_code, $trans_status);
+                    break;
+                } else {
+                    $paid_amount = $paid_amount - $record["amount_to_paid"];
+                    $payment_amount = $record["amount_to_paid"];
+                    $this->saveSalePayment($record["sale_id"], $payment_id, $payment_amount, $paid_date, $note);
+                    AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $record["sale_id"],
+                        $payment_amount, $paid_date, $note, $trans_code, $trans_status);
+                }
+            }
+
+            Account::model()->withdrawAccountBal($account, $total_paid);
+        }
+
+        $message = $payment_id;
+
+        return $message;
+    }
+
+    /*public function batchPayment($client_id, $employee_id, $account, $total_paid, $paid_date, $note)
+    {
+        $sql="SELECT s.id sale_id,s.`sale_time`,CONCAT(c.first_name,' ',c.last_name) client_name
+              ,(s.total - IFNULL(sp.payment_amount,0)) amount_to_paid
+            FROM v_sale s JOIN `client` c ON s.`client_id` = c.id AND c.id=:client_id
+                    LEFT JOIN v_sale_payment sp ON sp.sale_id=s.id
+            WHERE s.status=:status
+            AND (s.total - IFNULL(sp.payment_amount,0))>0
+            ORDER BY sale_time";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':client_id' => $client_id,':status' => $this->_sale_completed));
+
+        $paid_amount = $total_paid;
 
         $transaction = Yii::app()->db->beginTransaction();
         try {
@@ -296,7 +339,7 @@ class SalePayment extends CActiveRecord
         }
 
         return $message;
-    }
+    }*/
 
     public function saveSalePayment($sale_id, $payment_id, $payment_amount, $paid_date, $note, $payment_type = 'Cash')
     {
