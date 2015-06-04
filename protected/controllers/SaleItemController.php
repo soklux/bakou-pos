@@ -22,7 +22,7 @@ class SaleItemController extends Controller
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('Add','RemoveCustomer', 'SetComment', 'DeleteItem', 'AddItem', 'EditItem', 'EditItemPrice', 'Index', 'IndexPara', 'AddPayment', 'CancelSale', 'CompleteSale', 'Complete', 'SuspendSale', 'DeletePayment', 'SelectCustomer', 'AddCustomer', 'Receipt', 'UnsuspendSale', 'EditSale', 'Receipt', 'Suspend', 'ListSuspendedSale', 'SetPriceTier','SetTotalDiscount','DeleteSale','SetSaleRep'),
+                'actions' => array('Add','RemoveCustomer', 'SetComment', 'DeleteItem', 'AddItem', 'EditItem', 'EditItemPrice', 'Index', 'IndexPara', 'AddPayment', 'CancelSale', 'CompleteSale', 'Complete', 'SuspendSale', 'DeletePayment', 'SelectCustomer', 'AddCustomer', 'Receipt', 'UnsuspendSale', 'EditSale', 'Receipt', 'Suspend', 'ListSuspendedSale', 'SetPriceTier','SetTotalDiscount','DeleteSale','SetSaleRep','SetGST'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -260,14 +260,8 @@ class SaleItemController extends Controller
        
         $model->comment = $data['comment'];
         $model->total_discount= $data['total_discount'];
-        
-        /*
-        $customer = $this->customerInfo($data['customer_id']);
-        $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : '';
-        $data['cust_mobile'] = $customer !== null ? $customer->mobile_no : '';
-         * 
-        */
-        
+        $model->total_gst= $data['total_gst'];
+
         if (Yii::app()->request->isAjaxRequest) {
             
             //Yii::app()->clientScript->scriptMap['*.js'] = false; 
@@ -469,6 +463,7 @@ class SaleItemController extends Controller
         $data['session_sale_id'] = Yii::app()->shoppingCart->getSaleId();
         $data['employee'] = ucwords(Yii::app()->session['emp_fullname']);
         $data['total_discount'] = Yii::app()->shoppingCart->getTotalDiscount();
+        $data['total_gst'] = Yii::app()->shoppingCart->getTotalGST();
         
         $data['disable_editprice'] = Yii::app()->user->checkAccess('sale.editprice') ? false : true;
         $data['disable_discount'] = Yii::app()->user->checkAccess('sale.discount') ? false : true;
