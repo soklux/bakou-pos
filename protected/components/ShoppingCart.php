@@ -458,6 +458,18 @@ class ShoppingCart extends CApplicationComponent
         return round($subtotal, $this->getDecimalPlace());
     }
 
+    public function getTotalB4Vat()
+    {
+        $total = 0;
+        foreach ($this->getCart() as $item) {
+            $total+= Common::calTotalAfterDiscount($item['discount'],$item['price'],$item['quantity']);
+        }
+
+        $total = $total - Common::calDiscountAmount($this->getTotalDiscount(),$total);
+
+        return round($total, $this->getDecimalPlace());
+    }
+
     /**
      * Returns total price for all units of the position
      * @param bool $withDiscount
@@ -545,6 +557,7 @@ class ShoppingCart extends CApplicationComponent
         $this->setEmployee($sale->employee_id);
         $this->setSaleTime($sale->sale_time);
         $this->setTotalDiscount($sale->discount_amount);
+        $this->setTotalGST($sale->vat);
     }
 
     public function copyEntireSuspendSale($sale_id)

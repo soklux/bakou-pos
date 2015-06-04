@@ -134,14 +134,14 @@ class Sale extends CActiveRecord
         ));
     }
 
-    public function saveSale($in_sale_id, $items, $payments, $payment_received, $customer_id, $employee_id, $sub_total, $total, $comment, $status = self::sale_complete_status, $discount_amount,$discount_symbol,$sale_rep_id)
+    public function saveSale($in_sale_id, $items, $payments, $payment_received, $customer_id, $employee_id, $sub_total, $total, $comment, $status = self::sale_complete_status, $discount_amount,$discount_symbol,$gst_amount,$sale_rep_id)
     {
         if (count($items) == 0) {
             return '-1';
         }
         
         $message="";
-      
+
         //Check if invoice already exists
         $model = Sale::model()->findSale($in_sale_id);
         
@@ -178,6 +178,7 @@ class Sale extends CActiveRecord
             $model->status = $status;
             $model->discount_amount = $discount_amount === null ? 0 : $discount_amount;
             $model->discount_type = $discount_symbol === null ? '%' : $discount_symbol;
+            $model->vat = $gst_amount == null ? 0 : $gst_amount;
             $model->salerep_id = $sale_rep_id;
 
             if ($model->save()) {

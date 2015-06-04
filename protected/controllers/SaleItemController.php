@@ -320,7 +320,7 @@ class SaleItemController extends Controller
             $data['sale_id'] = Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'],
                 $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'], $data['total'],
                 $data['comment'], Yii::app()->params['sale_complete_status'], $data['discount_amt'],$data['discount_symbol'],
-                $data['salerep_id']);
+                $data['total_gst'],$data['salerep_id']);
 
             if (substr($data['sale_id'], 0, 2) == '-1') {
                 $data['warning'] = $data['sale_id'];
@@ -449,6 +449,7 @@ class SaleItemController extends Controller
         $data['count_payment'] = count(Yii::app()->shoppingCart->getPayments());
         $data['payment_received'] = Yii::app()->shoppingCart->getPaymentsTotal();
         $data['sub_total'] = Yii::app()->shoppingCart->getSubTotal();
+        $data['total_b4vat'] = Yii::app()->shoppingCart->getTotalB4Vat();
         $data['total'] = Yii::app()->shoppingCart->getTotal();
         $data['total_due'] = Yii::app()->shoppingCart->getTotalDue();
         $data['qtytotal'] = Yii::app()->shoppingCart->getQuantityTotal();
@@ -471,6 +472,7 @@ class SaleItemController extends Controller
         
         //$data['discount_amount'] = $data['sub_total'] * $data['total_discount']/100;
         $data['discount_amount'] = Common::calDiscountAmount($data['total_discount'],$data['sub_total']);
+        $data['gst_amount'] = $data['total_b4vat'] * $data['total_gst']/100;
 
         $discount_arr=Common::Discount($data['total_discount']);
         $data['discount_amt']=$discount_arr[0];
