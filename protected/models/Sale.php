@@ -154,7 +154,18 @@ class Sale extends CActiveRecord
         try {
 
             // Transaction Date for Inventory, Payment and sale trans date
-            $trans_date = date('Y-m-d H:i:s'); 
+            $trans_date = date('Y-m-d H:i:s');
+
+            // Getting Customer Account Info
+            $account = Account::model()->getAccountInfo($customer_id);
+
+            $old_total = $this->getOldSaleTotal($in_sale_id);
+
+            //Rolling back the Sale Total of old / previous Sale & Saving Change / Edit Sale into [account receivable] table
+            if ($account && $in_sale_id) {
+                AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $in_sale_id, -$old_total,$trans_date,'Edit Sale', 'CHASALE','R');
+                Account::model()->withdrawAccountBal($account,$old_total);
+            }
             
             //Saving existing Sale Item to Inventory table and removing it out
             $this->updateSale($in_sale_id, $employee_id,$trans_date);
@@ -181,7 +192,7 @@ class Sale extends CActiveRecord
                 // We only save Sale Payment, Account Receivable transaction and update Account (outstanding balance) of completed sale transaction
                 if ( $status == self::sale_complete_status ) {
 
-                    $account = Account::model()->getAccountInfo($customer_id);
+                    //$account = Account::model()->getAccountInfo($customer_id);
 
                     if ($account) {
                         // Add hot bill before proceed payment
@@ -217,9 +228,22 @@ class Sale extends CActiveRecord
     }
 
     // Rolling back Account & Account Receivable for Edit Sale
-    protected function rollbackAccount($account,$sale_id)
+    protected function getOldSaleTotal($in_sale_id)
     {
-        Account::model()->depositAccountBal($account,$total);
+        $total = 0;
+        $sql = "SELECT format(total,2) total
+               FROM v_sale
+               WHERE id=:sale_id
+               AND `status`=:status";
+
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true,
+            array(':sale_id' => $in_sale_id, ':status' => Yii::app()->params['sale_complete_status']));
+
+        foreach ($result as $record) {
+            $total = $record['total'];
+        }
+
+        return $total;
 
     }
 

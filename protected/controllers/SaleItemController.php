@@ -208,6 +208,26 @@ class SaleItemController extends Controller
         }
     }
 
+    public function actionSetGST()
+    {
+        if (Yii::app()->request->isPostRequest) {
+            $data = array();
+            $model = new SaleItem;
+            $amount = $_POST['SaleItem']['total_gst'];
+            $model->total_gst = $amount;
+
+            if ($model->validate()) {
+                Yii::app()->shoppingCart->setTotalGST($amount);
+            } else {
+                $error = CActiveForm::validate($model);
+                $errors = explode(":", $error);
+                $data['warning'] = str_replace("}", "", $errors[1]);
+            }
+
+            $this->reload($data);
+        }
+    }
+
     public function actionSetPriceTier()
     {
         if ( Yii::app()->request->isPostRequest && Yii::app()->request->isAjaxRequest ) {
@@ -354,16 +374,21 @@ class SaleItemController extends Controller
         exit;
     }
 
-    public function actionEditSale($sale_id)
+    public function actionEditSale($sale_id,$customer_id,$paid_amount)
     {
-        if (Yii::app()->user->checkAccess('invoice.print')) {
-            //if(Yii::app()->request->isPostRequest)
-            //{
+        if (Yii::app()->user->checkAccess('invoice.update')) {
+            if ($paid_amount==0 || $customer_id =="") {
+                //if(Yii::app()->request->isPostRequest)
+                //{
                 Yii::app()->shoppingCart->clearAll();
                 Yii::app()->shoppingCart->copyEntireSale($sale_id);
                 Yii::app()->session->close(); // preventing session clearing due to page redirecting..
                 $this->redirect('index');
-            //}
+                //}
+            } else {
+                Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_INFO,'Opp, sorry invoice has been paid, editing is not allowed!' );
+                $this->redirect(array('report/SaleInvoice'));
+            }
         } else {
             throw new CHttpException(403, 'You are not authorized to perform this action');
         }

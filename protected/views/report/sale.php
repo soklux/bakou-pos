@@ -6,13 +6,18 @@
 </style>
 <div id="report_container" class="row">
     <div class="col-xs-12 widget-container-col ui-sortable" id="report_main">
-                 
+
+
     <?php $box = $this->beginWidget('yiiwheels.widgets.box.WhBox', array(
                       'title' => Yii::t('app','Sale Invoices'),
                       'headerIcon' => 'ace-icon fa fa-signal',
                       'htmlHeaderOptions'=>array('class'=>'widget-header-flat widget-header-small'),
         ));?>
-    
+
+        <?php if (Yii::app()->user->hasFlash('info')): ?>
+            <?php $this->widget('bootstrap.widgets.TbAlert'); ?>
+        <?php endif; ?>
+
     <div id="report_header">
         <?php $this->renderPartial('_search',array('report'=>$report,'date_view'=>$date_view)); ?>
 
@@ -21,9 +26,9 @@
         $link = CHtml::link('Click this.', $url, array('target'=>'_blank'));
         ?>
     </div>
-        
-    <br>
-    
+
+        <br>
+
     <div id="report_body">
         
             <?php $this->widget('EExcelView',array(
@@ -129,7 +134,7 @@
                                       'edit' => array(
                                         'label'=>'edit',
                                         'icon'=>'glyphicon-edit',
-                                        'url'=>'Yii::app()->createUrl("SaleItem/EditSale", array("sale_id"=>$data["id"]))',
+                                        'url'=>'Yii::app()->createUrl("SaleItem/EditSale", array("sale_id"=>$data["id"],"customer_id" => $data["customer_id"],"paid_amount"=>$data["paid_amount"]))',
                                         'options' => array(
                                             'title'=>Yii::t('app','Edit Invoice'),
                                             'class'=>'btn btn-xs btn-warning',

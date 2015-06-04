@@ -102,11 +102,26 @@ class Report extends CFormModel
                       GROUP BY s.id,s.client_id,s.employee_id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i')
                  ) AS s";
 
+            $sql = "SELECT s.id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i') sale_time,
+                         CONCAT(c.first_name,' ',c.last_name) customer_id,
+                         CONCAT(e.first_name,' ',e.last_name) employee_id,
+                         SUM(s.sub_total) sub_total,SUM(s.total) total, SUM(sm.quantity) quantity,
+                         status_f `status`,remark,
+                         SUM(s.discount_amount) discount_amount,
+                         IFNULL(sp.payment_amount,0) paid_amount
+                    FROM v_sale s JOIN v_sale_item_sum sm ON s.id=sm.sale_id
+                        JOIN employee e ON e.id = s.`employee_id`
+                        LEFT JOIN `client` c ON c.`id` = s.`client_id`
+                        LEFT JOIN v_sale_payment sp ON sp.`sale_id` = s.id
+                    WHERE s.id=:sale_id
+                    GROUP BY s.id,CONCAT(c.first_name,' ',c.last_name),CONCAT(e.first_name,' ',e.last_name),DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i')
+                    ORDER By sale_time desc";
+
             $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => $this->sale_id));
         } else {
             
             $sql="SELECT id,sale_time,sub_total,discount_amount,(sub_total-discount_amount) total,quantity,
-                      (SELECT CONCAT_WS(' ',first_name,last_name) FROM `client` c WHERE c.id=s.client_id) customer_id,
+                          (SELECT CONCAT_WS(' ',first_name,last_name) FROM `client` c WHERE c.id=s.client_id) customer_id,
                        (SELECT CONCAT_WS(' ',first_name,last_name) FROM employee e WHERE e.id=s.employee_id) employee_id,
                        status,remark
                  FROM (SELECT s.id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i') sale_time,s.client_id,s.employee_id,
@@ -119,6 +134,22 @@ class Report extends CFormModel
                       AND s.sale_time<=date_add(str_to_date(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
                       GROUP BY s.id,s.client_id,s.employee_id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i')
                  ) AS s";
+
+            $sql = "SELECT s.id,DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i') sale_time,
+                         CONCAT(c.first_name,' ',c.last_name) customer_id,
+                         CONCAT(e.first_name,' ',e.last_name) employee_id,
+                         SUM(s.sub_total) sub_total,SUM(s.total) total, SUM(sm.quantity) quantity,
+                         status_f `status`,remark,
+                         SUM(s.discount_amount) discount_amount,
+                         IFNULL(sp.payment_amount,0) paid_amount
+                    FROM v_sale s JOIN v_sale_item_sum sm ON s.id=sm.sale_id
+                        JOIN employee e ON e.id = s.`employee_id`
+                        LEFT JOIN `client` c ON c.`id` = s.`client_id`
+                        LEFT JOIN v_sale_payment sp ON sp.`sale_id` = s.id
+                    WHERE s.sale_time>=str_to_date(:from_date,'%d-%m-%Y')
+                    AND s.sale_time<=date_add(str_to_date(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
+                    GROUP BY s.id,CONCAT(c.first_name,' ',c.last_name),CONCAT(e.first_name,' ',e.last_name),DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i')
+                    ORDER By sale_time desc";
 
             $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date));
         }

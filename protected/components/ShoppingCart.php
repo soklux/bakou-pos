@@ -251,6 +251,27 @@ class ShoppingCart extends CApplicationComponent
         $this->setSession(Yii::app()->session);
         unset($this->session['totaldiscount']);
     }
+
+    public function getTotalGST()
+    {
+        $this->setSession(Yii::app()->session);
+        if (!isset($this->session['totalgst'])) {
+            $this->setTotalGST(null);
+        }
+        return $this->session['totalgst'];
+    }
+
+    public function setTotalGST($data)
+    {
+        $this->setSession(Yii::app()->session);
+        $this->session['totalgst'] = $data;
+    }
+
+    public function clearTotalGST()
+    {
+        $this->setSession(Yii::app()->session);
+        unset($this->session['totalgst']);
+    }
     
 
     public function addItem($item_id, $quantity = 1, $discount = '0', $price = null, $description = null, $expire_date = null)
@@ -447,20 +468,12 @@ class ShoppingCart extends CApplicationComponent
     {
         $total = 0;
         foreach ($this->getCart() as $item) {
-           /* if (substr($item['discount'], 0, 1) == '$') {
-                $total += round($item['price'] * $item['quantity'] - substr($item['discount'], 1),
-                    Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
-            } else {
-                $total += round($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100,
-                    Yii::app()->shoppingCart->getDecimalPlace(), PHP_ROUND_HALF_DOWN);
-            }*/
-
             $total+= Common::calTotalAfterDiscount($item['discount'],$item['price'],$item['quantity']);
         }
 
         //$total = $total - ($total * $this->getTotalDiscount()) / 100;
-
         $total = $total - Common::calDiscountAmount($this->getTotalDiscount(),$total);
+        $total = $total + Common::calDiscountAmount($this->getTotalGST(),$total); // Applied Tax  After Discount
 
         return round($total, $this->getDecimalPlace());
     }
@@ -607,6 +620,7 @@ class ShoppingCart extends CApplicationComponent
         $this->clearPriceTier();
         $this->clearTotalDiscount();
         $this->clearPaymentNote();
+        $this->clearTotalGST();
         $this->clearSaleRep();
     }
 

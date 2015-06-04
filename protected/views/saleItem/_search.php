@@ -328,7 +328,9 @@ $(document).ready(function()
         
     $('.line_item_form').ajaxForm({target: "#register_container", beforeSubmit: salesBeforeSubmit});  
     
-    $('#total_discount_form').ajaxForm({target: "#register_container", beforeSubmit: salesBeforeSubmit}); 
+    $('#total_discount_form').ajaxForm({target: "#register_container", beforeSubmit: salesBeforeSubmit});
+
+    $('#total_gst_form').ajaxForm({target: "#register_container", beforeSubmit: salesBeforeSubmit});
     
     $('#suspend_sale_form').ajaxForm({target: "#register_container", beforeSubmit: salesBeforeSubmit});  
         

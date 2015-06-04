@@ -31,6 +31,7 @@ class SaleItem extends CActiveRecord
         public $discount;
         public $sub_total;
         public $total_discount;
+        public $total_gst; //Global Sale Tax (VAT)
         public $tier_id;
         public $employee_id;
         //public $total_discount;
@@ -64,11 +65,11 @@ class SaleItem extends CActiveRecord
 			//array('sale_id, item_id, unit_price, quantity', 'required'),
                         //array('quantity', 'required'),
 			array('sale_id, item_id, line', 'numerical', 'integerOnly'=>true),
-			array('quantity, cost_price, unit_price, price, discount_amount', 'numerical'),
+			array('quantity, cost_price, unit_price, price, discount_amount,total_gst', 'numerical'),
 			array('description, discount_type', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('sale_id, item_id, description, line, quantity, cost_price, unit_price, price, discount_amount, discount_type, total_discount', 'safe', 'on'=>'search'),
+			array('sale_id, item_id, description, line, quantity, cost_price, unit_price, price, discount_amount, discount_type, total_discount,total_gst', 'safe', 'on'=>'search'),
 		);
 	}
 

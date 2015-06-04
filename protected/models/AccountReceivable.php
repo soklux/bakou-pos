@@ -129,17 +129,21 @@ class AccountReceivable extends CActiveRecord
 
     public function saveAccountRecv($account_id, $employee_id, $sale_id, $amount, $trans_date, $note,$trans_code = 'CHSALE', $trans_status = 'N')
     {
-        $account_recv = new AccountReceivable;
-        $account_recv->account_id = $account_id;
-        $account_recv->employee_id = $employee_id;
-        $account_recv->trans_id = $sale_id;
-        $account_recv->trans_amount = $amount;
-        $account_recv->trans_code = $trans_code;
-        $account_recv->trans_datetime = $trans_date;
-        $account_recv->trans_status = $trans_status;
-        $account_recv->note = $note;
-        $account_recv->save();
+        $model = new AccountReceivable;
+        $model->account_id = $account_id;
+        $model->employee_id = $employee_id;
+        $model->trans_id = $sale_id;
+        $model->trans_amount = $amount;
+        $model->trans_code = $trans_code;
+        $model->trans_datetime = $trans_date;
+        $model->trans_status = $trans_status;
+        $model->note = $note;
 
+        if ($model->validate()) {
+            $model->save();
+        } else {
+            var_dump($model->getErrors());
+        }
     }
 
 }
