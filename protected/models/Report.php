@@ -1141,5 +1141,34 @@ class Report extends CFormModel
 
         return $dataProvider; // Return as array object
     }
+	
+	public function saleItemSumyCust()
+    {
+        $sql="SELECT i.`name` item_name, CONCAT( c.`first_name`,' ', last_name) client_name,
+                   SUM(si.`quantity`) quantity, SUM(si.`quantity`*si.`price`) amount
+                FROM sale s JOIN sale_item si ON si.`sale_id` = s.id
+                 JOIN `client` c ON c.`id` = s.`client_id`
+                   JOIN item i ON i.id = si.`item_id`
+                WHERE s.sale_time>=str_to_date(:from_date,'%d-%m-%Y')
+                AND s.sale_time<date_add(str_to_date(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
+                AND s.status=:status
+                GROUP BY client_name,item_name
+                ORDER BY item_name";
+
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['sale_complete_status']));
+
+        $dataProvider = new CArrayDataProvider($rawData, array(
+            //'id'=>'saleinvoice',
+            'keyField' => 'item_name',
+            'sort' => array(
+                'attributes' => array(
+                    'item_name',
+                ),
+            ),
+            'pagination' => false,
+        ));
+
+        return $dataProvider; // Return as array object
+    }
 
 }

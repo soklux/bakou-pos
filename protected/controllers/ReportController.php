@@ -915,6 +915,35 @@ class ReportController extends Controller
             $this->render('sale_summary_by_salerep', array('report' => $report, 'from_date' => $from_date, 'to_date' => $to_date));
         }
     }
+	
+	public function actionSaleItemSumbyCust($period = 'today')
+    {
+        $report = new Report;
+        //$report->unsetAttributes();  // clear any default values
+
+        if (isset($_GET['Report'])) {
+            $report->attributes = $_GET['Report'];
+            $from_date = $_GET['Report']['from_date'];
+            $to_date = $_GET['Report']['to_date'];
+        } else {
+            $from_date = date('d-m-Y');
+            $to_date = date('d-m-Y');
+        }
+
+        $report->from_date = $from_date;
+        $report->to_date = $to_date;
+
+        if (Yii::app()->request->isAjaxRequest) {
+            Yii::app()->clientScript->scriptMap['*.js'] = false;
+            Yii::app()->clientScript->scriptMap['*.css'] = false;
+            echo CJSON::encode(array(
+                'status' => 'success',
+                'div' => $this->renderPartial('sale_item_sum_bycust_ajax', array('report' => $report, 'from_date' => $from_date, 'to_date' => $to_date), true, false),
+            ));
+        } else {
+            $this->render('sale_item_sum_bycust', array('report' => $report, 'from_date' => $from_date, 'to_date' => $to_date));
+        }
+    }
     
 
 }
