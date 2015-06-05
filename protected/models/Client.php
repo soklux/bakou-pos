@@ -204,6 +204,13 @@ class Client extends CActiveRecord
         Account::model()->updateAll(array('status' => $this->_active_status), 'client_id=:client_id',
             array(':client_id' => $id));
     }
+
+    public static function clientByID($id)
+    {
+        $model = Client::model()->findByPk($id);
+
+        return isset($model) ? $model : null;
+    }
          
         /**
 	 * Suggests a list of existing values matching the specified keyword.

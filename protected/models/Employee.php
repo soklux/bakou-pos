@@ -205,6 +205,12 @@ class Employee extends CActiveRecord
         return parent::afterFind();
     }
 
+    public static function employeeByID($id)
+    {
+        $model = Employee::model()->findByPk($id);
+
+        return isset($model) ? $model : null;
+    }
 
     public static function itemAlias($type, $code = null)
     {

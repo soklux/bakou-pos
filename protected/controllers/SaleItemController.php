@@ -304,13 +304,14 @@ class SaleItemController extends Controller
         $this->layout = '//layouts/column_receipt';
 
         $data = $this->sessionInfo();
-        $customer = $this->customerInfo($data['customer_id']);
-        $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
+
+        //$customer = $this->customerInfo($data['customer_id']);
+        //$data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
 
         /*
          * Check if there is payment is less than total sale - Customer Must be defined
          */
-        if ($data['amount_change'] > 0 && $customer == null) {
+        if ($data['amount_change'] > 0 && $data['customer'] == null) {
             $data['warning'] = Yii::t('app', 'Plz, Select Customer');
             $this->reload($data);
         } elseif (empty($data['items'])) {
@@ -339,8 +340,8 @@ class SaleItemController extends Controller
             //Save transaction to db
             $data['sale_id'] = 'POS ' . Sale::model()->saveSale($data['session_sale_id'], $data['items'], $data['payments'], $data['payment_received'], $data['customer_id'], $data['employee_id'], $data['sub_total'], $data['comment'], Yii::app()->params['sale_suspend_status'],$data['total_discount']);
 
-            $customer = $this->customerInfo($data['customer_id']);
-            $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
+            //$customer = $this->customerInfo($data['customer_id']);
+            //$data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
 
             if ($data['sale_id'] == 'POS -1') {
                 echo "NOK";
@@ -401,8 +402,8 @@ class SaleItemController extends Controller
             
             $data['sale_id'] = $sale_id;
 
-            $customer = $this->customerInfo($data['customer_id']);
-            $data['customer'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : '';
+            //$customer = $this->customerInfo($data['customer_id']);
+            //$data['customer'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : '';
          
             if (count($data['items']) == 0) {
                 $data['error_message'] = 'Sale Transaction Failed';
@@ -462,15 +463,14 @@ class SaleItemController extends Controller
         $data['transaction_date'] = date('d/m/Y');
         $data['transaction_time'] = date('h:i:s');
         $data['session_sale_id'] = Yii::app()->shoppingCart->getSaleId();
-        $data['employee'] = ucwords(Yii::app()->session['emp_fullname']);
+        //$data['employee'] = ucwords(Yii::app()->session['emp_fullname']);
         $data['total_discount'] = Yii::app()->shoppingCart->getTotalDiscount();
         $data['total_gst'] = Yii::app()->shoppingCart->getTotalGST();
-        
+
         $data['disable_editprice'] = Yii::app()->user->checkAccess('sale.editprice') ? false : true;
         $data['disable_discount'] = Yii::app()->user->checkAccess('sale.discount') ? false : true;
         $data['colspan'] = Yii::app()->settings->get('sale','discount')=='hidden' ? '2' : '3';
-        
-        //$data['discount_amount'] = $data['sub_total'] * $data['total_discount']/100;
+
         $data['discount_amount'] = Common::calDiscountAmount($data['total_discount'],$data['sub_total']);
         $data['gst_amount'] = $data['total_b4vat'] * $data['total_gst']/100;
 
@@ -498,22 +498,33 @@ class SaleItemController extends Controller
         $data['amount_change_whole'] = ceil($data['amount_change']);  // floor(1.25)=1
         $data['amount_change_fraction_khr'] = ceil( (( $data['amount_change'] -  $data['amount_change_whole'] ) * $data['usd_2_khr'])/100 - 0.1 ) * 100; //Added 0.1 to solve ceil (-0.1/100)*100=399
                
-        // Customer Account Info
+        /*** Customer Account Info ***/
         $account = $this->custAccountInfo($data['customer_id']);
-        $data['cust_fullname'] = $account !== null ? $account->name : '';
+        $customer = Client::model()->clientByID($data['customer_id']);
+        $employee = Employee::model()->employeeByID($data['employee_id']);
+        $sale_rep = Employee::model()->employeeByID($data['salerep_id']);
+
+        $data['account'] = $account;
+        $data['customer'] = $customer;
+        $data['employee'] = $employee;
+
         $data['acc_balance'] = $account !== null ? $account->current_balance : '';
-        
+        $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
+        $data['salerep_fullname'] = $sale_rep !== null ? $sale_rep->first_name . ' ' . $sale_rep->last_name : $employee->first_name . ' '  . $employee->last_name;
+        $data['salerep_tel'] = $sale_rep !== null ? $sale_rep->mobile_no : '';
+
+
         return $data;
     }
     
-    protected function customerInfo($customer_id)
+   /* protected function customerInfo($customer_id)
     {
         $model=null;
         if ($customer_id != null) {
             $model = Client::model()->findbyPk($customer_id);
         }
         return $model;
-    }
+    }*/
     
     protected function custAccountInfo($customer_id)
     {
