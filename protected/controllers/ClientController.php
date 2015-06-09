@@ -71,88 +71,100 @@ class ClientController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate($sale_mode='N')
-	{
-		$model=new Client;
+    public function actionCreate($sale_mode = 'N')
+    {
+        $model = new Client;
+        $contact = new Contact;
+        $has_error ="";
 
-		// Uncomment the following line if AJAX validation is needed
-		//$this->performAjaxValidation($model
-                if (Yii::app()->user->checkAccess('client.create'))
-                {
-                    if(isset($_POST['Client']))
-                    {
-                        $model->attributes=$_POST['Client'];
-                        if($model->validate())
-                        {
-                            $transaction=Yii::app()->db->beginTransaction();
-                            try 
-                            {
-                                if($model->save())
-                                { 
-                                    $client_id=$model->id;
-                                    $client_fname=$model->first_name . ' ' . $model->last_name;
-                                    $price_tier_id = $model->price_tier_id;
-                                    Account::model()->saveAccount($client_id,$client_fname); 
+        if (Yii::app()->user->checkAccess('client.create')) {
+            if (isset($_POST['Client'])) {
+                $model->attributes = $_POST['Client'];
+                $contact->attributes = $_POST['Contact'];
 
-                                    $transaction->commit();
+                if ( $_POST['Client']['year'] !== "" || $_POST['Client']['month'] !== "" || $_POST['Client']['day'] !== "" ) {
+                    $dob = $_POST['Client']['year'] . '-' . $_POST['Client']['month'] . '-' . $_POST['Client']['day'];
+                    $model->dob = $dob;
+                }
 
-                                    if ($sale_mode=='Y') {
-                                        Yii::app()->shoppingCart->setCustomer($client_id);
-                                        Yii::app()->shoppingCart->setPriceTier($price_tier_id);
-                                        $this->redirect(array('saleItem/index'));
-                                    } else {
-                                        Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,'<strong>' . ucfirst($model->first_name) . '</strong> have been saved successfully!' );
-                                        $this->redirect(array('create'));
-                                    }
+                // validate BOTH $a and $b
+                $valid = $model->validate();
+                $valid = $contact->validate() && $valid;
 
-                                    /* Decide to not using Modal diaglog for CRUD form 
-                                    Yii::app()->clientScript->scriptMap['jquery.js'] = false;
-                                    echo CJSON::encode(array(
-                                       'status'=>'success',
-                                       'div'=>"<div class=alert alert-info fade in>Successfully added ! </div>",
-                                       ));
+                //if ($model->validate()) {
+                if ($valid) {
+                    $transaction = Yii::app()->db->beginTransaction();
+                    try {
 
-                                    Yii::app()->end();
-                                     * 
-                                    */
-                                }
-                            }catch (CDbException $e)
-                            {
-                               $transaction->rollback();
-                               //Yii::app()->user->setFlash('error', "{$e->getMessage()}");
-                               Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_WARNING,'Oop something wrong : <strong>' . $e->getMessage());
-                            } 
-
+                        if (isset($_POST['Contact'])) {
+                            $contact->save();
+                            $model->contact_id = $contact->id;
                         }
+
+                        if ($model->save()) {
+                            $client_id = $model->id;
+                            $client_fname = $model->first_name . ' ' . $model->last_name;
+                            $price_tier_id = $model->price_tier_id;
+
+                            Account::model()->saveAccount($client_id, $client_fname);
+                            $transaction->commit();
+
+                            if ($sale_mode == 'Y') {
+                                Yii::app()->shoppingCart->setCustomer($client_id);
+                                Yii::app()->shoppingCart->setPriceTier($price_tier_id);
+                                $this->redirect(array('saleItem/index'));
+                            } else {
+                                Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,
+                                    '<strong>' . ucfirst($model->first_name) . '</strong> have been saved successfully!');
+                                $this->redirect(array('create'));
+                            }
+
+                            /* Decide to not using Modal diaglog for CRUD form
+                            Yii::app()->clientScript->scriptMap['jquery.js'] = false;
+                            echo CJSON::encode(array(
+                               'status'=>'success',
+                               'div'=>"<div class=alert alert-info fade in>Successfully added ! </div>",
+                               ));
+
+                            Yii::app()->end();
+                             *
+                            */
+                        }
+                    } catch (CDbException $e) {
+                        $transaction->rollback();
+                        //Yii::app()->user->setFlash('error', "{$e->getMessage()}");
+                        Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_WARNING,
+                            'Oop something wrong : <strong>' . $e->getMessage());
                     }
-                }
-                else {
-                    throw new CHttpException(403, 'You are not authorized to perform this action');
-                }
 
-		if(Yii::app()->request->isAjaxRequest)
-                {
-                    $cs=Yii::app()->clientScript;
-                    $cs->scriptMap=array(
-                        'jquery.js'=>false,
-                        'bootstrap.js'=>false,
-                        'jquery.min.js'=>false,
-                        'bootstrap.notify.js'=>false,
-                        'bootstrap.bootbox.min.js'=>false,
-                    );
-
-                    echo CJSON::encode( array(
-                        'status' => 'render',
-                        'div' => $this->renderPartial( '_form', array('model' => $model),true,false),
-                    ));
-
-                    Yii::app()->end();
+                } else {
+                    $has_error="has-error";
                 }
-                else
-                {
-                    $this->render('create',array('model' => $model)); 
-                }
-	}
+            }
+        } else {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
+
+        if (Yii::app()->request->isAjaxRequest) {
+            $cs = Yii::app()->clientScript;
+            $cs->scriptMap = array(
+                'jquery.js' => false,
+                'bootstrap.js' => false,
+                'jquery.min.js' => false,
+                'bootstrap.notify.js' => false,
+                'bootstrap.bootbox.min.js' => false,
+            );
+
+            echo CJSON::encode(array(
+                'status' => 'render',
+                'div' => $this->renderPartial('_form', array('model' => $model,'contact' => $contact, 'has_error' => $has_error), true, false),
+            ));
+
+            Yii::app()->end();
+        } else {
+            $this->render('create', array('model' => $model, 'contact' => $contact, 'has_error' => $has_error));
+        }
+    }
         
         /**
 	 * Creates a new model.
@@ -225,75 +237,92 @@ class ClientController extends Controller
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id,$sale_mode='N')
-	{
-		$model=$this->loadModel($id);
+    public function actionUpdate($id, $sale_mode = 'N')
+    {
+        $model = $this->loadModel($id);
+        $contact = Contact::model()->conatctByID($model->contact_id);
+        $has_error = "";
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
+        if (!$contact) {
+            $contact = New Contact;
+        }
 
-                if (Yii::app()->user->checkAccess('client.update'))
-                {
-                    if(isset($_POST['Client']))
-                    {
-                            $model->attributes=$_POST['Client'];
-                            if ($model->validate())
-                            {    
-                                $transaction=$model->dbConnection->beginTransaction(); 
-                                try
-                                {
-                                    if ($model->save())
-                                    {
-                                        $client_fname=$model->first_name . ' ' . $model->last_name;
-                                        Account::model()->saveAccount($model->id,$client_fname);
-                                        $price_tier_id = $model->price_tier_id;
-                                        
-                                        $transaction->commit(); 
-                                        
-                                        if ($sale_mode=='Y') {
-                                            Yii::app()->shoppingCart->setCustomer($id);
-                                            Yii::app()->shoppingCart->setPriceTier($price_tier_id);
-                                            $this->redirect(array('saleItem/index'));
-                                        } else {
-                                             Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,'<strong>' . ucfirst($model->first_name) . '</strong> have been saved successfully!' );
-                                            $this->redirect(array('admin'));
-                                        }
-                                    }
-                                }catch(Exception $e)
-                                {
-                                    $transaction->rollback();
-                                    print_r($e);
-                                } 
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
+
+        if (Yii::app()->user->checkAccess('client.update')) {
+            if (isset($_POST['Client'])) {
+                $model->attributes = $_POST['Client'];
+                $contact->attributes = $_POST['Contact'];
+
+                if ($_POST['Client']['year'] !== "" || $_POST['Client']['month'] !== "" || $_POST['Client']['day'] !== "") {
+                    $dob = $_POST['Client']['year'] . '-' . $_POST['Client']['month'] . '-' . $_POST['Client']['day'];
+                    $model->dob = $dob;
+                }
+
+                // validate BOTH $a and $b
+                $valid = $model->validate();
+                $valid = $contact->validate() && $valid;
+
+                //if ($model->validate())
+                if ($valid) {
+                    $transaction = $model->dbConnection->beginTransaction();
+                    try {
+
+                        if (isset($_POST['Contact'])) {
+                            $contact->save();
+                            $model->contact_id = $contact->id;
+                        }
+
+                        if ($model->save()) {
+                            $client_fname = $model->first_name . ' ' . $model->last_name;
+                            Account::model()->saveAccount($model->id, $client_fname);
+                            $price_tier_id = $model->price_tier_id;
+
+                            $transaction->commit();
+
+                            if ($sale_mode == 'Y') {
+                                Yii::app()->shoppingCart->setCustomer($id);
+                                Yii::app()->shoppingCart->setPriceTier($price_tier_id);
+                                $this->redirect(array('saleItem/index'));
+                            } else {
+                                Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,
+                                    '<strong>' . ucfirst($model->first_name) . '</strong> have been saved successfully!');
+                                $this->redirect(array('admin'));
                             }
+                        }
+                    } catch (Exception $e) {
+                        $transaction->rollback();
+                        print_r($e);
                     }
+                } else {
+                    $has_error="has-error";
                 }
-                else {
-                    throw new CHttpException(403, 'You are not authorized to perform this action');
-                }    
+            }
+        } else {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
 
-		if(Yii::app()->request->isAjaxRequest)
-                {
-                    $cs=Yii::app()->clientScript;
-                    $cs->scriptMap=array(
-                        'jquery.js'=>false,
-                        'bootstrap.js'=>false,
-                        'jquery.min.js'=>false,
-                        'bootstrap.notify.js'=>false,
-                        'bootstrap.bootbox.min.js'=>false,
-                    );
+        if (Yii::app()->request->isAjaxRequest) {
+            $cs = Yii::app()->clientScript;
+            $cs->scriptMap = array(
+                'jquery.js' => false,
+                'bootstrap.js' => false,
+                'jquery.min.js' => false,
+                'bootstrap.notify.js' => false,
+                'bootstrap.bootbox.min.js' => false,
+            );
 
-                    echo CJSON::encode( array(
-                        'status' => 'render',
-                        'div' => $this->renderPartial( '_form', array('model' => $model),true,false),
-                    ));
+            echo CJSON::encode(array(
+                'status' => 'render',
+                'div' => $this->renderPartial('_form', array('model' => $model), true, false),
+            ));
 
-                    Yii::app()->end();
-                }
-                else
-                {
-                    $this->render('update',array('model' => $model)); 
-                }
-	}
+            Yii::app()->end();
+        } else {
+            $this->render('update', array('model' => $model, 'contact' => $contact , 'has_error' => $has_error));
+        }
+    }
 
 	/**
 	 * Deletes a particular model.

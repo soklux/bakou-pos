@@ -5,10 +5,12 @@
  *
  * The followings are the available columns in table 'client':
  * @property integer $id
+ * @property integer $contact_id
  * @property integer $price_tier_id
  * @property string $first_name
  * @property string $last_name
  * @property string $mobile_no
+ * @property date $dob
  * @property string $address1
  * @property string $address2
  * @property integer $city_id
@@ -25,9 +27,12 @@
  */
 class Client extends CActiveRecord
 {
-        public $search;
-        private $_active_status='1';
-        private $_inactive_status='0';
+    public $search;
+    private $_active_status = '1';
+    private $_inactive_status = '0';
+    public $day; //Day : DD
+    public $month; // Month : MM
+    public $year; // Year - YYYY
     
         /**
 	 * @return string the associated database table name
@@ -46,19 +51,20 @@ class Client extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('first_name, mobile_no', 'required'),
-			array('city_id, price_tier_id, employee_id', 'numerical', 'integerOnly'=>true),
+			array('city_id, price_tier_id, employee_id, contact_id', 'numerical', 'integerOnly'=>true),
 			array('first_name, last_name', 'length', 'max'=>100),
 			array('mobile_no', 'length', 'max'=>15),
 			array('address1, address2', 'length', 'max'=>60),
 			array('country_code', 'length', 'max'=>2),
-			array('email', 'length', 'max'=>30),
+			array('email, fax', 'length', 'max'=>30),
 			array('status', 'length', 'max'=>1),
-			array('notes', 'safe'),
+			array('notes, day, month, year', 'safe'),
+            array('dob ', 'date', 'format'=>array('yyyy-MM-dd'), 'allowEmpty'=>true),
             array('created_at,updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
             array('updated_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => false, 'on' => 'update'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, price_tier_id, first_name, last_name, mobile_no, address1, address2, city_id, country_code, email, notes, status, search, employee_id', 'safe', 'on'=>'search'),
+			array('id, contact_id, price_tier_id, first_name, last_name, mobile_no, address1, address2, city_id, country_code, email, fax, notes, status, search, employee_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -77,23 +83,25 @@ class Client extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'first_name' => Yii::t('app','First Name'),
-			'last_name' => Yii::t('app','Last Name'),
-			'mobile_no' => Yii::t('app','Mobile No'),
-			'address1' => Yii::t('app','Address1'),
-			'address2' => Yii::t('app','Address2'),
-			'city_id' => Yii::t('app','City'),
-			'country_code' => Yii::t('app','Country Code'),
-			'email' => Yii::t('app','Email'),
-			'notes' => Yii::t('app','Notes'),
-			'status' => Yii::t('app','Status'),
-                        'search' => Yii::t('app','Search') . Yii::t('app','Customer') ,
-		);
-	}
+    public function attributeLabels()
+    {
+        return array(
+            'id' => 'ID',
+            'first_name' => Yii::t('app', 'First Name'),
+            'last_name' => Yii::t('app', 'Last Name'),
+            'mobile_no' => Yii::t('app', 'Mobile No'),
+            'address1' => Yii::t('app', 'Address1'),
+            'address2' => Yii::t('app', 'Address2'),
+            'city_id' => Yii::t('app', 'City'),
+            'country_code' => Yii::t('app', 'Country Code'),
+            'email' => Yii::t('app', 'Email'),
+            'fax' => Yii::t('app', 'Fax'),
+            'notes' => Yii::t('app', 'Notes'),
+            'status' => Yii::t('app', 'Status'),
+            'search' => Yii::t('app', 'Search') . Yii::t('app', 'Customer'),
+            'dob' => Yii::t('app','Date of Birth'),
+        );
+    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
@@ -245,6 +253,16 @@ class Client extends CActiveRecord
         $url = Url::to(['client/view', 'id'=>$this->id]);
         $options = [];
         return Html::a($this->getFullName(), $url, $options);
+    }
+
+    protected function afterFind()
+    {
+        $dob = strtotime($this->dob);
+
+        $this->day = date('d',$dob);
+        $this->month = date('m',$dob);
+        $this->year = date('Y',$dob);
+        return parent::afterFind();
     }
         
 }

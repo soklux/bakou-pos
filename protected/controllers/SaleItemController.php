@@ -325,6 +325,7 @@ class SaleItemController extends Controller
 
             if (substr($data['sale_id'], 0, 2) == '-1') {
                 $data['warning'] = $data['sale_id'];
+                $this->reload($data);
             } else {
                 $this->render('_receipt', $data);
                 Yii::app()->shoppingCart->clearAll();
