@@ -244,26 +244,27 @@ class CategoryController extends Controller
 			Yii::app()->end();
 		}
 	}
-        
-        /** Lookup Client for select2 
-         * 
-         * @throws CHttpException
-         */
-        public function actionGetCategory2() { 
-            if (isset($_GET['term'])) {
-                 $term = trim($_GET['term']);
-                 $ret['results'] = Category::getCategory2($term); //PHP Example · ivaynberg/select2  http://bit.ly/10FNaXD got stuck serveral hoursss :|
-                 echo CJSON::encode($ret);
-                 Yii::app()->end();
 
-            }
+    /** Lookup Client for select2
+     *
+     * @throws CHttpException
+     */
+    public function actionGetCategory2()
+    {
+        if (isset($_GET['term'])) {
+            $term = trim($_GET['term']);
+            $ret['results'] = Category::getCategory2($term); //PHP Example · ivaynberg/select2  http://bit.ly/10FNaXD got stuck serveral hoursss :|
+            echo CJSON::encode($ret);
+            Yii::app()->end();
+
         }
-        
-        public function actionInitCategory() 
-        {
-            $model = Category::model()->find('id=:category_id',array(':category_id'=>(int)$_GET['id']));
-            if($model!==null) {
-                echo CJSON::encode(array('id'=>$model->id,'text'=>$model->name));
-            }
+    }
+
+    public function actionInitCategory()
+    {
+        $model = Category::model()->find('id=:category_id', array(':category_id' => (int)$_GET['id']));
+        if ($model !== null) {
+            echo CJSON::encode(array('id' => $model->id, 'text' => $model->name));
         }
+    }
 }

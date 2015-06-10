@@ -13,6 +13,7 @@
  * @property double $cost_price
  * @property double $unit_price
  * @property double $quantity
+ * @property integer $unit_measurable_id
  * @property double $reorder_level
  * @property string $location
  * @property integer $allow_alt_description
@@ -81,7 +82,7 @@ class Item extends CActiveRecord
             ),
             array('name', 'unique'),
             array(
-                'category_id, supplier_id, unit_id, allow_alt_description, is_serialized, is_expire, count_interval',
+                'category_id, supplier_id, unit_id, unit_measurable_id, allow_alt_description, is_serialized, is_expire, count_interval',
                 'numerical',
                 'integerOnly' => true
             ),
@@ -98,7 +99,7 @@ class Item extends CActiveRecord
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array(
-                'id, name, item_number,unit_id, category_id, supplier_id, cost_price, unit_price, quantity, reorder_level, location, allow_alt_description, is_serialized, description, status, promo_price, is_expore, count_interval',
+                'id, name, item_number,unit_id, category_id, supplier_id, cost_price, unit_price, quantity, unit_measurable_id, reorder_level, location, allow_alt_description, is_serialized, description, status, promo_price, is_expore, count_interval',
                 'safe',
                 'on' => 'search'
             ),
@@ -115,6 +116,7 @@ class Item extends CActiveRecord
         return array(
             'inventories' => array(self::HAS_MANY, 'Inventory', 'trans_items'),
             'category' => array(self::BELONGS_TO, 'Category', 'category_id'),
+            'unit_measurement' => array(self::BELONGS_TO, 'UnitMeasurable', 'unit_measurable_id'),
             'supplier' => array(self::BELONGS_TO, 'Supplier', 'supplier_id'),
             //'unit' => array(self::BELONGS_TO, 'ItemUnit', 'unit_id'),
             'sales' => array(self::MANY_MANY, 'Sale', 'sale_item(item_id, sale_id)'),
@@ -152,6 +154,7 @@ class Item extends CActiveRecord
             'promo_end_date' => Yii::t('app', 'Promo End'),
             'is_expire' => Yii::t('app', 'Is Expire ?'),
             'count_interval' => Yii::t('app', 'Count Interval'),
+            'unit_measurable_id' => Yii::t('app', 'Unit Of Measurable'),
         );
     }
 
@@ -376,9 +379,10 @@ class Item extends CActiveRecord
                     CASE WHEN ipt.`price` IS NOT NULL THEN ipt.`price`
                         ELSE i.`unit_price`
                     END unit_price,
-                    i.`description`
+                    i.`description`,um.`name` unit_measurable
             FROM `item` i LEFT JOIN item_price_tier ipt ON ipt.`item_id`=i.id
                     AND ipt.`price_tier_id`=:price_tier_id
+                  LEFT JOIN unit_measurable um ON um.id = i.unit_measurable_id
             WHERE i.id=:item_id
             AND status=:status";
 
@@ -402,9 +406,10 @@ class Item extends CActiveRecord
                     CASE WHEN ipt.`price` IS NOT NULL THEN ipt.`price`
                         ELSE i.`unit_price`
                     END unit_price,
-                    i.`description`
+                    i.`description`,um.`name` unit_measurable
             FROM `item` i LEFT JOIN item_price_tier ipt ON ipt.`item_id`=i.id
                     AND ipt.`price_tier_id`=:price_tier_id
+                 LEFT JOIN unit_measurable um ON um.id = i.unit_measurable_id
             WHERE i.item_number=:item_id
             AND status=:status";
 

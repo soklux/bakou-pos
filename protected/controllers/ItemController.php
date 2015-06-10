@@ -71,12 +71,18 @@ class ItemController extends Controller
                 
                 //$publisher_name=$_POST['Item']['publisher_id'];
                 $category_name=$_POST['Item']['category_id'];
-                           
+                $unit_measurable_name=$_POST['Item']['unit_measurable_id'];
+
                  //Saving new category to `category` table
-                $category_id=Category::model()->saveCategory($category_name);
+                $category_id = Category::model()->saveCategory($category_name);
+                $unit_measurable_id = UnitMeasurable::model()->saveUnitMeasurable($unit_measurable_name);
                  
                 if ($category_id!==null) {
                     $model->category_id=$category_id;
+                }
+
+                if ($unit_measurable_id !== null) {
+                    $model->unit_measurable_id = $unit_measurable_id;
                 }
                 
                 if ($model->validate()) {
@@ -160,11 +166,18 @@ class ItemController extends Controller
                 //$qty = isset($_POST['Item']['quantity']) ? $_POST['Item']['quantity'] : 0;
                 //$model->quantity = $qty;  A buggy was not noticed every update reset item to zero EM EUY
                 $category_name=$_POST['Item']['category_id'];
-                
-                $category_id=Category::model()->saveCategory($category_name);
-                 
-                if ($category_id!==null) {
-                    $model->category_id=$category_id;
+                $unit_measurable_name=$_POST['Item']['unit_measurable_id'];
+
+                //Saving new category to `category` table
+                $category_id = Category::model()->saveCategory($category_name);
+                $unit_measurable_id = UnitMeasurable::model()->saveUnitMeasurable($unit_measurable_name);
+
+                if ($category_id !== null) {
+                    $model->category_id = $category_id;
+                }
+
+                if ($unit_measurable_id !== null) {
+                    $model->unit_measurable_id = $unit_measurable_id;
                 }
 
                 if ($model->validate()) {

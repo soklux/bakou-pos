@@ -35,22 +35,28 @@ class Category extends CActiveRecord
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('name', 'required'),
-                        array('name', 'unique'),
-			array('name', 'length', 'max'=>50),
-			array('created_date, modified_date', 'safe'),
-                        array('created_date', 'default', 'value' => date('Y-m-d'), 'setOnEmpty' => true, 'on' => 'insert'),
-                        array('created_date,modified_date','default','value'=>new CDbExpression('NOW()'),'setOnEmpty'=>false,'on'=>'update'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, name, created_date, modified_date', 'safe', 'on'=>'search'),
-		);
-	}
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('name', 'required'),
+            array('name', 'unique'),
+            array('name', 'length', 'max' => 50),
+            array('created_date, modified_date', 'safe'),
+            array('created_date', 'default', 'value' => date('Y-m-d'), 'setOnEmpty' => true, 'on' => 'insert'),
+            array(
+                'created_date,modified_date',
+                'default',
+                'value' => new CDbExpression('NOW()'),
+                'setOnEmpty' => false,
+                'on' => 'update'
+            ),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, name, created_date, modified_date', 'safe', 'on' => 'search'),
+        );
+    }
 
 	/**
 	 * @return array relational rules.

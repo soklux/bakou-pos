@@ -307,6 +307,7 @@ class ShoppingCart extends CApplicationComponent
                     'discount' => $discount,
                     'expire_date' => $expire_date,
                     'description' => $description!= null ? $description : $model["description"],
+                    'unit_measurable' => $model['unit_measurable'],
                 )
             );
         }
