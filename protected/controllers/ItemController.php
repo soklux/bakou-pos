@@ -289,9 +289,11 @@ class ItemController extends Controller
             }
 
             if (isset($_GET['archivedItem'])) {
-                Yii::app()->user->setState('archivedItem',$_GET['archivedItem']);
+                Yii::app()->user->setState('archived',$_GET['archivedItem']);
                 unset($_GET['archivedItem']);
             }
+
+            $model->item_archived = Yii::app()->user->getState('archived', Yii::app()->params['defaultArchived']);
 
             $this->render('admin', array(
                 'model' => $model,

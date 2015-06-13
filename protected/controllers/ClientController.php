@@ -377,6 +377,18 @@ class ClientController extends Controller
                 $model->attributes = $_GET['Client'];
             }
 
+            if (isset($_GET['pageSize'])) {
+                Yii::app()->user->setState('clientpageSize',(int)$_GET['pageSize']);
+                unset($_GET['pageSize']);
+            }
+
+            if (isset($_GET['archivedClient'])) {
+                Yii::app()->user->setState('archived_client',$_GET['archivedClient']);
+                unset($_GET['archivedClient']);
+            }
+
+            $model->client_archived = Yii::app()->user->getState('archived_client', Yii::app()->params['defaultArchived']);
+
             $this->render('admin', array(
                 'model' => $model,
                 'client_id' => $client_id

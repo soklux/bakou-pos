@@ -36,10 +36,10 @@ $this->breadcrumbs=array(
                       'headerIcon' => 'ace-icon fa fa-user',
                       'htmlHeaderOptions'=>array('class'=>'widget-header-flat widget-header-small'),
         ));?> 
-        
-        
-        <?php echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
-        <div class="search-form" style="display:none">
+
+        <?php //echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
+
+        <div class="search-form pull-right" style="">
             <?php $this->renderPartial('_search',array(
                     'model'=>$model,
             )); ?>
@@ -61,6 +61,30 @@ $this->breadcrumbs=array(
                 'icon'=>'fa fa-icon fa-credit-card',
                 'url'=>$this->createUrl('clientItem/index'),
         )); */ ?>
+
+        &nbsp;&nbsp;
+
+        <?php echo CHtml::activeCheckBox($model,'client_archived',array(
+            'value' => 1,
+            'uncheckValue' => 0,
+            'checked'=> ($model->client_archived == 'false') ? false:true,
+            'onclick' => "$.fn.yiiGridView.update('client-grid',{data:{archivedClient:$(this).is(':checked')}});"
+        )); ?>
+
+        Show archived/deleted Customers
+
+        <?php
+        $pageSize = Yii::app()->user->getState( 'clientpageSize', Yii::app()->params[ 'defaultPageSize' ] );
+        $pageSizeDropDown = CHtml::dropDownList(
+            'pageSize',
+            $pageSize,
+            array( 10 => 10, 25 => 25, 50 => 50, 100 => 100 ),
+            array(
+                'class'  => 'change-pagesize',
+                'onchange' => "$.fn.yiiGridView.update('client-grid',{data:{pageSize:$(this).val()}});",
+            )
+        );
+        ?>
                
         <?php $this->widget('yiiwheels.widgets.grid.WhGridView',array(
                 'id'=>'client-grid',
@@ -68,8 +92,10 @@ $this->breadcrumbs=array(
                 'type' => TbHtml::GRID_TYPE_HOVER,
                 //'headerOffset' => 40,
                 //'responsiveTable' => true,
+                'template'=>"{items}\n{summary}\n{pager}",
+                'summaryText'=>'Showing {start}-{end} of {count} entries ' . $pageSizeDropDown .  ' rows per page',
                 'htmlOptions'=>array('class'=>'table-responsive panel'),
-                'dataProvider'=>$model->search($client_id),
+                'dataProvider'=>$model->search(),
                 'columns'=>array(
                         /*
                         array(
@@ -91,42 +117,40 @@ $this->breadcrumbs=array(
                         */
                         array(
                             'name' => 'first_name',
-                            'value' => 'CHtml::link($data->first_name, Yii::app()->createUrl("client/update",array("id"=>$data->primaryKey)))',
+                            'value' => '$data->status=="1" ? CHtml::link($data->first_name, Yii::app()->createUrl("client/update",array("id"=>$data->primaryKey))) : "<span class=\"text-muted\">  $data->first_name <span>" ',
                             'type'  => 'raw',   
                         ),
-                        'last_name',
-                        'mobile_no',
-                        'address1',
+                        array(
+                            'name' => 'last_name',
+                            'value' => '$data->status=="1" ? CHtml::link($data->last_name, Yii::app()->createUrl("client/update",array("id"=>$data->primaryKey))) : "<span class=\"text-muted\">  $data->last_name <span>" ',
+                            'type'  => 'raw',
+                        ),
+                        array(
+                            'name' => 'last_name',
+                            'value' => '$data->status=="1" ? $data->mobile_no : "<span class=\"text-muted\">  $data->mobile_no <span>"',
+                            'type'  => 'raw',
+                        ),
+                        array(
+                            'name' => 'address1',
+                            'value' => '$data->status=="1" ? $data->address1 : "<span class=\"text-muted\">  $data->address1 <span>"',
+                            'type'  => 'raw',
+                        ),
                         array('name' =>'balance',
                               'header'=>'Balance',
                               'value' =>array($this,"gridBalance"),
                               'visible'=> Yii::app()->user->checkAccess("payment.index"),
+                              'type'  => 'raw',
                         ),
                         array('class'=>'bootstrap.widgets.TbButtonColumn',
-                              'template'=>'<div class="btn-group">{delete}{undeleted}{update}{payment}</div>',
+                              'template'=>'<div class="btn-group">{update}{payment}{delete}{undeleted}</div>',
                               'htmlOptions'=>array('class'=>'nowrap'),
-                              'buttons' => array(  
-                                  'delete' => array(
-                                        'url'=>'Yii::app()->createUrl("client/delete/",array("id"=>$data->id))',
-                                        'options' => array(
-                                            'class'=>'btn btn-xs btn-danger',
-                                        ),
-                                        'visible'=>'$data->status=="1" && Yii::app()->user->checkAccess("client.delete")',
-                                  ),
-                                  'undeleted' => array(
-                                        'label'=>Yii::t('app','UnDelete'),
-                                        'url'=>'Yii::app()->createUrl("client/undodelete", array("id"=>$data->id))',
-                                        'icon'=>'bigger-120 glyphicon-refresh',
-                                        'options' => array(
-                                            'class'=>'btn btn-xs btn-warning btn-undodelete',
-                                        ), 
-                                        'visible'=>'$data->status=="0" && Yii::app()->user->checkAccess("client.delete")',
-                                  ),
+                              'buttons' => array(
                                   'update' => array(
                                         'icon' => 'ace-icon fa fa-edit',
                                         'options' => array(
                                             'class'=>'btn btn-xs btn-info',
-                                         ), 
+                                         ),
+                                        'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("client.update")',
                                   ),
                                   'payment' => array(
                                         'label'=>'Payment',
@@ -136,7 +160,23 @@ $this->breadcrumbs=array(
                                            'class'=>'btn btn-xs btn-success',
                                            'title'=>Yii::t('app','Payment'),
                                          ),
-                                        'visible'=>'Yii::app()->user->checkAccess("payment.index")',
+                                        'visible'=>'$data->status=="1" && Yii::app()->user->checkAccess("payment.index")',
+                                  ),
+                                  'delete' => array(
+                                      'url'=>'Yii::app()->createUrl("client/delete/",array("id"=>$data->id))',
+                                      'options' => array(
+                                          'class'=>'btn btn-xs btn-danger',
+                                      ),
+                                      'visible'=>'$data->status=="1" && Yii::app()->user->checkAccess("client.delete")',
+                                  ),
+                                  'undeleted' => array(
+                                      'label'=>Yii::t('app','UnDelete'),
+                                      'url'=>'Yii::app()->createUrl("client/undodelete", array("id"=>$data->id))',
+                                      'icon'=>'bigger-120 glyphicon-refresh',
+                                      'options' => array(
+                                          'class'=>'btn btn-xs btn-warning btn-undodelete',
+                                      ),
+                                      'visible'=>'$data->status=="0" && Yii::app()->user->checkAccess("client.delete")',
                                   ),
                                ),
                         ),

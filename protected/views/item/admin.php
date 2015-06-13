@@ -56,33 +56,20 @@ $('.search-form form').submit(function(){
                 'url' => $this->createUrl('createImage'),
             )); ?>
 
-            &nbsp;
+            &nbsp;&nbsp;
 
-            <?php  $archived = Yii::app()->user->getState( 'archived', Yii::app()->params[ 'archived' ] ); ?>
+            <?php  $archived = Yii::app()->user->getState( 'archived', Yii::app()->params['defaultArchived'] ); ?>
 
-            <?php echo TbHtml::checkBox('checkBox', $archived, array(
-                    'label' => 'Show archived/deleted items',
-                    'onchange' => "$.fn.yiiGridView.update('item-grid',{data:{archivedItem:$(this).val()}});"
-                )
-            );
-            ?>
+            <?php echo CHtml::activeCheckBox($model,'item_archived',array(
+                'value' => 1,
+                'uncheckValue' => 0,
+                'checked'=> ($model->item_archived == 'false') ? false:true,
+                'onclick' => "$.fn.yiiGridView.update('item-grid',{data:{archivedItem:$(this).is(':checked')}});"
+            )); ?>
 
+            Show archived/deleted clients
 
-            <?php /* echo TbHtml::linkButton(Yii::t( 'app', 'New Category' ),array(
-                    'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
-                    'size'=>TbHtml::BUTTON_SIZE_SMALL,
-                    'icon'=>'glyphicon-briefcase white',
-                    'url'=>$this->createUrl('category/create'),
-                    'class'=>'update-dialog-open-link',
-                    'data-update-dialog-title' => Yii::t('app','New Category'),
-            )); */?>
-
-            <?php /*echo TbHtml::linkButton(Yii::t( 'app', 'List of Categories' ),array(
-                    'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
-                    'size'=>TbHtml::BUTTON_SIZE_SMALL,
-                    'icon'=>'glyphicon-list white',
-                    'url'=>$this->createUrl('category/admin'),
-            )); */?>
+            <?php //echo ' - ' . $model->item_archived; ?>
 
         <?php } ?>
     </div>
@@ -126,9 +113,8 @@ $('.search-form form').submit(function(){
             */
             array(
                 'name' => 'name',
-                'header' => 'Name',
-                'value' => 'CHtml::link($data->name, Yii::app()->createUrl("item/UpdateImage",array("id"=>$data->primaryKey)))',
-                'type' => 'raw',
+                'value' => '$data->status=="1" ? CHtml::link($data->name, Yii::app()->createUrl("client/update",array("id"=>$data->primaryKey))) : "<span class=\"text-muted\">  $data->name <span>" ',
+                'type'  => 'raw',
             ),
             array(
                 'name' => 'item_number',
@@ -145,8 +131,8 @@ $('.search-form form').submit(function(){
             */
             array(
                 'name' => 'location',
-                //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs hidden-md'),
-                //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs hidden-md'),
+                'value' => '$data->status=="1" ? $data->location : "<span class=\"text-muted\">  $data->location <span>"',
+                'type'  => 'raw',
             ),
             array(
                 'name' => 'category_id',
@@ -176,13 +162,13 @@ $('.search-form form').submit(function(){
             */
             array(
                 'name' => 'quantity',
-                //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs hidden-md'),
-                //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs hidden-md'),
+                'value' => '$data->status=="1" ? $data->quantity : "<span class=\"text-muted\">  $data->quantity <span>"',
+                'type'  => 'raw',
             ),
             array(
                 'name' => 'status',
                 'type' => 'raw',
-                'value' => '$data->status==1 ? TbHtml::labelTb("Active", array("color" => TbHtml::LABEL_COLOR_SUCCESS)) : TbHtml::labelTb("De-Activated", array("color" => TbHtml::LABEL_COLOR_WARNING))',
+                'value' => '$data->status==1 ? TbHtml::labelTb("Active", array("color" => TbHtml::LABEL_COLOR_SUCCESS)) : TbHtml::labelTb("Archived")',
                 //'value' => 'TbHtml::labelTb($data->status)',
                 //'headerHtmlOptions'=>array('class'=>'hidden-480'),
                 //'htmlOptions'=>array('class' => 'hidden-480'),
@@ -202,6 +188,7 @@ $('.search-form form').submit(function(){
                             'class' => 'btn btn-xs btn-pink',
                             'title' => 'Stock History',
                         ),
+                        'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("item.index") ',
                     ),
                     'cost' => array(
                         'click' => 'updateDialogOpen',
@@ -212,7 +199,7 @@ $('.search-form form').submit(function(){
                             'class' => 'btn btn-xs btn-info',
                             'title' => 'Cost History',
                         ),
-                        'visible' => 'Yii::app()->user->checkAccess("item.create") || Yii::app()->user->checkAccess("item.update")',
+                        'visible' => '$data->status=="1"  && (Yii::app()->user->checkAccess("item.create") || Yii::app()->user->checkAccess("item.update"))',
                     ),
                     'price' => array(
                         'click' => 'updateDialogOpen',
@@ -224,7 +211,7 @@ $('.search-form form').submit(function(){
                             'class' => 'btn btn-xs btn-success',
                             'title' => 'Price History',
                         ),
-                        'visible' => 'Yii::app()->user->checkAccess("item.create") || Yii::app()->user->checkAccess("item.update")',
+                        'visible' => '$data->status=="1"  && (Yii::app()->user->checkAccess("item.create") || Yii::app()->user->checkAccess("item.update"))',
                     ),
                     /*
                     'edit' => array(
@@ -247,7 +234,7 @@ $('.search-form form').submit(function(){
                         'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("item.delete")',
                     ),
                     'undeleted' => array(
-                        'label' => Yii::t('app', 'Undo Delete Item'),
+                        'label' => Yii::t('app', 'Restore Item'),
                         'url' => 'Yii::app()->createUrl("Item/UndoDelete", array("id"=>$data->id))',
                         'icon' => 'bigger-120 glyphicon-refresh',
                         'options' => array(

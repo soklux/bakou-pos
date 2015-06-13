@@ -43,9 +43,12 @@ class Item extends CActiveRecord
     public $promo_price;
     public $promo_start_date;
     public $promo_end_date;
+    public $item_archived;
 
     private $_active_status = '1';
     private $_inactive_status = '0';
+
+
 
     /**
      * Returns the static model of the specified AR class.
@@ -188,8 +191,20 @@ class Item extends CActiveRecord
         //$criteria->params[':t'] = $this->name;
         //$criteria->params[':d'] = $this->name;
 
-        $criteria->condition = 'name LIKE :name OR item_number like :name';
-        $criteria->params = array(':name' => '%' . $this->name . '%', ':item_number' => $this->name . '%');
+        if  ( Yii::app()->user->getState('archived', Yii::app()->params['defaultArchived'] ) == 'true' ) {
+            $criteria->condition = 'name LIKE :name OR item_number like :name';
+            $criteria->params = array(
+                ':name' => '%' . $this->name . '%',
+                ':item_number' => $this->name . '%'
+            );
+        } else {
+            $criteria->condition = 'status=:active_status AND (name LIKE :name OR item_number like :name)';
+            $criteria->params = array(
+                ':active_status' => $this->_active_status,
+                ':name' => '%' . $this->name . '%',
+                ':item_number' => $this->name . '%'
+            );
+        }
 
         //$criteria->addSearchCondition('status',$this->_active_status);
 
@@ -298,7 +313,7 @@ class Item extends CActiveRecord
         return Yii::app()->db->createCommand($sql)->queryAll(true, array(
                 ':item_name' => $item_name,
                 ':item_number' => $item_number,
-                ':status' => $this->_active_status
+                ':status' => '1',//$this->_active_status,
             )
         );
     }
