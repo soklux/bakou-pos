@@ -33,6 +33,7 @@ class Client extends CActiveRecord
     public $day; //Day : DD
     public $month; // Month : MM
     public $year; // Year - YYYY
+    public $client_archived;
     
         /**
 	 * @return string the associated database table name
@@ -115,17 +116,18 @@ class Client extends CActiveRecord
 	 * @return CActiveDataProvider the data provider that can return the models
 	 * based on the search/filter conditions.
 	 */
-    public function search($client_id = null)
+    public function search()
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
 
 
-        if ($client_id !== null) {
+        /*if ($client_id !== null) {
             $criteria->compare('id', $client_id);
-        }
+        }*/
 
+        $criteria->compare('id', $this->id);
         //$criteria->compare('first_name',$this->first_name,true);
         //$criteria->compare('last_name',$this->last_name,true);
         //$criteria->compare('mobile_no',$this->mobile_no,true);
@@ -139,20 +141,40 @@ class Client extends CActiveRecord
 
         //$criteria->addSearchCondition('status',$this->_active_status);
 
-        if ($this->search) {
+        //if ($this->search) {
 
-            $criteria->condition = "(first_name=:first_name or last_name=:last_name or mobile_no=:mobile_no) and status=:status";
+            /*$criteria->condition = "status=:active_status AND (first_name like :first_name or last_name)";
             $criteria->params = array(
-                ':first_name' => $this->search,
-                ':last_name' => $this->search,
-                ':mobile_no' => $this->search,
-                ':status' => '1',
+                ':active_status' => $this->_active_status,
+                ':first_name' =>  '%'. $this->first_name .  '%',
+                ':last_name' => $this->first_name,
+                ':mobile_no' => $this->first_name,
+            );*/
+        //}
 
+
+        if  ( Yii::app()->user->getState('archived_client', Yii::app()->params['defaultArchived'] ) == 'true' ) {
+            $criteria->condition = 'first_name like :first_name or last_name like :last_name or mobile_no=:mobile_no';
+            $criteria->params = array(
+                ':first_name' =>  '%'. $this->first_name .  '%',
+                ':last_name' => '%'. $this->first_name . '%',
+                ':mobile_no' => $this->first_name,
+            );
+        } else {
+            $criteria->condition = 'status=:active_status AND (first_name like :first_name or last_name like :last_name or mobile_no=:mobile_no)';
+            $criteria->params = array(
+                ':active_status' => $this->_active_status,
+                ':first_name' =>  '%'. $this->first_name .  '%',
+                ':last_name' => '%'. $this->first_name .  '%',
+                ':mobile_no' => $this->first_name,
             );
         }
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'pagination' => array(
+                'pageSize' => Yii::app()->user->getState('clientpageSize',Yii::app()->params['defaultPageSize']),
+            ),
         ));
     }
 
@@ -170,7 +192,7 @@ class Client extends CActiveRecord
     /*
      * Getting client using for select 2
      */
-    public static function select2Client($name = '')
+    public function select2Client($name = '')
     {
 
         // Recommended: Secure Way to Write SQL in Yii

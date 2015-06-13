@@ -129,16 +129,16 @@ class Supplier extends CActiveRecord
                 //$criteria->addSearchCondition('status',Yii::app()->params['_active_status']);
                 //$criteria->order = 'company_name';
                 
-                if ($this->search) {
-                
-                    $criteria->condition="(company_name like :company_name or first_name=:search or last_name=:search or concat(first_name,last_name)=:fullname or concat(last_name,first_name)=:fullname  or mobile_no like :mobile_no)";
-                    $criteria->params = array(
-                                ':company_name' => '%' . $this->search . '%', 
-                                ':search' => $this->search, 
-                                ':fullname' => preg_replace('/\s+/', '',$this->search),
-                                ':mobile_no' => '%' . $this->search . '%',
-                    );
-                }
+        if ($this->search) {
+
+            $criteria->condition="(company_name like :company_name or first_name=:search or last_name=:search or concat(first_name,last_name)=:fullname or concat(last_name,first_name)=:fullname  or mobile_no like :mobile_no)";
+            $criteria->params = array(
+                        ':company_name' => '%' . $this->search . '%',
+                        ':search' => $this->search,
+                        ':fullname' => preg_replace('/\s+/', '',$this->search),
+                        ':mobile_no' => '%' . $this->search . '%',
+            );
+        }
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
