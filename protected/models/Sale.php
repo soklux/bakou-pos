@@ -413,12 +413,14 @@ class Sale extends CActiveRecord
 
             $trans_date = date('Y-m-d H:i:s');
             $trans_comment='Cancel Sale';
+            $trans_code='CHSALE';
+            $trans_status='R'
 
             $this->updateItemInventory($sale_id,$trans_date,$trans_comment,$employee_id);
 
             $sale = $this->findByPk($sale_id);
 
-            $sale_amount = -($sale->sub_total - ($sale->sub_total*$sale->discount_amount)/100);
+            $sale_amount = ($sale->sub_total - ($sale->sub_total*$sale->discount_amount)/100);
             $customer_id = $sale->client_id;
 
             $sale->status=$status;
@@ -426,11 +428,15 @@ class Sale extends CActiveRecord
             $sale->save();
 
             // Updating current_balance in account table
-            $account=$this->updateAccount($customer_id, $sale_amount);
+            //$account = $this->updateAccount($customer_id, $sale_amount);
+            $account = Account::model()->getAccountInfo($customer_id);
 
             if ($account) {
+                // Rollback Account Amount
+                Account::model()->depositAccountBal($account,$sale_amount);
+                AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $sale_id, $sale_amount,$trans_date,$trans_comment, $trans_code, $trans_status);
                 // Saving to Account Receivable where trans_cod='R' reverse (Payment, Sale Transaction ..)
-                $this->saveAR($account->id, $employee_id, $sale_id, $sale_amount, 0, $trans_date,'CHSALE','R');
+                //$this->saveAR($account->id, $employee_id, $sale_id, $sale_amount, 0, $trans_date,'CHSALE','R');
             }
 
             $transaction->commit();

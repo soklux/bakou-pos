@@ -142,28 +142,26 @@ class SaleController extends Controller
                 //$this->loadModel($id)->delete();
                 $remark = $_POST['remark'];
                 $employee_id = Yii::app()->session['employeeid'];
-                $result_id=Sale::model()->deleteSale($id, $remark,$employee_id);
+                $result_id = Sale::model()->deleteSale($id, $remark, $employee_id);
 
-                if ($result_id === -1)
-                {
+                if ($result_id === -1) {
                     echo CJSON::encode(array(
-                            'status'=>'failed',
-                            'message'=>'<div class="alert in alert-block fade alert-error">Transaction Failed !<a class="close" data-dismiss="alert" href="#">&times;</a></div>',
-                        ));
+                        'status' => 'failed',
+                        'message' => '<div class="alert in alert-block fade alert-error">Transaction Failed !<a class="close" data-dismiss="alert" href="#">&times;</a></div>',
+                    ));
                 } else {
                     echo CJSON::encode(array(
                         'status' => 'success',
-                         //'div_receipt'=>$this->createUrl('/report')
+                        //'div_receipt'=>$this->createUrl('/report')
                     ));
                     Yii::app()->end();
-                }    
+                }
 
                 // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
                 if (!isset($_GET['ajax'])) {
                     $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-                }    
-            }
-            else {
+                }
+            } else {
                 throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
             }
         } else {

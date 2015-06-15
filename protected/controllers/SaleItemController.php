@@ -426,20 +426,22 @@ class SaleItemController extends Controller
         $model = new Sale;
         $this->render('sale_suspended', array('model' => $model));
     }
-    
+
     public function actionDeleteSale($sale_id)
     {
-        $result_id=Sale::model()->deleteSale($sale_id, 'Cancel Suspended Sale', Yii::app()->shoppingCart->getEmployee());
-        
-        if ($result_id === -1)
-        {
-           Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,'<strong>Oh snap!</strong> Change a few things up and try submitting again.');
+        $result_id = Sale::model()->deleteSale($sale_id, 'Cancel Suspended Sale',
+            Yii::app()->shoppingCart->getEmployee());
+
+        if ($result_id === -1) {
+            Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,
+                '<strong>Oh snap!</strong> Change a few things up and try submitting again.');
         } else {
             Yii::app()->shoppingCart->clearAll();
-            Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,'<strong>Well done!</strong> Invoice Id ' . $sale_id . 'have been deleted successfully!' );
+            Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,
+                '<strong>Well done!</strong> Invoice Id ' . $sale_id . 'have been deleted successfully!');
             $this->redirect('ListSuspendedSale');
         }
-        
+
     }
     
     protected function sessionInfo($data=array()) 
