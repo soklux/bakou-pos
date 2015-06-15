@@ -405,7 +405,7 @@ class Sale extends CActiveRecord
         }
     }
 
-    public function deleteSale($sale_id, $remark, $employee_id, $status = self::sale_cancel_status)
+    public function deleteSale($sale_id, $remark,$customer_id, $employee_id, $status = self::sale_cancel_status)
     {
 
         $transaction = Yii::app()->db->beginTransaction();
@@ -414,14 +414,16 @@ class Sale extends CActiveRecord
             $trans_date = date('Y-m-d H:i:s');
             $trans_comment='Cancel Sale';
             $trans_code='CHSALE';
-            $trans_status='R'
+            $trans_status='R';
 
             $this->updateItemInventory($sale_id,$trans_date,$trans_comment,$employee_id);
 
             $sale = $this->findByPk($sale_id);
 
-            $sale_amount = ($sale->sub_total - ($sale->sub_total*$sale->discount_amount)/100);
-            $customer_id = $sale->client_id;
+            //$sale_amount = ($sale->sub_total - ($sale->sub_total*$sale->discount_amount)/100);
+            //$customer_id = $sale->client_id;
+
+            $total = $this->getOldSaleTotal($sale_id);
 
             $sale->status=$status;
             $sale->remark=$remark;
@@ -432,10 +434,10 @@ class Sale extends CActiveRecord
             $account = Account::model()->getAccountInfo($customer_id);
 
             if ($account) {
-                // Rollback Account Amount
-                Account::model()->depositAccountBal($account,$sale_amount);
-                AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $sale_id, $sale_amount,$trans_date,$trans_comment, $trans_code, $trans_status);
+                // Rollback Account = Outstanding Balance + Total Sub
+                Account::model()->withdrawAccountBal($account,$total);
                 // Saving to Account Receivable where trans_cod='R' reverse (Payment, Sale Transaction ..)
+                AccountReceivable::model()->saveAccountRecv($account->id, $employee_id, $sale_id, $total,$trans_date,$trans_comment, $trans_code, $trans_status);
                 //$this->saveAR($account->id, $employee_id, $sale_id, $sale_amount, 0, $trans_date,'CHSALE','R');
             }
 
@@ -592,14 +594,14 @@ class Sale extends CActiveRecord
     {
 
         $sql = "SELECT s.id sale_id,
-                            (SELECT CONCAT_WS(' ',first_name,last_name) FROM `client` c WHERE c.id=s.client_id) client_id,
-                            DATE_FORMAT(s.sale_time,'%d-%m-%Y %H:%i') sale_time,st.items,remark
-                    FROM sale s INNER JOIN (SELECT si.sale_id, GROUP_CONCAT(i.name) items
+                      CONCAT(c.first_name,' ',c.last_name) customer_name, c.client_id,
+                      DATE_FORMAT(s.sale_time,'%d-%m-%Y %H:%i') sale_time,st.items,remark
+                FROM sale s INNER JOIN (SELECT si.sale_id, GROUP_CONCAT(i.name) items
                                             FROM sale_item si INNER JOIN item i ON i.id=si.item_id 
                                             GROUP BY si.sale_id
                                             ) st ON st.sale_id=s.id
-                  WHERE status='2'                           
-                 ";
+                     left join `client` c on c.`id` = s.`client_id`
+                WHERE status='2'";
 
         $rawData = Yii::app()->db->createCommand($sql)->queryAll(true);
 

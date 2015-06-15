@@ -373,7 +373,7 @@ class SaleItemController extends Controller
     public function actionEditSale($sale_id,$customer_id,$paid_amount)
     {
         if (Yii::app()->user->checkAccess('invoice.update')) {
-            if ($paid_amount==0 || $customer_id =="") {
+            if ($paid_amount==0 || $customer_id == "") {
                 //if(Yii::app()->request->isPostRequest)
                 //{
                 Yii::app()->shoppingCart->clearAll();
@@ -427,10 +427,9 @@ class SaleItemController extends Controller
         $this->render('sale_suspended', array('model' => $model));
     }
 
-    public function actionDeleteSale($sale_id)
+    public function actionDeleteSale($sale_id,$customer_id)
     {
-        $result_id = Sale::model()->deleteSale($sale_id, 'Cancel Suspended Sale',
-            Yii::app()->shoppingCart->getEmployee());
+        $result_id = Sale::model()->deleteSale($sale_id, 'Cancel Suspended Sale', $customer_id,Yii::app()->shoppingCart->getEmployee());
 
         if ($result_id === -1) {
             Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_SUCCESS,
@@ -443,7 +442,7 @@ class SaleItemController extends Controller
         }
 
     }
-    
+
     protected function sessionInfo($data=array()) 
     {
         //$data=array();

@@ -134,15 +134,14 @@ class SaleController extends Controller
      * If deletion is successful, the browser will be redirected to the 'admin' page.
      * @param integer $id the ID of the model to be deleted
      */
-    public function actionDelete($id)
+    public function actionDelete($id,$customer_id)
     {
         if (Yii::app()->user->checkAccess('invoice.delete')) {
             if (Yii::app()->request->isPostRequest) {
                 // we only allow deletion via POST request
-                //$this->loadModel($id)->delete();
                 $remark = $_POST['remark'];
                 $employee_id = Yii::app()->session['employeeid'];
-                $result_id = Sale::model()->deleteSale($id, $remark, $employee_id);
+                $result_id = Sale::model()->deleteSale($id, $remark, $customer_id,$employee_id);
 
                 if ($result_id === -1) {
                     echo CJSON::encode(array(

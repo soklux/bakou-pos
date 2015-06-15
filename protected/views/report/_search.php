@@ -20,8 +20,11 @@
         
         <?php if ($date_view!=='choose') { ?> 
         
-            <label class="text-info" for="sale_id"><?php //echo Yii::t('app','Invoice ID'); ?></label>
-            <?php echo $form->textFieldControlGroup($report,'sale_id',array('class'=>'input-medium','maxlength'=>100,'id'=>'sale_id_id','placeholder'=>'Invoice ID')); ?>
+            <!--<label class="text-info" for="sale_id"><?php /*echo Yii::t('app','Invoice ID'); */?></label>-->
+
+            <?php //echo $form->textFieldControlGroup($report,'sale_id',array('class'=>'input-medium','maxlength'=>100,'id'=>'sale_id_id','placeholder'=>'Invoice ID')); ?>
+
+            <?php echo CHtml::activeTelField($report,'sale_id', array('class' => 'col-xs-10 col-sm-4','placeholder'=>'Customer Name')); ?>
               
         <?php } ?>
         

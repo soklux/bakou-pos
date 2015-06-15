@@ -19,6 +19,7 @@
         <?php endif; ?>
 
     <div id="report_header">
+
         <?php $this->renderPartial('_search',array('report'=>$report,'date_view'=>$date_view)); ?>
 
         <?php 
@@ -77,11 +78,11 @@
                             ),
                             array('name'=>'employee_id',
                                   'header'=>Yii::t('app','Sold By'), 
-                                  'value'=>'$data["employee_id"]',
+                                  'value'=>'$data["employee_name"]',
                             ),
                             array('name'=>'customer_id',
                                   'header'=>Yii::t('app','Sold To'), 
-                                  'value'=>'$data["customer_id"]',
+                                  'value'=>'$data["customer_name"]',
                             ),
                             array('name'=>'remark',
                                   'header'=>Yii::t('app','Remark'), 
@@ -89,7 +90,7 @@
                             ),
                             array('name'=>'status',
                                   'header'=>Yii::t('app','Status'), 
-                                  'value'=>'$data["status"]',
+                                  'value'=>'$data["status_f"]',
                             ),
                             array('class'=>'bootstrap.widgets.TbButtonColumn',
                                   //'header'=>'Invoice Detail',
@@ -124,22 +125,22 @@
                                       'cancel' => array(
                                         'label'=>'cancel',
                                         'icon'=>'glyphicon-trash',
-                                        'url'=>'Yii::app()->createUrl("sale/delete", array("id"=>$data["id"]))',
+                                        'url'=>'Yii::app()->createUrl("sale/delete", array("id"=>$data["id"], "customer_id"=>$data["client_id"]))',
                                         'options' => array(
                                             'title'=>Yii::t('app','Cancel Invoice'),
                                             'class'=>'btnCancelInvoice btn btn-xs btn-danger',
                                         ),
-                                        'visible'=>'Yii::app()->user->checkAccess("invoice.delete")',  
+                                        'visible'=>'$data["status"]=="1" && Yii::app()->user->checkAccess("invoice.delete")',
                                       ),
                                       'edit' => array(
                                         'label'=>'edit',
                                         'icon'=>'glyphicon-edit',
-                                        'url'=>'Yii::app()->createUrl("SaleItem/EditSale", array("sale_id"=>$data["id"],"customer_id" => $data["customer_id"],"paid_amount"=>$data["paid_amount"]))',
+                                        'url'=>'Yii::app()->createUrl("SaleItem/EditSale", array("sale_id"=>$data["id"],"customer_id" => $data["customer_name"],"paid_amount"=>$data["paid_amount"]))',
                                         'options' => array(
                                             'title'=>Yii::t('app','Edit Invoice'),
                                             'class'=>'btn btn-xs btn-warning',
                                         ),
-                                        'visible'=>'Yii::app()->user->checkAccess("invoice.update")',
+                                        'visible'=>'$data["status"]=="1" && Yii::app()->user->checkAccess("invoice.update")',
                                       ),
                                    ),
                              ),
