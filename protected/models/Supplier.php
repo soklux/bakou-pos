@@ -24,7 +24,9 @@
  */
 class Supplier extends CActiveRecord
 {
-        public $search;
+    public $search;
+    public $supplier_archived;
+    private $_active_status = '1';
     
         /**
 	 * Returns the static model of the specified AR class.
@@ -125,10 +127,8 @@ class Supplier extends CActiveRecord
 		//$criteria->compare('country_code',$this->country_code,true);
 		//$criteria->compare('email',$this->email,true);
 		//$criteria->compare('notes',$this->notes,true);
-                
-                //$criteria->addSearchCondition('status',Yii::app()->params['_active_status']);
-                //$criteria->order = 'company_name';
-                
+
+        /*
         if ($this->search) {
 
             $criteria->condition="(company_name like :company_name or first_name=:search or last_name=:search or concat(first_name,last_name)=:fullname or concat(last_name,first_name)=:fullname  or mobile_no like :mobile_no)";
@@ -139,45 +139,64 @@ class Supplier extends CActiveRecord
                         ':mobile_no' => '%' . $this->search . '%',
             );
         }
+        */
+        if  ( Yii::app()->user->getState('supplier_archived', Yii::app()->params['defaultArchived'] ) == 'true' ) {
+            $criteria->condition = 'company_name like :search or first_name=:search or last_name=:search or concat(first_name,last_name)=:search or concat(last_name,first_name)=:search  or mobile_no like :search';
+            $criteria->params = array(
+                ':search' => '%' . $this->search . '%',
+            );
+        } else {
+            $criteria->condition = 'status=:active_status AND (company_name like :search or first_name=:search or last_name=:search or concat(first_name,last_name)=:search or concat(last_name,first_name)=:search  or mobile_no like :search)';
+            $criteria->params = array(
+                ':active_status' => Yii::app()->params['_active_status'],
+                ':search' => '%' . $this->search . '%',
+            );
+        }
+
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
                         'sort'=>array( 'defaultOrder'=>'company_name')
 		));
 	}
-        
-        protected function getSupplierInfo()
-        {
-            return $this->company_name.' - ' .$this->first_name . ' ' . $this->last_name;
-        }
-        
-        public function getSupplier()
-        {
-            $supplier = Supplier::model()->findAll('status=:status',array(':status'=>Yii::app()->params['_active_status']));
-            $list    = CHtml::listData($supplier , 'id', 'SupplierInfo');
-            return $list;
-        }
-        
-        public static function select2Supplier($name = '') {
 
-            // Recommended: Secure Way to Write SQL in Yii 
-            $sql = 'SELECT id ,concat_ws(" : ",company_name,mobile_no) AS text 
+    protected function getSupplierInfo()
+    {
+        return $this->company_name . ' - ' . $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getSupplier()
+    {
+        $supplier = Supplier::model()->findAll('status=:status',
+            array(':status' => Yii::app()->params['_active_status']));
+        $list = CHtml::listData($supplier, 'id', 'SupplierInfo');
+
+        return $list;
+    }
+
+    public static function select2Supplier($name = '')
+    {
+
+        // Recommended: Secure Way to Write SQL in Yii
+        $sql = 'SELECT id ,concat_ws(" : ",company_name,mobile_no) AS text
                     FROM supplier 
                     WHERE (company_name LIKE :name or mobile_no like :name)
                     AND status=:status';
-            $name = '%' . $name . '%';
-            return Yii::app()->db->createCommand($sql)->queryAll(true, array(':name' => $name,':status'=>Yii::app()->params['_active_status']));
-        }
-        
-        public function deleteSupplier($supplier_id)
-        {
-            Supplier::model()->updateByPk((int)$supplier_id,array('status'=>Yii::app()->params['_inactive_status']));
-        }
-        
-        public function undodeleteSupplier($supplier_id)
-        {
-            Supplier::model()->updateByPk((int)$supplier_id,array('status'=>Yii::app()->params['_active_status']));
-        }
+        $name = '%' . $name . '%';
+
+        return Yii::app()->db->createCommand($sql)->queryAll(true,
+            array(':name' => $name, ':status' => Yii::app()->params['_active_status']));
+    }
+
+    public function deleteSupplier($supplier_id)
+    {
+        Supplier::model()->updateByPk((int)$supplier_id, array('status' => Yii::app()->params['_inactive_status']));
+    }
+
+    public function undodeleteSupplier($supplier_id)
+    {
+        Supplier::model()->updateByPk((int)$supplier_id, array('status' => Yii::app()->params['_active_status']));
+    }
         
          /**
 	 * Suggests a list of existing values matching the specified keyword.

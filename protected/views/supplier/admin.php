@@ -44,20 +44,49 @@ $('.search-form form').submit(function(){
 
     <?php $this->widget( 'ext.modaldlg.EModalDlg' ); ?>
 
-    <?php echo TbHtml::linkButton(Yii::t( 'app', 'Add New' ),array(
-            'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
-            'size'=>TbHtml::BUTTON_SIZE_SMALL,
-            'icon'=>'fa-icon fa fa-plus white',
-            'url'=>$this->createUrl('create'),
-            'data-update-dialog-title' => Yii::t( 'app', 'New Supplier' ),
-    )); ?>
+    <?php if ( Yii::app()->user->checkAccess('supplier.create') ) { ?>
 
+        <?php echo TbHtml::linkButton(Yii::t( 'app', 'Add New' ),array(
+                'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
+                'size'=>TbHtml::BUTTON_SIZE_SMALL,
+                'icon'=>'fa-icon fa fa-plus white',
+                'url'=>$this->createUrl('create'),
+                'data-update-dialog-title' => Yii::t( 'app', 'New Supplier' ),
+        )); ?>
+
+        &nbsp;&nbsp;
+
+        <?php echo CHtml::activeCheckBox($model, 'supplier_archived', array(
+            'value' => 1,
+            'uncheckValue' => 0,
+            'checked' => ($model->supplier_archived == 'false') ? false : true,
+            'onclick' => "$.fn.yiiGridView.update('supplier-grid',{data:{archivedSupplier:$(this).is(':checked')}});"
+        )); ?>
+
+        Show archived/deleted supplier
+
+    <?php } ?>
+
+    <?php
+        $pageSize = Yii::app()->user->getState( 'pageSize', Yii::app()->params[ 'defaultPageSize' ] );
+        $pageSizeDropDown = CHtml::dropDownList(
+            'pageSize',
+            $pageSize,
+            array( 10 => 10, 25 => 25, 50 => 50, 100 => 100 ),
+            array(
+                'class'  => 'change-pagesize',
+                'onchange' => "$.fn.yiiGridView.update('supplier-grid',{data:{pageSize:$(this).val()}});",
+            )
+        );
+    ?>
 
     <?php $this->widget('yiiwheels.widgets.grid.WhGridView',array(
             'id'=>'supplier-grid',
             'fixedHeader' => true,
             //'headerOffset' => 40,
             //'responsiveTable' => true,
+            'template'=>"{items}\n{summary}\n{pager}",
+            'summaryText'=>'Showing {start}-{end} of {count} entries ' . $pageSizeDropDown .  ' rows per page',
             'htmlOptions'=>array('class'=>'table-responsive panel'),
             'dataProvider'=>$model->search(),
             'columns'=>array(

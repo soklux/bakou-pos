@@ -58,8 +58,6 @@ $('.search-form form').submit(function(){
 
             &nbsp;&nbsp;
 
-            <?php  $archived = Yii::app()->user->getState( 'archived', Yii::app()->params['defaultArchived'] ); ?>
-
             <?php echo CHtml::activeCheckBox($model,'item_archived',array(
                 'value' => 1,
                 'uncheckValue' => 0,

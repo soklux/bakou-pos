@@ -240,26 +240,25 @@ class SupplierController extends Controller
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete($id)
-	{
-                if (Yii::app()->user->checkAccess('supplier.delete'))
-                {
-                    if(Yii::app()->request->isPostRequest)
-                    {
-                            // we only allow deletion via POST request
-                            //$this->loadModel($id)->delete();
-                            Supplier::model()->deleteSupplier($id);
+    public function actionDelete($id)
+    {
+        if (Yii::app()->user->checkAccess('supplier.delete')) {
+            if (Yii::app()->request->isPostRequest) {
+                // we only allow deletion via POST request
+                //$this->loadModel($id)->delete();
+                Supplier::model()->deleteSupplier($id);
 
-                            // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-                            if(!isset($_GET['ajax']))
-                                    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-                    } else {
-                            throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
-                    }
-                } else {
-                    throw new CHttpException(403, 'You are not authorized to perform this action');
+                // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+                if (!isset($_GET['ajax'])) {
+                    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
                 }
-	}
+            } else {
+                throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+            }
+        } else {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
+    }
         
         /**
 	 * Undo Deletes a particular model.
@@ -300,21 +299,35 @@ class SupplierController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionAdmin()
-	{
-            if (Yii::app()->user->checkAccess('supplier.index') || Yii::app()->user->checkAccess('supplier.create') || Yii::app()->user->checkAccess('supplier.update') || Yii::app()->user->checkAccess('supplier.delete')) {
-		$model=new Supplier('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Supplier']))
-			$model->attributes=$_GET['Supplier'];
-
-		$this->render('admin',array(
-			'model'=>$model,
-		));
-            } else {
-                throw new CHttpException(403, 'You are not authorized to perform this action');
+    public function actionAdmin()
+    {
+        if (Yii::app()->user->checkAccess('supplier.index') || Yii::app()->user->checkAccess('supplier.create') || Yii::app()->user->checkAccess('supplier.update') || Yii::app()->user->checkAccess('supplier.delete')) {
+            $model = new Supplier('search');
+            $model->unsetAttributes();  // clear any default values
+            if (isset($_GET['Supplier'])) {
+                $model->attributes = $_GET['Supplier'];
             }
-	}
+
+            if (isset($_GET['pageSize'])) {
+                Yii::app()->user->setState('supplierpageSize', (int)$_GET['pageSize']);
+                unset($_GET['pageSize']);
+            }
+
+            if (isset($_GET['archivedSupplier'])) {
+                Yii::app()->user->setState('archived_supplier', $_GET['archivedSupplier']);
+                unset($_GET['archivedSupplier']);
+            }
+
+            $model->supplier_archived = Yii::app()->user->getState('archived_supplier',
+                Yii::app()->params['defaultArchived']);
+
+            $this->render('admin', array(
+                'model' => $model,
+            ));
+        } else {
+            throw new CHttpException(403, 'You are not authorized to perform this action');
+        }
+    }
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

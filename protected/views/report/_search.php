@@ -237,8 +237,9 @@
                      success : function(data) {
                             if (data.status==='success')
                             {
-                                $.fn.yiiGridView.update('sale-grid');
+                                //$.fn.yiiGridView.update('sale-grid');
                                 //$('#sale_invoice').html(data.div);
+                                location.reload(true);
                             }
                             else 
                             {

@@ -514,7 +514,15 @@ class SaleItemController extends Controller
         $data['cust_fullname'] = $customer !== null ? $customer->first_name . ' ' . $customer->last_name : 'General';
         $data['salerep_fullname'] = $sale_rep !== null ? $sale_rep->first_name . ' ' . $sale_rep->last_name : $employee->first_name . ' '  . $employee->last_name;
         $data['salerep_tel'] = $sale_rep !== null ? $sale_rep->mobile_no : '';
+        $data['cust_address1'] = $customer !== null ? $customer->address1 : '';
+        $data['cust_mobile_no'] = $customer !== null ? $customer->mobile_no : '';
+        $data['cust_fax'] = $customer !== null ? $customer->fax : '';
+        $data['cust_notes'] = $customer !== null ? $customer->notes : '';
+        $data['cust_contact_fullname'] = '';
 
+        if ($customer !== null) {
+            $data['cust_contact_fullname'] = $customer->contact !== null ? $customer->contact->first_name . ' ' . $customer->contact->last_name : '';
+        }
 
         return $data;
     }

@@ -100,11 +100,11 @@ class Report extends CFormModel
                         JOIN employee e ON e.id = s.`employee_id`
                         LEFT JOIN `client` c ON c.`id` = s.`client_id`
                         LEFT JOIN v_sale_payment sp ON sp.`sale_id` = s.id
-                    WHERE s.id=:sale_id or (c.first_name like :first_name or c.last_name like :last_name)
+                    WHERE s.id=:sale_id OR (c.first_name like :first_name OR c.last_name like :last_name OR CONCAT(c.first_name,' ',c.last_name) like :full_name )
                     GROUP BY s.id,CONCAT(c.first_name,' ',c.last_name),CONCAT(e.first_name,' ',e.last_name),DATE_FORMAT(s.sale_time,'%d-%m-%Y %H-%i'),s.employee_id,s.client_id
                     ORDER By s.sale_time desc";
 
-            $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => $this->sale_id, ':first_name' => '%' . $this->sale_id . '%', ':last_name' => '%' . $this->sale_id . '%'));
+            $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':sale_id' => $this->sale_id, ':first_name' => '%' . $this->sale_id . '%', ':last_name' => '%' . $this->sale_id . '%', ':full_name' => '%' . $this->sale_id . '%'));
 
         } else {
             
