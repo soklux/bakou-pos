@@ -23,16 +23,17 @@
  */
 class Employee extends CActiveRecord
 {
-	
-        public $login_id;
-        public $image;
-        public $search;
-        public $day; //Day : DD
-        public $month; // Month : MM
-        public $year; // Year - YYYY
-        
-        private $employee_active = '1';
-        private $employee_inactive = '0'; 
+
+    public $login_id;
+    public $image;
+    public $search;
+    public $day; //Day : DD
+    public $month; // Month : MM
+    public $year; // Year - YYYY
+    public $employee_archived;
+
+    private $employee_active = '1';
+    private $employee_inactive = '0';
     
         /**
 	 * @return string the associated database table name
@@ -130,7 +131,7 @@ class Employee extends CActiveRecord
 		//$criteria->compare('notes',$this->notes,true);
 		//$criteria->compare('status',$this->status,true);
 
-        if ($this->search) {
+       /* if ($this->search) {
 
             $criteria->condition = "(first_name=:search or last_name=:search or concat(first_name,last_name)=:fullname or concat(last_name,first_name)=:fullname  or mobile_no like :mobile_no)";
             $criteria->params = array(
@@ -140,6 +141,19 @@ class Employee extends CActiveRecord
             );
         } elseif (!Yii::app()->user->isAdmin) {
             $criteria->condition = "id not in (1,2)";
+        }*/
+
+        if ( Yii::app()->user->getState('employee_archived', Yii::app()->params['defaultArchived'] ) == 'true' ) {
+            $criteria->condition = 'first_name like :search OR last_name like :search';
+            $criteria->params = array(
+                ':search' => '%' . $this->search . '%',
+            );
+        } else {
+            $criteria->condition = 'status=:active_status AND (first_name like :search OR last_name like :search or mobile_no like :search)';
+            $criteria->params = array(
+                ':active_status' => $this->employee_active,
+                ':search' => '%' . $this->search . '%',
+            );
         }
 
 		return new CActiveDataProvider($this, array(
@@ -162,11 +176,17 @@ class Employee extends CActiveRecord
     public function deleteEmployee($id)
     {
         Employee::model()->updateByPk((int)$id, array('status' => $this->employee_inactive));
+        $user = RbacUser::model()->find('employee_id=:employee_id' , array(':employee_id' => $id));
+        $user->status = $this->employee_inactive;
+        $user->save();
     }
 
     public function undodeleteEmployee($id)
     {
         Employee::model()->updateByPk((int)$id, array('status' => $this->employee_active));
+        $user = RbacUser::model()->find('employee_id=:employee_id' , array(':employee_id' => $id));
+        $user->status = $this->employee_active;
+        $user->save();
     }
 
     protected function getEmployeeInfo()

@@ -30,7 +30,7 @@ class UserIdentity extends CUserIdentity
             $user = RbacUser::model()->findByAttributes(array('user_name' => $this->username));
             $ph = new PasswordHash(Yii::app()->params['phpass']['iteration_count_log2'], Yii::app()->params['phpass']['portable_hashes']);
         }
-        
+
         if ($user === null) {
             if (strpos($this->username, "@")) {
                 $this->errorCode = self::ERROR_EMAIL_INVALID;
@@ -42,7 +42,7 @@ class UserIdentity extends CUserIdentity
         //else if($user->status==0&&Yii::app()->getModule('user')->loginNotActiv==false)
         //	$this->errorCode=self::ERROR_STATUS_NOTACTIV;
         } elseif ($user->status == 0) {
-            $this->errorCode = self::ERROR_STATUS_BAN;
+            $this->errorCode = self::ERROR_STATUS_NOTACTIV;
         } else {
             $this->_id = $user->id;
             $this->username = $user->user_name; // title column as username

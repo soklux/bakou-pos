@@ -61,27 +61,50 @@ class RbacUser extends CActiveRecord
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('user_name', 'required'),
-                        array('Password', 'required','on'=>'insert'),
-                        array('user_name', 'unique'),
-                        array('PasswordConfirm', 'compare', 'compareAttribute'=>'Password'), //'message'=>"Passwords don't match"),
-			array('group_id, employee_id, deleted, status, created_by', 'numerical', 'integerOnly'=>true),
-			array('user_name', 'length', 'max'=>60),
-			array('user_password', 'length', 'max'=>128),
-			array('date_entered, modified_date, PasswordOld, Password, ResetPassword', 'safe'),
-                        array('date_entered','default','value'=>new CDbExpression('NOW()'),'setOnEmpty'=>false,'on'=>'insert'),
-                        array('modified_date','default','value'=>new CDbExpression('NOW()'),'setOnEmpty'=>false,'on'=>'insert'),
-                        array('modified_date','default','value'=>new CDbExpression('NOW()'),'setOnEmpty'=>false,'on'=>'update'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, user_name, group_id, employee_id, user_password, deleted,PasswordOld, ResetPassword, status, date_entered, modified_date, created_by', 'safe', 'on'=>'search'),
-		);
-	}
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('user_name', 'required'),
+            array('Password', 'required', 'on' => 'insert'),
+            array('user_name', 'unique'),
+            array('PasswordConfirm', 'compare', 'compareAttribute' => 'Password'),
+            //'message'=>"Passwords don't match"),
+            array('group_id, employee_id, deleted, status, created_by', 'numerical', 'integerOnly' => true),
+            array('user_name', 'length', 'max' => 60),
+            array('user_password', 'length', 'max' => 128),
+            array('date_entered, modified_date, PasswordOld, Password, ResetPassword', 'safe'),
+            array(
+                'date_entered',
+                'default',
+                'value' => new CDbExpression('NOW()'),
+                'setOnEmpty' => false,
+                'on' => 'insert'
+            ),
+            array(
+                'modified_date',
+                'default',
+                'value' => new CDbExpression('NOW()'),
+                'setOnEmpty' => false,
+                'on' => 'insert'
+            ),
+            array(
+                'modified_date',
+                'default',
+                'value' => new CDbExpression('NOW()'),
+                'setOnEmpty' => false,
+                'on' => 'update'
+            ),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array(
+                'id, user_name, group_id, employee_id, user_password, deleted,PasswordOld, ResetPassword, status, date_entered, modified_date, created_by',
+                'safe',
+                'on' => 'search'
+            ),
+        );
+    }
 
 	/**
 	 * @return array relational rules.
@@ -100,32 +123,32 @@ class RbacUser extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'user_name' => Yii::t('app','User Name'),
-			'group_id' => 'Group',
-			'employee_id' => 'Employee',
-			'user_password' => 'User Password',
-			'deleted' => 'Deleted',
-			'status' => 'User Status',
-			'date_entered' => 'Date Entered',
-			'modified_date' => 'Modified Date',
-			'created_by' => 'Created By',
-                        'PasswordConfirm'=> Yii::t('app','Confirm Password'),
-                        'Password'=> Yii::t('app','Password'),
-                        'PasswordOld'=>Yii::t('app','Current Password'),
-                        'items'=>Yii::t('app','Items'),
-                        'sales'=>Yii::t('app','Sales'),
-                        'employees'=>Yii::t('app','Employees'),
-                        'customers'=>Yii::t('app','Customers'),
-                        'suppliers'=>Yii::t('app','Suppliers'),
-                        'store'=>Yii::t('app','Store'),
-                        'receivings'=>Yii::t('app','Receivings'),
-                        'reports'=>Yii::t('app','Reports'),
-		);
-	}
+    public function attributeLabels()
+    {
+        return array(
+            'id' => 'ID',
+            'user_name' => Yii::t('app', 'User Name'),
+            'group_id' => 'Group',
+            'employee_id' => 'Employee',
+            'user_password' => 'User Password',
+            'deleted' => 'Deleted',
+            'status' => 'User Status',
+            'date_entered' => 'Date Entered',
+            'modified_date' => 'Modified Date',
+            'created_by' => 'Created By',
+            'PasswordConfirm' => Yii::t('app', 'Confirm Password'),
+            'Password' => Yii::t('app', 'Password'),
+            'PasswordOld' => Yii::t('app', 'Current Password'),
+            'items' => Yii::t('app', 'Items'),
+            'sales' => Yii::t('app', 'Sales'),
+            'employees' => Yii::t('app', 'Employees'),
+            'customers' => Yii::t('app', 'Customers'),
+            'suppliers' => Yii::t('app', 'Suppliers'),
+            'store' => Yii::t('app', 'Store'),
+            'receivings' => Yii::t('app', 'Receivings'),
+            'reports' => Yii::t('app', 'Reports'),
+        );
+    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

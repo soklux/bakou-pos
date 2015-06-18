@@ -31,8 +31,8 @@
     ");
     ?>
 
-    <?php echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
-    <div class="search-form" style="display:none">
+    <?php //echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
+    <div class="search-form pull-right" style="">
     <?php $this->renderPartial('_search',array(
             'model'=>$model,
     )); ?>
@@ -46,16 +46,42 @@
                 'icon'=>'glyphicon-plus white',
                 'url'=>$this->createUrl('create'),
         )); ?>
+
+        &nbsp;&nbsp;
+
+        <?php echo CHtml::activeCheckBox($model,'employee_archived',array(
+            'value' => 1,
+            'uncheckValue' => 0,
+            'checked'=> ($model->employee_archived == 'false') ? false:true,
+            'onclick' => "$.fn.yiiGridView.update('employee-grid',{data:{archivedEmployee:$(this).is(':checked')}});"
+        )); ?>
+
+        Show archived/deleted clients
     
     <?php } ?>
 
     <?php if(Yii::app()->user->hasFlash('success')):?>
         <?php $this->widget('bootstrap.widgets.TbAlert'); ?>
-    <?php endif; ?> 
+    <?php endif; ?>
 
-    <?php $this->widget('bootstrap.widgets.TbGridView',array(
+       <?php
+       $pageSize = Yii::app()->user->getState('employeepageSize', Yii::app()->params['defaultPageSize']);
+       $pageSizeDropDown = CHtml::dropDownList(
+           'pageSize',
+           $pageSize,
+           array(10 => 10, 25 => 25, 50 => 50, 100 => 100),
+           array(
+               'class' => 'change-pagesize',
+               'onchange' => "$.fn.yiiGridView.update('employee-grid',{data:{employeepageSize:$(this).val()}});",
+           )
+       );
+       ?>
+
+       <?php $this->widget('bootstrap.widgets.TbGridView',array(
             'id'=>'employee-grid',
             'dataProvider'=>$model->search(),
+            'template'=>"{items}\n{summary}\n{pager}",
+            'summaryText'=>'Showing {start}-{end} of {count} entries ' . $pageSizeDropDown .  ' rows per page',
             'htmlOptions'=>array('class'=>'table-responsive panel'),
             'columns'=>array(
                     //'id',

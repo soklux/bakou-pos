@@ -35,8 +35,8 @@ $('.search-form form').submit(function(){
                   'htmlHeaderOptions'=>array('class'=>'widget-header-flat widget-header-small'),  
     ));?> 
 
-    <?php echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
-    <div class="search-form" style="display:none">
+    <?php //echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
+    <div class="search-form pull-right" style="">
     <?php $this->renderPartial('_search',array(
             'model'=>$model,
     )); ?>
@@ -68,7 +68,7 @@ $('.search-form form').submit(function(){
     <?php } ?>
 
     <?php
-        $pageSize = Yii::app()->user->getState( 'pageSize', Yii::app()->params[ 'defaultPageSize' ] );
+        $pageSize = Yii::app()->user->getState( 'supplierpageSize', Yii::app()->params[ 'defaultPageSize' ] );
         $pageSizeDropDown = CHtml::dropDownList(
             'pageSize',
             $pageSize,

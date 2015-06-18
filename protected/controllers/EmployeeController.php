@@ -336,6 +336,18 @@ class EmployeeController extends Controller
             if (isset($_GET['Employee']))
                 $model->attributes = $_GET['Employee'];
 
+            if (isset($_GET['employeepageSize'])) {
+                Yii::app()->user->setState('employeepageSize', (int)$_GET['employeepageSize']);
+                unset($_GET['employeepageSize']);
+            }
+
+            if (isset($_GET['archivedEmployee'])) {
+                Yii::app()->user->setState('employee_archived',$_GET['archivedEmployee']);
+                unset($_GET['archivedEmployee']);
+            }
+
+            $model->employee_archived = Yii::app()->user->getState('employee_archived', Yii::app()->params['defaultArchived']);
+
             $this->render('admin', array(
                 'model' => $model,
             ));

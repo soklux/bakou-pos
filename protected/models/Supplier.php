@@ -140,8 +140,8 @@ class Supplier extends CActiveRecord
             );
         }
         */
-        if  ( Yii::app()->user->getState('supplier_archived', Yii::app()->params['defaultArchived'] ) == 'true' ) {
-            $criteria->condition = 'company_name like :search or first_name=:search or last_name=:search or concat(first_name,last_name)=:search or concat(last_name,first_name)=:search  or mobile_no like :search';
+        if  ( Yii::app()->user->getState('archived_supplier', Yii::app()->params['defaultArchived'] ) == 'true' ) {
+            $criteria->condition = 'company_name like :search or first_name like :search or last_name like :search or concat(first_name,last_name) like :search or concat(last_name,first_name) like :search  or mobile_no like :search';
             $criteria->params = array(
                 ':search' => '%' . $this->search . '%',
             );
@@ -156,7 +156,10 @@ class Supplier extends CActiveRecord
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
-                        'sort'=>array( 'defaultOrder'=>'company_name')
+            'pagination' => array(
+                'pageSize' => Yii::app()->user->getState('supplierpageSize',Yii::app()->params['defaultPageSize']),
+            ),
+            'sort'=>array( 'defaultOrder'=>'company_name')
 		));
 	}
 

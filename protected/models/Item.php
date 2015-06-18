@@ -192,7 +192,7 @@ class Item extends CActiveRecord
         //$criteria->params[':d'] = $this->name;
 
         if  ( Yii::app()->user->getState('archived', Yii::app()->params['defaultArchived'] ) == 'true' ) {
-            $criteria->condition = 'name LIKE :name OR item_number like :name';
+            $criteria->condition = 'name LIKE :name OR item_number LIKE :name';
             $criteria->params = array(
                 ':name' => '%' . $this->name . '%',
                 ':item_number' => $this->name . '%'
