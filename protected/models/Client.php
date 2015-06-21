@@ -28,8 +28,6 @@
 class Client extends CActiveRecord
 {
     public $search;
-    private $_active_status = '1';
-    private $_inactive_status = '0';
     public $day; //Day : DD
     public $month; // Month : MM
     public $year; // Year - YYYY
@@ -139,13 +137,13 @@ class Client extends CActiveRecord
         //$criteria->compare('notes',$this->notes,true);
         //$criteria->compare('status',$this->status,true);
 
-        //$criteria->addSearchCondition('status',$this->_active_status);
+        //$criteria->addSearchCondition('status',Yii::app()->params['active_status']);
 
         //if ($this->search) {
 
             /*$criteria->condition = "status=:active_status AND (first_name like :first_name or last_name)";
             $criteria->params = array(
-                ':active_status' => $this->_active_status,
+                ':active_status' => Yii::app()->params['active_status'],
                 ':first_name' =>  '%'. $this->first_name .  '%',
                 ':last_name' => $this->first_name,
                 ':mobile_no' => $this->first_name,
@@ -163,7 +161,7 @@ class Client extends CActiveRecord
         } else {
             $criteria->condition = 'status=:active_status AND (first_name like :first_name or last_name like :last_name or mobile_no=:mobile_no)';
             $criteria->params = array(
-                ':active_status' => $this->_active_status,
+                ':active_status' => Yii::app()->params['active_status'],
                 ':first_name' =>  '%'. $this->first_name .  '%',
                 ':last_name' => '%'. $this->first_name .  '%',
                 ':mobile_no' => $this->first_name,
@@ -204,7 +202,7 @@ class Client extends CActiveRecord
         $name = '%' . $name . '%';
 
         return Yii::app()->db->createCommand($sql)->queryAll(true,
-            array(':name' => $name, ':active_status' => $this->_active_status));
+            array(':name' => $name, ':active_status' => Yii::app()->params['active_status']));
 
     }
 
@@ -215,7 +213,7 @@ class Client extends CActiveRecord
 
     public function getClient()
     {
-        $model = Client::model()->findAll('status=:status', array(':status' => $this->_active_status));
+        $model = Client::model()->findAll('status=:status', array(':status' => Yii::app()->params['active_status']));
         $list = CHtml::listData($model, 'id', 'Fullname');
 
         return $list    ;
@@ -223,15 +221,15 @@ class Client extends CActiveRecord
 
     public function deleteClient($id)
     {
-        Client::model()->updateByPk($id, array('status' => $this->_inactive_status));
-        Account::model()->updateAll(array('status' => $this->_inactive_status), 'client_id=:client_id',
+        Client::model()->updateByPk($id, array('status' => Yii::app()->params['inactive_status']));
+        Account::model()->updateAll(array('status' => Yii::app()->params['inactive_status']), 'client_id=:client_id',
             array(':client_id' => $id));
     }
 
     public function undodeleteClient($id)
     {
-        Client::model()->updateByPk($id, array('status' => $this->_active_status));
-        Account::model()->updateAll(array('status' => $this->_active_status), 'client_id=:client_id',
+        Client::model()->updateByPk($id, array('status' => Yii::app()->params['active_status']));
+        Account::model()->updateAll(array('status' => Yii::app()->params['active_status']), 'client_id=:client_id',
             array(':client_id' => $id));
     }
 
@@ -254,7 +252,7 @@ class Client extends CActiveRecord
 			'condition'=>'(first_name LIKE :keyword or last_name=:keyword or mobile_no like :keyword) and status=:status',
                         'order'=>'first_name',
 			'limit'=>$limit,
-			'params'=>array(':keyword'=>"%$keyword%",':status'=>$this->_active_status)
+			'params'=>array(':keyword'=>"%$keyword%",':status'=>Yii::app()->params['active_status'])
 		));
 		$suggest=array();
 		foreach($models as $model) {

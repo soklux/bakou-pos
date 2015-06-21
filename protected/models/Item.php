@@ -45,11 +45,6 @@ class Item extends CActiveRecord
     public $promo_end_date;
     public $item_archived;
 
-    private $_active_status = '1';
-    private $_inactive_status = '0';
-
-
-
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -186,11 +181,7 @@ class Item extends CActiveRecord
         //$criteria->compare('is_serialized',$this->is_serialized);
         //$criteria->compare('description',$this->description,true);
         //$criteria->compare('status',$this->status);
-
-        //$criteria->addCondition("name LIKE :t OR item_number LIKE :d");
-        //$criteria->params[':t'] = $this->name;
-        //$criteria->params[':d'] = $this->name;
-
+        
         if  ( Yii::app()->user->getState('archived', Yii::app()->params['defaultArchived'] ) == 'true' ) {
             $criteria->condition = 'name LIKE :name OR item_number LIKE :name';
             $criteria->params = array(
@@ -200,13 +191,13 @@ class Item extends CActiveRecord
         } else {
             $criteria->condition = 'status=:active_status AND (name LIKE :name OR item_number like :name)';
             $criteria->params = array(
-                ':active_status' => $this->_active_status,
+                ':active_status' => Yii::app()->params['active_status'],
                 ':name' => '%' . $this->name . '%',
                 ':item_number' => $this->name . '%'
             );
         }
 
-        //$criteria->addSearchCondition('status',$this->_active_status);
+        //$criteria->addSearchCondition('status',Yii::app()->params['active_status']);
 
         //$criteria->condition='deleted=:is_deleted';
         //$criteria->params=array(':is_deleted'=>$this::_item_not_deleted);
@@ -313,7 +304,7 @@ class Item extends CActiveRecord
         return Yii::app()->db->createCommand($sql)->queryAll(true, array(
                 ':item_name' => $item_name,
                 ':item_number' => $item_number,
-                ':status' => '1',//$this->_active_status,
+                ':status' => '1',//Yii::app()->params['active_status'],
             )
         );
     }
@@ -407,7 +398,7 @@ class Item extends CActiveRecord
         $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(
                 ':item_id' => $item_id,
                 ':price_tier_id' => $price_tier_id,
-                ':status' => $this->_active_status,
+                ':status' => Yii::app()->params['active_status'],
             )
         );
 
@@ -430,7 +421,7 @@ class Item extends CActiveRecord
         $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(
                 ':item_id' => $item_id,
                 ':price_tier_id' => $price_tier_id,
-                ':status' => $this->_active_status,
+                ':status' => Yii::app()->params['active_status'],
             )
         );
 
@@ -439,12 +430,12 @@ class Item extends CActiveRecord
 
     public function deleteItem($id)
     {
-        Item::model()->updateByPk((int)$id, array('status' => $this->_inactive_status));
+        Item::model()->updateByPk((int)$id, array('status' => Yii::app()->params['inactive_status']));
     }
 
     public function undodeleteItem($id)
     {
-        Item::model()->updateByPk((int)$id, array('status' => $this->_active_status));
+        Item::model()->updateByPk((int)$id, array('status' => Yii::app()->params['active_status']));
     }
 
     public static function itemAlias($type, $code = null)
@@ -489,7 +480,7 @@ class Item extends CActiveRecord
             'params' => array(
                 ':keyword' => "%$keyword%",
                 ':item_number' => $keyword,
-                ':status' => $this->_active_status
+                ':status' => Yii::app()->params['active_status']
             )
         ));
         $suggest = array();
@@ -524,7 +515,7 @@ class Item extends CActiveRecord
             'params' => array(
                 ':keyword' => "%$keyword%",
                 ':item_number' => $keyword,
-                ':status' => $this->_active_status
+                ':status' => Yii::app()->params['active_status']
             )
         ));
         $suggest = array();

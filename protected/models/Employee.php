@@ -31,9 +31,6 @@ class Employee extends CActiveRecord
     public $month; // Month : MM
     public $year; // Year - YYYY
     public $employee_archived;
-
-    private $employee_active = '1';
-    private $employee_inactive = '0';
     
         /**
 	 * @return string the associated database table name
@@ -151,7 +148,7 @@ class Employee extends CActiveRecord
         } else {
             $criteria->condition = 'status=:active_status AND (first_name like :search OR last_name like :search or mobile_no like :search)';
             $criteria->params = array(
-                ':active_status' => $this->employee_active,
+                ':active_status' => Yii::app()->params['active_status'],
                 ':search' => '%' . $this->search . '%',
             );
         }
@@ -175,17 +172,17 @@ class Employee extends CActiveRecord
 
     public function deleteEmployee($id)
     {
-        Employee::model()->updateByPk((int)$id, array('status' => $this->employee_inactive));
+        Employee::model()->updateByPk((int)$id, array('status' => Yii::app()->params['inactive_status']));
         $user = RbacUser::model()->find('employee_id=:employee_id' , array(':employee_id' => $id));
-        $user->status = $this->employee_inactive;
+        $user->status = Yii::app()->params['inactive_status'];
         $user->save();
     }
 
     public function undodeleteEmployee($id)
     {
-        Employee::model()->updateByPk((int)$id, array('status' => $this->employee_active));
+        Employee::model()->updateByPk((int)$id, array('status' => Yii::app()->params['active_status']));
         $user = RbacUser::model()->find('employee_id=:employee_id' , array(':employee_id' => $id));
-        $user->status = $this->employee_active;
+        $user->status = Yii::app()->params['active_status'];
         $user->save();
     }
 

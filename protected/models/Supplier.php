@@ -26,7 +26,6 @@ class Supplier extends CActiveRecord
 {
     public $search;
     public $supplier_archived;
-    private $_active_status = '1';
     
         /**
 	 * Returns the static model of the specified AR class.
@@ -148,7 +147,7 @@ class Supplier extends CActiveRecord
         } else {
             $criteria->condition = 'status=:active_status AND (company_name like :search or first_name=:search or last_name=:search or concat(first_name,last_name)=:search or concat(last_name,first_name)=:search  or mobile_no like :search)';
             $criteria->params = array(
-                ':active_status' => Yii::app()->params['_active_status'],
+                ':active_status' => Yii::app()->params['active_status'],
                 ':search' => '%' . $this->search . '%',
             );
         }
@@ -171,7 +170,7 @@ class Supplier extends CActiveRecord
     public function getSupplier()
     {
         $supplier = Supplier::model()->findAll('status=:status',
-            array(':status' => Yii::app()->params['_active_status']));
+            array(':status' => Yii::app()->params['active_status']));
         $list = CHtml::listData($supplier, 'id', 'SupplierInfo');
 
         return $list;
@@ -188,17 +187,17 @@ class Supplier extends CActiveRecord
         $name = '%' . $name . '%';
 
         return Yii::app()->db->createCommand($sql)->queryAll(true,
-            array(':name' => $name, ':status' => Yii::app()->params['_active_status']));
+            array(':name' => $name, ':status' => Yii::app()->params['active_status']));
     }
 
     public function deleteSupplier($supplier_id)
     {
-        Supplier::model()->updateByPk((int)$supplier_id, array('status' => Yii::app()->params['_inactive_status']));
+        Supplier::model()->updateByPk((int)$supplier_id, array('status' => Yii::app()->params['inactive_status']));
     }
 
     public function undodeleteSupplier($supplier_id)
     {
-        Supplier::model()->updateByPk((int)$supplier_id, array('status' => Yii::app()->params['_active_status']));
+        Supplier::model()->updateByPk((int)$supplier_id, array('status' => Yii::app()->params['active_status']));
     }
         
          /**
@@ -213,7 +212,7 @@ class Supplier extends CActiveRecord
 			'condition'=>'(company_name LIKE :keyword or mobile_no like :keyword) and status=:status',
                         'order'=>'company_name',
 			'limit'=>$limit,
-			'params'=>array(':keyword'=>"%$keyword%",':status'=>Yii::app()->params['_active_status'])
+			'params'=>array(':keyword'=>"%$keyword%",':status'=>Yii::app()->params['active_status'])
 		));
 		$suggest=array();
 		foreach($models as $model) {

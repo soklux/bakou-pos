@@ -33,7 +33,7 @@ class PriceTierController extends Controller
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update', 'admin','delete','undodelete'),
+                'actions' => array('create', 'update', 'admin','delete','restore'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -177,41 +177,40 @@ class PriceTierController extends Controller
      */
     public function actionDelete($id)
     {
-        if (Yii::app()->user->checkAccess('item.delete')) { 
-            if (Yii::app()->request->isPostRequest) {
-                // we only allow deletion via POST request
-                PriceTier::model()->deletePriceTeir($id);
-
-                // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-                if (!isset($_GET['ajax'])) {
-                    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-                }
-            } else {
-                throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
-            }
-        } else {
+        if (!Yii::app()->user->checkAccess('item.delete')) {
             throw new CHttpException(403, 'You are not authorized to perform this action');
         }
-    }
-    
-    public function actionUndoDelete($id)
-    {
-        if (Yii::app()->user->checkAccess('item.delete')) { 
-            if (Yii::app()->request->isPostRequest) {
-                // we only allow deletion via POST request
-                PriceTier::model()->undodeletePriceTeir($id);
 
-                // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-                if (!isset($_GET['ajax'])) {
-                    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-                }
-            } else {
-                throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        if (Yii::app()->request->isPostRequest) {
+            PriceTier::model()->deletePriceTier($id);
+
+            // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+            if (!isset($_GET['ajax'])) {
+                $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
             }
         } else {
+            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
+    }
+
+    public function actionRestore($id)
+    {
+        if (!Yii::app()->user->checkAccess('item.delete')) {
             throw new CHttpException(403, 'You are not authorized to perform this action');
-        } 
-            
+        }
+
+        if (Yii::app()->request->isPostRequest) {
+            // we only allow deletion via POST request
+            //$this->loadModel($id)->delete();
+            PriceTier::model()->restorePriceTier($id);
+
+            // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+            if (!isset($_GET['ajax'])) {
+                $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+            }
+        } else {
+            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     /**
@@ -235,6 +234,18 @@ class PriceTierController extends Controller
         if (isset($_GET['PriceTier'])) {
             $model->attributes = $_GET['PriceTier'];
         }
+
+        if (isset($_GET['pageSize'])) {
+            Yii::app()->user->setState('pricetier_pageSize',(int)$_GET['pageSize']);
+            unset($_GET['pageSize']);
+        }
+
+        if (isset($_GET['archived'])) {
+            Yii::app()->user->setState('pricetier_archived',$_GET['archived']);
+            unset($_GET['archived']);
+        }
+
+        $model->pricetier_archived = Yii::app()->user->getState('pricetier_archived', Yii::app()->params['defaultArchived'] );
 
         $this->render('admin', array(
             'model' => $model,

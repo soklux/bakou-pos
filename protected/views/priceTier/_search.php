@@ -1,29 +1,14 @@
-<?php
-/* @var $this PriceTierController */
-/* @var $model PriceTier */
-/* @var $form CActiveForm */
-?>
-
-<div class="wide form">
-
-    <?php $form=$this->beginWidget('\TbActiveForm', array(
-	'action'=>Yii::app()->createUrl($this->route),
-	'method'=>'get',
-        'layout'=>TbHtml::FORM_LAYOUT_HORIZONTAL,
+<?php $form = $this->beginWidget('\TbActiveForm', array(
+    'action' => Yii::app()->createUrl($this->route),
+    'method' => 'get',
+    'layout' => TbHtml::FORM_LAYOUT_SEARCH,
 )); ?>
 
-                    <?php //echo $form->textFieldControlGroup($model,'id',array('span'=>5)); ?>
+    <span class="input-icon">
+        <?php echo CHtml::activeTelField($model, 'tier_name',
+            array('class' => 'col-xs-12', 'placeholder' => Yii::t('app', 'Filter'))); ?>
+    <i class="ace-icon fa fa-search nav-search-icon"></i>
+    </span>
 
-                    <?php echo $form->textFieldControlGroup($model,'tier_name',array('span'=>5,'maxlength'=>30)); ?>
+<?php $this->endWidget(); ?>
 
-                    <?php //echo $form->textFieldControlGroup($model,'modified_date',array('span'=>5)); ?>
-
-                    <?php //echo $form->textFieldControlGroup($model,'deleted',array('span'=>5)); ?>
-
-        <div class="form-actions">
-        <?php echo TbHtml::submitButton('Search',  array('color' => TbHtml::BUTTON_COLOR_PRIMARY,));?>
-    </div>
-
-    <?php $this->endWidget(); ?>
-
-</div><!-- search-form -->

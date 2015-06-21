@@ -113,7 +113,6 @@ class ItemController extends Controller
                         }
                     } catch (Exception $e) {
                         $transaction->rollback();
-                        //print_r($e);
                         Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_WARNING,'Oop something wrong : <strong>' . $e);
                     }
                 }

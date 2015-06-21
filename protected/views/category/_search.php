@@ -4,17 +4,10 @@
         'layout'=>TbHtml::FORM_LAYOUT_HORIZONTAL,
 )); ?>
 
-
-	<?php //echo $form->textFieldRow($model,'id',array('class'=>'span5')); ?>
-
-	<?php echo $form->textFieldControlGroup($model,'name',array('class'=>'span4','maxlength'=>50)); ?>
-
-	<?php //echo $form->textFieldRow($model,'created_date',array('class'=>'span5')); ?>
-
-	<?php //echo $form->textFieldRow($model,'modified_date',array('class'=>'span5')); ?>
-
-	<div class="form-actions">
-		<?php echo TbHtml::submitButton('Search',  array('color' => TbHtml::BUTTON_COLOR_PRIMARY,));?>
-	</div>
+    <span class="input-icon">
+        <?php echo CHtml::activeTelField($model, 'name',
+            array('class' => 'col-xs-12', 'placeholder' => Yii::t('app', 'Filter'))); ?>
+    <i class="ace-icon fa fa-search nav-search-icon"></i>
+    </span>
 
 <?php $this->endWidget(); ?>
