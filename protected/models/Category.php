@@ -117,4 +117,18 @@ class Category extends CActiveRecord
 
         return $list;
     }
+	
+	public function saveCategory($category_name)
+	{
+		$category_id=null;
+		$exists = Category::model()->exists('id=:category_id',array(':category_id'=> (int) $category_name ));
+		if (!$exists) {
+			$category= new Category;
+			$category->name=$category_name;
+			$category->save();
+			$category_id=$category->id;
+		}
+
+		return $category_id;
+	}
 }
