@@ -115,6 +115,7 @@
                 */
                 array(
                     'class' => 'bootstrap.widgets.TbButtonColumn',
+                    'header' => Yii::t('app','Action'),
                     'template' => '<div class="btn-group">{view}{update}{delete}{undeleted}</div>',
                     'htmlOptions' => array('class' => 'nowrap'),
                     'buttons' => array(

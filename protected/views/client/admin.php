@@ -131,6 +131,7 @@ $this->breadcrumbs = array(
                 ),
                 array(
                     'class' => 'bootstrap.widgets.TbButtonColumn',
+                    'header' => Yii::t('app','Action'),
                     'template' => '<div class="btn-group">{update}{payment}{delete}{undeleted}</div>',
                     'htmlOptions' => array('class' => 'nowrap'),
                     'buttons' => array(

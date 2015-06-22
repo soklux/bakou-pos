@@ -24,187 +24,189 @@ $('.search-form form').submit(function(){
 ?>
 
 <div class="row" id="supplier_cart">
+    <div class="col-xs-12 widget-container-col ui-sortable">
+        <?php if (Yii::app()->user->hasFlash('warning') || Yii::app()->user->hasFlash('success')): ?>
+            <?php $this->widget('bootstrap.widgets.TbAlert'); ?>
+        <?php endif; ?>
 
-    <?php if (Yii::app()->user->hasFlash('warning') || Yii::app()->user->hasFlash('success')): ?>
-        <?php $this->widget('bootstrap.widgets.TbAlert'); ?>
-    <?php endif; ?>
+        <?php $box = $this->beginWidget('yiiwheels.widgets.box.WhBox', array(
+            'title' => Yii::t('app', 'List of Suppliers'),
+            'headerIcon' => 'fa-icon fa fa-users',
+            'htmlHeaderOptions' => array('class' => 'widget-header-flat widget-header-small'),
+        )); ?>
 
-    <?php $box = $this->beginWidget('yiiwheels.widgets.box.WhBox', array(
-        'title' => Yii::t('app', 'List of Suppliers'),
-        'headerIcon' => 'fa-icon fa fa-users',
-        'htmlHeaderOptions' => array('class' => 'widget-header-flat widget-header-small'),
-    )); ?>
+        <?php $this->widget('ext.modaldlg.EModalDlg'); ?>
 
-    <?php $this->widget('ext.modaldlg.EModalDlg'); ?>
+        <div class="page-header">
+            <div class="nav-search" id="nav-search">
+                <?php $this->renderPartial('_search', array(
+                    'model' => $model,
+                )); ?>
+            </div>
 
-    <div class="page-header">
-        <div class="nav-search" id="nav-search">
-            <?php $this->renderPartial('_search', array(
-                'model' => $model,
-            )); ?>
+            <?php if (Yii::app()->user->checkAccess('supplier.create')) { ?>
+
+                <?php echo TbHtml::linkButton(Yii::t('app', 'Add New'), array(
+                    'color' => TbHtml::BUTTON_COLOR_PRIMARY,
+                    'size' => TbHtml::BUTTON_SIZE_SMALL,
+                    'icon' => 'fa-icon fa fa-plus white',
+                    'url' => $this->createUrl('create'),
+                    'data-update-dialog-title' => Yii::t('app', 'New Supplier'),
+                )); ?>
+
+                &nbsp;&nbsp;
+
+                <?php echo CHtml::activeCheckBox($model, 'supplier_archived', array(
+                    'value' => 1,
+                    'uncheckValue' => 0,
+                    'checked' => ($model->supplier_archived == 'false') ? false : true,
+                    'onclick' => "$.fn.yiiGridView.update('supplier-grid',{data:{archivedSupplier:$(this).is(':checked')}});"
+                )); ?>
+
+                Show archived/deleted <b>Supplier</b>
+
+            <?php } ?>
         </div>
 
-        <?php if (Yii::app()->user->checkAccess('supplier.create')) { ?>
-
-            <?php echo TbHtml::linkButton(Yii::t('app', 'Add New'), array(
-                'color' => TbHtml::BUTTON_COLOR_PRIMARY,
-                'size' => TbHtml::BUTTON_SIZE_SMALL,
-                'icon' => 'fa-icon fa fa-plus white',
-                'url' => $this->createUrl('create'),
-                'data-update-dialog-title' => Yii::t('app', 'New Supplier'),
-            )); ?>
-
-            &nbsp;&nbsp;
-
-            <?php echo CHtml::activeCheckBox($model, 'supplier_archived', array(
-                'value' => 1,
-                'uncheckValue' => 0,
-                'checked' => ($model->supplier_archived == 'false') ? false : true,
-                'onclick' => "$.fn.yiiGridView.update('supplier-grid',{data:{archivedSupplier:$(this).is(':checked')}});"
-            )); ?>
-
-            Show archived/deleted <b>Supplier</b>
-
-        <?php } ?>
-    </div>
-
-    <?php
-    $pageSize = Yii::app()->user->getState('supplierpageSize', Yii::app()->params['defaultPageSize']);
-    $pageSizeDropDown = CHtml::dropDownList(
-        'pageSize',
-        $pageSize,
-        array(10 => 10, 25 => 25, 50 => 50, 100 => 100),
-        array(
-            'class' => 'change-pagesize',
-            'onchange' => "$.fn.yiiGridView.update('supplier-grid',{data:{pageSize:$(this).val()}});",
-        )
-    );
-    ?>
-
-    <?php $this->widget('yiiwheels.widgets.grid.WhGridView', array(
-        'id' => 'supplier-grid',
-        'fixedHeader' => true,
-        //'headerOffset' => 40,
-        //'responsiveTable' => true,
-        'template' => "{items}\n{summary}\n{pager}",
-        'summaryText' => 'Showing {start}-{end} of {count} entries ' . $pageSizeDropDown . ' rows per page',
-        'htmlOptions' => array('class' => 'table-responsive panel'),
-        'dataProvider' => $model->search(),
-        'columns' => array(
+        <?php
+        $pageSize = Yii::app()->user->getState('supplierpageSize', Yii::app()->params['defaultPageSize']);
+        $pageSizeDropDown = CHtml::dropDownList(
+            'pageSize',
+            $pageSize,
+            array(10 => 10, 25 => 25, 50 => 50, 100 => 100),
             array(
-                'name' => 'id',
-                'headerHtmlOptions' => array('class' => 'hidden-480 hidden-xs'),
-                'htmlOptions' => array('class' => 'hidden-480 hidden-xs'),
-            ),
-            array(
-                'name' => 'company_name',
-                'value' => 'CHtml::link($data->company_name, Yii::app()->createUrl("supplier/update",array("id"=>$data->primaryKey)))',
-                'type' => 'raw',
-            ),
-            'first_name',
-            'last_name',
-            array(
-                'name' => 'mobile_no',
-                //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs'),
-                //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs'),
-            ),
-            array(
-                'name' => 'address1',
-                //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs'),
-                //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs'),
-            ),
-            array(
-                'name' => 'status',
-                'type' => 'raw',
-                'value' => '$data->status=="1" ? TbHtml::labelTb("Active", array("color" => TbHtml::LABEL_COLOR_SUCCESS)) : TbHtml::labelTb("Inactive", array("color" => TbHtml::LABEL_COLOR_DEFAULT))',
-                //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs'),
-                //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs'),
-            ),
-            //'address2',
-            /*
-            'city_id',
-            'country_code',
-            'email',
-            'notes',
-            */
-            array(
-                'class' => 'bootstrap.widgets.TbButtonColumn',
-                'template' => '<div class="hidden-sm hidden-xs btn-group">{view}{update}{delete}{undeleted}</div>',
-                'htmlOptions' => array('class' => 'nowrap'),
-                'buttons' => array(
-                    'view' => array(
-                        'click' => 'updateDialogOpen',
-                        'url' => 'Yii::app()->createUrl("supplier/view/",array("id"=>$data->id))',
-                        'options' => array(
-                            'class' => 'btn btn-xs btn-success',
-                            'data-update-dialog-title' => Yii::t('app', 'View Supplier'),
+                'class' => 'change-pagesize',
+                'onchange' => "$.fn.yiiGridView.update('supplier-grid',{data:{pageSize:$(this).val()}});",
+            )
+        );
+        ?>
+
+        <?php $this->widget('yiiwheels.widgets.grid.WhGridView', array(
+            'id' => 'supplier-grid',
+            'fixedHeader' => true,
+            //'headerOffset' => 40,
+            //'responsiveTable' => true,
+            'template' => "{items}\n{summary}\n{pager}",
+            'summaryText' => 'Showing {start}-{end} of {count} entries ' . $pageSizeDropDown . ' rows per page',
+            'htmlOptions' => array('class' => 'table-responsive panel'),
+            'dataProvider' => $model->search(),
+            'columns' => array(
+                array(
+                    'name' => 'id',
+                    'headerHtmlOptions' => array('class' => 'hidden-480 hidden-xs'),
+                    'htmlOptions' => array('class' => 'hidden-480 hidden-xs'),
+                ),
+                array(
+                    'name' => 'company_name',
+                    'value' => 'CHtml::link($data->company_name, Yii::app()->createUrl("supplier/update",array("id"=>$data->primaryKey)))',
+                    'type' => 'raw',
+                ),
+                'first_name',
+                'last_name',
+                array(
+                    'name' => 'mobile_no',
+                    //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs'),
+                    //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs'),
+                ),
+                array(
+                    'name' => 'address1',
+                    //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs'),
+                    //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs'),
+                ),
+                array(
+                    'name' => 'status',
+                    'type' => 'raw',
+                    'value' => '$data->status=="1" ? TbHtml::labelTb("Active", array("color" => TbHtml::LABEL_COLOR_SUCCESS)) : TbHtml::labelTb("Inactive", array("color" => TbHtml::LABEL_COLOR_DEFAULT))',
+                    //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs'),
+                    //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs'),
+                ),
+                //'address2',
+                /*
+                'city_id',
+                'country_code',
+                'email',
+                'notes',
+                */
+                array(
+                    'class' => 'bootstrap.widgets.TbButtonColumn',
+                    'header' => Yii::t('app', 'Action'),
+                    'template' => '<div class="hidden-sm hidden-xs btn-group">{view}{update}{delete}{undeleted}</div>',
+                    'htmlOptions' => array('class' => 'nowrap'),
+                    'buttons' => array(
+                        'view' => array(
+                            'click' => 'updateDialogOpen',
+                            'url' => 'Yii::app()->createUrl("supplier/view/",array("id"=>$data->id))',
+                            'options' => array(
+                                'class' => 'btn btn-xs btn-success',
+                                'data-update-dialog-title' => Yii::t('app', 'View Supplier'),
+                            ),
                         ),
-                    ),
-                    'update' => array(
-                        'icon' => 'ace-icon fa fa-edit',
-                        'label' => Yii::t('app', 'Update'),
-                        'options' => array(
-                            'class' => 'btn btn-xs btn-info',
+                        'update' => array(
+                            'icon' => 'ace-icon fa fa-edit',
+                            'label' => Yii::t('app', 'Update'),
+                            'options' => array(
+                                'class' => 'btn btn-xs btn-info',
+                            ),
                         ),
-                    ),
-                    'delete' => array(
-                        'label' => Yii::t('app', 'Delete'),
-                        'options' => array(
-                            'class' => 'btn btn-xs btn-danger',
+                        'delete' => array(
+                            'label' => Yii::t('app', 'Delete'),
+                            'options' => array(
+                                'class' => 'btn btn-xs btn-danger',
+                            ),
+                            'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("supplier.delete")',
                         ),
-                        'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("supplier.delete")',
-                    ),
-                    'undeleted' => array(
-                        'label' => Yii::t('app', 'Undo Delete Item'),
-                        'url' => 'Yii::app()->createUrl("Supplier/UndoDelete", array("id"=>$data->id))',
-                        'icon' => 'bigger-120 glyphicon-refresh',
-                        'options' => array(
-                            'class' => 'btn btn-xs btn-warning btn-undodelete',
+                        'undeleted' => array(
+                            'label' => Yii::t('app', 'Undo Delete Item'),
+                            'url' => 'Yii::app()->createUrl("Supplier/UndoDelete", array("id"=>$data->id))',
+                            'icon' => 'bigger-120 glyphicon-refresh',
+                            'options' => array(
+                                'class' => 'btn btn-xs btn-warning btn-undodelete',
+                            ),
+                            'visible' => '$data->status=="0" && Yii::app()->user->checkAccess("supplier.delete")',
                         ),
-                        'visible' => '$data->status=="0" && Yii::app()->user->checkAccess("supplier.delete")',
                     ),
                 ),
-            ),
-            /*
-            array('class'=>'bootstrap.widgets.TbButtonColumn',
-                'template'=>'<div class="hidden-md hidden-lg"><div class="inline position-relative">
-                                <button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown" data-position="auto"><i class="ace-icon fa fa-cog icon-only bigger-110"></i></button>
-                                <ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
-                                <li>{view}</li><li>{update}</li><li>{delete1}</li>
-                                </ul></div></div>',
-                'htmlOptions'=>array('class'=>'nowrap'),
-                'buttons' => array(
-                    'view' => array(
-                      'click' => 'updateDialogOpen',
-                      'url'=>'Yii::app()->createUrl("supplier/view/",array("id"=>$data->id))',
-                      'options' => array(
-                          'class'=>'btn btn-xs btn-success',
-                          'data-update-dialog-title' => Yii::t( 'app', 'View Supplier' ),
+                /*
+                array('class'=>'bootstrap.widgets.TbButtonColumn',
+                    'template'=>'<div class="hidden-md hidden-lg"><div class="inline position-relative">
+                                    <button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown" data-position="auto"><i class="ace-icon fa fa-cog icon-only bigger-110"></i></button>
+                                    <ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+                                    <li>{view}</li><li>{update}</li><li>{delete1}</li>
+                                    </ul></div></div>',
+                    'htmlOptions'=>array('class'=>'nowrap'),
+                    'buttons' => array(
+                        'view' => array(
+                          'click' => 'updateDialogOpen',
+                          'url'=>'Yii::app()->createUrl("supplier/view/",array("id"=>$data->id))',
+                          'options' => array(
+                              'class'=>'btn btn-xs btn-success',
+                              'data-update-dialog-title' => Yii::t( 'app', 'View Supplier' ),
+                            ),
                         ),
-                    ),
-                    'update' => array(
-                      'icon' => 'ace-icon fa fa-edit',
-                      //'url'=>'Yii::app()->createUrl("supplier/update/",array("id"=>$data->id))',
-                      'label'=>Yii::t('app','Update'),
-                      'options' => array(
-                          'class'=>'btn btn-xs btn-info',
-                      ),
-                    ),
-                    'delete1' => array(
-                       'label'=>Yii::t('app','Delete'),
-                       'options' => array(
-                          'class'=>'btn btn-xs btn-danger',
+                        'update' => array(
+                          'icon' => 'ace-icon fa fa-edit',
+                          //'url'=>'Yii::app()->createUrl("supplier/update/",array("id"=>$data->id))',
+                          'label'=>Yii::t('app','Update'),
+                          'options' => array(
+                              'class'=>'btn btn-xs btn-info',
+                          ),
                         ),
-                    ),
-                 ),
+                        'delete1' => array(
+                           'label'=>Yii::t('app','Delete'),
+                           'options' => array(
+                              'class'=>'btn btn-xs btn-danger',
+                            ),
+                        ),
+                     ),
+                ),
+                 *
+                */
             ),
-             *
-            */
-        ),
-    )); ?>
+        )); ?>
 
-    <?php $this->endWidget(); ?>
+        <?php $this->endWidget(); ?>
 
+    </div>
 </div>
 
 <?php
