@@ -181,4 +181,5 @@
         </div>
         <?php $this->endWidget(); ?>
 </div>
-        
+
+<?php Yii::app()->clientScript->registerScript('setFocus',  '$("#Employee_first_name").focus();'); ?>

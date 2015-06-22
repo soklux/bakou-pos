@@ -1,9 +1,3 @@
-<?php
-/* @var $this PriceTierController */
-/* @var $model PriceTier */
-/* @var $form TbActiveForm */
-?>
-
 <div class="form">
 
     <?php $form=$this->beginWidget('\TbActiveForm', array(
@@ -27,7 +21,7 @@
             <?php //echo $form->textFieldControlGroup($model,'deleted',array('span'=>5)); ?>
 
         <div class="form-actions">
-                 <?php echo TbHtml::submitButton($model->isNewRecord ? Yii::t('app','form.button.create') : Yii::t('app','form.button.save'),array(
+                 <?php echo TbHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array(
 		    'color'=>TbHtml::BUTTON_COLOR_PRIMARY,
 		    //'size'=>TbHtml::BUTTON_SIZE_SMALL,
 		)); ?>

@@ -76,6 +76,7 @@ class Client extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'accounts' => array(self::HAS_MANY, 'Account', 'client_id'),
+            'contact' => array(self::BELONGS_TO, 'Contact', 'contact_id'),
 		);
 	}
 

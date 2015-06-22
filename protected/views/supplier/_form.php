@@ -37,3 +37,5 @@
 	</div>
 
 <?php $this->endWidget(); ?>
+
+<?php Yii::app()->clientScript->registerScript('setFocus',  '$("#Supplier_company_name").focus();'); ?>
