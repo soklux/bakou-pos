@@ -24,7 +24,7 @@ $this->breadcrumbs=array(
                                     <i class="ace-icon fa fa-shopping-cart"></i>
                                 </div>
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number"><?php echo number_format($report->totalSale2Y(),Yii::app()->shoppingCart->getDecimalPlace()); ?></span>
+                                    <span class="infobox-data-number"><?php echo number_format($report->totalSale2D(),Yii::app()->shoppingCart->getDecimalPlace()); ?></span>
                                     <div class="infobox-content"><?php echo CHtml::link('Today\'s Sale', Yii::app()->createUrl("report/SaleReportTab")); ?></div>
                                 </div>
                             </div>
@@ -35,9 +35,9 @@ $this->breadcrumbs=array(
                                 </div>
 
                                 <div class="infobox-data">
-                                    <span class="infobox-data-number"><?php echo number_format($report->totalSale2D(),Yii::app()->shoppingCart->getDecimalPlace()); ?></span>
+                                    <span class="infobox-data-number"><?php echo number_format($report->totalSale2Y(),Yii::app()->shoppingCart->getDecimalPlace()); ?></span>
 
-                                    <div class="infobox-content">Total Sales</div>
+                                    <div class="infobox-content">This Year Sales</div>
                                 </div>
                             </div>
 

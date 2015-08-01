@@ -377,9 +377,6 @@ class Report extends CFormModel
                 AND s.sale_time<=DATE_ADD(STR_TO_DATE(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
                 AND s.status=:status";
 
-
-        echo $sql;
-
         $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
