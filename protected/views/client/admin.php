@@ -129,47 +129,7 @@ $this->breadcrumbs = array(
                     'visible' => Yii::app()->user->checkAccess("payment.index"),
                     'type' => 'raw',
                 ),
-                array(
-                    'class' => 'bootstrap.widgets.TbButtonColumn',
-                    'header' => Yii::t('app','Action'),
-                    'template' => '<div class="btn-group">{update}{payment}{delete}{undeleted}</div>',
-                    'htmlOptions' => array('class' => 'nowrap'),
-                    'buttons' => array(
-                        'update' => array(
-                            'icon' => 'ace-icon fa fa-edit',
-                            'options' => array(
-                                'class' => 'btn btn-xs btn-info',
-                            ),
-                            'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("client.update")',
-                        ),
-                        'payment' => array(
-                            'label' => 'Payment',
-                            'icon' => 'fa-icon fa fa-heart icon-animated-vertical',
-                            'url' => 'Yii::app()->createUrl("client/Payment",array("client_id"=>$data->id))',
-                            'options' => array(
-                                'class' => 'btn btn-xs btn-success',
-                                'title' => Yii::t('app', 'Payment'),
-                            ),
-                            'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("payment.index")',
-                        ),
-                        'delete' => array(
-                            'url' => 'Yii::app()->createUrl("client/delete/",array("id"=>$data->id))',
-                            'options' => array(
-                                'class' => 'btn btn-xs btn-danger',
-                            ),
-                            'visible' => '$data->status=="1" && Yii::app()->user->checkAccess("client.delete")',
-                        ),
-                        'undeleted' => array(
-                            'label' => Yii::t('app', 'UnDelete'),
-                            'url' => 'Yii::app()->createUrl("client/undodelete", array("id"=>$data->id))',
-                            'icon' => 'bigger-120 glyphicon-refresh',
-                            'options' => array(
-                                'class' => 'btn btn-xs btn-warning btn-undodelete',
-                            ),
-                            'visible' => '$data->status=="0" && Yii::app()->user->checkAccess("client.delete")',
-                        ),
-                    ),
-                ),
+                
             ),
         )); ?>
 

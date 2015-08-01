@@ -57,10 +57,10 @@
         'fixedHeader' => true,
         'responsiveTable' => true,
         'type'=>TbHtml::GRID_TYPE_BORDERED,
-	'dataProvider'=>$report->saleSummary(),
+	    'dataProvider'=>$report->saleSummary(),
         //'filter'=>$filtersForm,
         'summaryText' =>'<p class="text-info" align="left">' . Yii::t('app','Sales Summary') . Yii::t('app','From') . ':  ' . $from_date . '  ' . Yii::t('app','To') . ':  ' . $to_date . '</p>', 
-	'template'=>"{summary}\n{items}\n{exportbuttons}\n{pager}",
+	    'template'=>"{summary}\n{items}\n{exportbuttons}\n{pager}",
         'columns'=>array(
 		array('name'=>'no_of_invoice',
                       'header'=>Yii::t('app','No. of Invoices'),

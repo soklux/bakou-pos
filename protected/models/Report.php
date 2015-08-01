@@ -261,7 +261,7 @@ class Report extends CFormModel
             AND s.status=:status
             GROUP BY date_format(s.sale_time,'%d-%m-%Y')";
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             //'id'=>'saleinvoice',
@@ -295,7 +295,7 @@ class Report extends CFormModel
             AND s.status=:status
             GROUP BY date_format(s.sale_time,'%d-%m-%Y')";
 
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
         foreach ($result as $record) {
             $sub_total = $record['sub_total'];
@@ -377,7 +377,10 @@ class Report extends CFormModel
                 AND s.sale_time<=DATE_ADD(STR_TO_DATE(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
                 AND s.status=:status";
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+
+        echo $sql;
+
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             'keyField' => 'no_of_invoice',
@@ -402,7 +405,7 @@ class Report extends CFormModel
                 GROUP BY DATE_FORMAT(s.`sale_time`,'%d-%m-%Y')
              ) as t";
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             //'id'=>'saleinvoice',
@@ -431,7 +434,7 @@ class Report extends CFormModel
                AND s.sale_time<=DATE_ADD(STR_TO_DATE(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
                AND s.status=:status";
     
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
          foreach ($result as $record) {
             $sub_total = $record['sub_total'];
@@ -455,7 +458,7 @@ class Report extends CFormModel
             GROUP BY DATE_FORMAT(s.`sale_time`,'%m-%Y')";
         
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true,array(':status'=>Yii::app()->params['_active_status']));
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true,array(':status'=>Yii::app()->params['active_status']));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             //'id'=>'saleinvoice',
@@ -475,7 +478,7 @@ class Report extends CFormModel
                AND s.sale_time<=DATE_ADD(STR_TO_DATE(:to_date,'%d-%m-%Y'),INTERVAL 1 DAY)
                AND s.status=:status";   
 
-        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status'=>Yii::app()->params['_active_status']));
+        $result = Yii::app()->db->createCommand($sql)->queryAll(true, array(':status'=>Yii::app()->params['active_status']));
 
         foreach ($result as $record) {
             $sub_total = $record['sub_total'];
@@ -1107,7 +1110,7 @@ class Report extends CFormModel
                 AND s.status=:status
                 GROUP BY CONCAT(e.`first_name`,' - ',e.`last_name`)";
 
-        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['_active_status']));
+        $rawData = Yii::app()->db->createCommand($sql)->queryAll(true, array(':from_date' => $this->from_date, ':to_date' => $this->to_date,':status'=>Yii::app()->params['active_status']));
 
         $dataProvider = new CArrayDataProvider($rawData, array(
             'keyField' => 'sale_rep',

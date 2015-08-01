@@ -37,7 +37,6 @@ $this->breadcrumbs = array(
 
         <?php //echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
 
-
         <div class="page-header">
             <div class="nav-search" id="nav-search">
                 <?php $this->renderPartial('_search', array(

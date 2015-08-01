@@ -594,14 +594,14 @@ class Sale extends CActiveRecord
     {
 
         $sql = "SELECT s.id sale_id,
-                      CONCAT(c.first_name,' ',c.last_name) customer_name, c.client_id,
+                      CONCAT(c.first_name,' ',c.last_name) customer_name, s.client_id,
                       DATE_FORMAT(s.sale_time,'%d-%m-%Y %H:%i') sale_time,st.items,remark
                 FROM sale s INNER JOIN (SELECT si.sale_id, GROUP_CONCAT(i.name) items
                                             FROM sale_item si INNER JOIN item i ON i.id=si.item_id 
                                             GROUP BY si.sale_id
                                             ) st ON st.sale_id=s.id
                      left join `client` c on c.`id` = s.`client_id`
-                WHERE status='2'";
+                WHERE s.status='2'";
 
         $rawData = Yii::app()->db->createCommand($sql)->queryAll(true);
 

@@ -35,9 +35,9 @@ $this->breadcrumbs=array(
             'value' => '$data["sale_time"]',
         ),
         array(
-            'name' => 'client_id',
+            'name' => 'customer_name',
             'header' => Yii::t('app', 'Customer Name'),
-            'value' => '$data["client_name]',
+            'value' => '$data["customer_name"]',
         ),
         array(
             'name' => 'items',
