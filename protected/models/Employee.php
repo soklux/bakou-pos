@@ -155,7 +155,9 @@ class Employee extends CActiveRecord
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
-            //'sort'=>array( 'defaultOrder'=>'first_name'),
+            'pagination' => array(
+                'pageSize' => Yii::app()->user->getState('employeePageSize', Common::defaultPageSize()),
+            ),
 		));
 	}
 

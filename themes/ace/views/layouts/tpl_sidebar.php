@@ -100,7 +100,7 @@ $this->widget('bootstrap.widgets.TbNav', array(
                                array('label'=>Yii::t('menu','Price Tier'),'icon'=> TbHtml::ICON_ADJUST, 'url'=>Yii::app()->urlManager->createUrl('priceTier/admin'), 'active'=>$this->id .'/'. $this->action->id=='priceTier/admin','visible'=>Yii::app()->user->checkAccess('store.update')),
                                //array('label'=>Yii::t('menu','Location'),'icon'=> TbHtml::ICON_MAP_MARKER, 'url'=>Yii::app()->urlManager->createUrl('location/admin'), 'active'=>$this->id .'/'. $this->action->id=='location/admin','visible'=>Yii::app()->user->checkAccess('store.update')),
                                array('label'=>Yii::t('menu','Shop Setting'),'icon'=> TbHtml::ICON_COG, 'url'=>Yii::app()->urlManager->createUrl('settings/index'), 'active'=>$this->id=='settings',
-                                   'visible'=> Yii::app()->user->isAdmin
+                                   //'visible'=> Yii::app()->user->isAdmin
                                ),
                                    //'visible'=>Yii::app()->user->checkAccess('store.update')),
                                //array('label'=>Yii::t('menu','Branch'),'icon'=> TbHtml::ICON_HOME, 'url'=>Yii::app()->urlManager->createUrl('store/admin'), 'active'=>$this->id .'/'. $this->action->id=='store/admin','visible'=>Yii::app()->user->checkAccess('store.update')),

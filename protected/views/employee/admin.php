@@ -67,14 +67,13 @@
         <?php endif; ?>
 
         <?php
-        $pageSize = Yii::app()->user->getState('employeepageSize', Yii::app()->params['defaultPageSize']);
         $pageSizeDropDown = CHtml::dropDownList(
             'pageSize',
-            $pageSize,
-            array(10 => 10, 25 => 25, 50 => 50, 100 => 100),
+            Yii::app()->user->getState('employeePageSize', Common::defaultPageSize()),
+            Common::arrayFactory('page_size'),
             array(
                 'class' => 'change-pagesize',
-                'onchange' => "$.fn.yiiGridView.update('employee-grid',{data:{employeepageSize:$(this).val()}});",
+                'onchange' => "$.fn.yiiGridView.update('employee-grid',{data:{pageSize:$(this).val()}});",
             )
         );
         ?>

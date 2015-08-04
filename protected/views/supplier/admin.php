@@ -69,11 +69,10 @@ $('.search-form form').submit(function(){
         </div>
 
         <?php
-        $pageSize = Yii::app()->user->getState('supplierpageSize', Yii::app()->params['defaultPageSize']);
         $pageSizeDropDown = CHtml::dropDownList(
             'pageSize',
-            $pageSize,
-            array(10 => 10, 25 => 25, 50 => 50, 100 => 100),
+            Yii::app()->user->getState('supplierPageSize', Common::defaultPageSize()),
+            Common::arrayFactory('page_size'),
             array(
                 'class' => 'change-pagesize',
                 'onchange' => "$.fn.yiiGridView.update('supplier-grid',{data:{pageSize:$(this).val()}});",

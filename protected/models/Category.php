@@ -99,10 +99,13 @@ class Category extends CActiveRecord
 		//$criteria->compare('created_date',$this->created_date,true);
 		//$criteria->compare('modified_date',$this->modified_date,true);
                 
-                $criteria->order = 'name';
+        $criteria->order = 'name';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+            'pagination' => array(
+                'pageSize' => Yii::app()->user->getState('categoryPageSize', Common::defaultPageSize()),
+            ),
 		));
 	}
         

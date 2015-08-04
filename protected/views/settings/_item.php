@@ -7,7 +7,7 @@
                 echo CHtml::checkBox(get_class($model) . '[' . $category . '][' . $key . ']', $val); 
                 echo '<span class="lbl"></span>'; 
             } else if ($key === 'itemNumberPerPage') {
-                echo CHtml::dropDownList(get_class($model) . '[' . $category . '][' . $key . ']',$val,  Item::itemAlias('number_per_page'));
+                echo CHtml::dropDownList(get_class($model) . '[' . $category . '][' . $key . ']',$val,  Common::arrayFactory('page_size'));
                
             } 
         ?>

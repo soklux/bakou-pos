@@ -309,7 +309,7 @@ class SupplierController extends Controller
             }
 
             if (isset($_GET['pageSize'])) {
-                Yii::app()->user->setState('supplierpageSize', (int)$_GET['pageSize']);
+                Yii::app()->user->setState('supplierPageSize', (int)$_GET['pageSize']);
                 unset($_GET['pageSize']);
             }
 

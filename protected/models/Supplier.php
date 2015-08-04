@@ -156,7 +156,7 @@ class Supplier extends CActiveRecord
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
             'pagination' => array(
-                'pageSize' => Yii::app()->user->getState('supplierpageSize',Yii::app()->params['defaultPageSize']),
+                'pageSize' => Yii::app()->user->getState('supplierPageSize', Common::defaultPageSize()),
             ),
             'sort'=>array( 'defaultOrder'=>'company_name')
 		));

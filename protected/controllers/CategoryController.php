@@ -214,6 +214,11 @@ class CategoryController extends Controller
 		if(isset($_GET['Category']))
 			$model->attributes=$_GET['Category'];
 
+		if (isset($_GET['pageSize'])) {
+			Yii::app()->user->setState('categoryPageSize',(int)$_GET['pageSize']);
+			unset($_GET['pageSize']);
+		}
+
 		$this->render('admin',array(
 			'model'=>$model,
 		));

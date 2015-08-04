@@ -65,11 +65,10 @@ $this->breadcrumbs = array(
         </div>
 
         <?php
-        $pageSize = Yii::app()->user->getState('clientpageSize', Yii::app()->params['defaultPageSize']);
         $pageSizeDropDown = CHtml::dropDownList(
             'pageSize',
-            $pageSize,
-            array(10 => 10, 25 => 25, 50 => 50, 100 => 100),
+            $pageSize = Yii::app()->user->getState('clientpageSize', Common::defaultPageSize()),
+            Common::arrayFactory('page_size'),
             array(
                 'class' => 'change-pagesize',
                 'onchange' => "$.fn.yiiGridView.update('client-grid',{data:{pageSize:$(this).val()}});",
