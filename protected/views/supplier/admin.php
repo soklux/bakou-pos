@@ -38,7 +38,7 @@ $('.search-form form').submit(function(){
         <?php $this->widget('ext.modaldlg.EModalDlg'); ?>
 
         <div class="page-header">
-            <div class="nav-search" id="nav-search">
+            <div class="nav-search search-form" id="nav-search">
                 <?php $this->renderPartial('_search', array(
                     'model' => $model,
                 )); ?>

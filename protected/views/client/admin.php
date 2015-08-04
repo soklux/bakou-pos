@@ -34,7 +34,7 @@ $this->breadcrumbs = array(
         )); ?>
 
         <div class="page-header">
-            <div class="nav-search" id="nav-search">
+            <div class="nav-search search-form" id="nav-search">
                 <?php $this->renderPartial('_search', array(
                     'model' => $model,
                 )); ?>

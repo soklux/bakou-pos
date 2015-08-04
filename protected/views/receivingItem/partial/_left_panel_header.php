@@ -136,6 +136,8 @@ $(document).ready(function()
         $(this.form).ajaxSubmit({target: "#register_container", beforeSubmit: receivingsBeforeSubmit });
     });
 
+    $('.input-mask-date').mask('99/99/9999');
+
 });
 
 function receivingsBeforeSubmit(formData, jqForm, options)

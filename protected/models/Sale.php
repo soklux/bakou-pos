@@ -361,7 +361,7 @@ class Sale extends CActiveRecord
             $inventory->save();
             
             //Update quantity in expiry table
-            //$this->updateStockExpire($item['item_id'], $item['quantity'], $sale_id);
+            $this->updateStockExpire($item['item_id'], $item['quantity'], $sale_id);
         }
     }
 

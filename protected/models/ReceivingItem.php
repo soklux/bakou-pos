@@ -47,7 +47,7 @@ class ReceivingItem extends CActiveRecord
 			array('receive_id, item_id, line', 'numerical', 'integerOnly'=>true),
 			array('quantity, cost_price, unit_price, price, discount_amount', 'numerical'),
 			array('discount_type', 'length', 'max'=>2),
-                        array('expire_date', 'date', 'format'=>array('dd/MM/yyyy','d/MM/yyyy')),
+			array('expire_date', 'date', 'format'=>array('dd/MM/yyyy','d/MM/yyyy')),
 			array('description', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
@@ -63,8 +63,8 @@ class ReceivingItem extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-                    'item' => array(self::BELONGS_TO, 'Item', 'item_id'),
-                    'receiving' => array(self::BELONGS_TO, 'Receiving', 'receiving_id'),
+			'item' => array(self::BELONGS_TO, 'Item', 'item_id'),
+			'receiving' => array(self::BELONGS_TO, 'Receiving', 'receiving_id'),
 		);
 	}
 

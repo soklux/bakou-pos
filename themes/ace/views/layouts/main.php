@@ -53,9 +53,8 @@
    
     <?php
         $cs->registerScriptFile($baseUrl.'/js/ace-extra.min.js',CClientScript::POS_END);
-        //$cs->registerScriptFile($baseUrl.'/js/jquery.colorbox-min.js',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/ace-elements.min.js',CClientScript::POS_END);  
-        $cs->registerScriptFile($baseUrl.'/js/ace.min.js',CClientScript::POS_END);
+        $cs->registerScriptFile($baseUrl.'/js/ace.min.js',CClientScript::POS_END);;
         //$cs->registerScriptFile($baseUrl.'/js/ace.ajax-content',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/jquery.form.min.js',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/jquery-ui.min.js',CClientScript::POS_END);

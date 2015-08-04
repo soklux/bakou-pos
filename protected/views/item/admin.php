@@ -38,7 +38,7 @@ $this->breadcrumbs = array(
         <?php //echo TbHtml::linkButton(Yii::t('app','Search'),array('class'=>'search-button btn','size'=>TbHtml::BUTTON_SIZE_SMALL,'icon'=>'ace-icon fa fa-search',)); ?>
 
         <div class="page-header">
-            <div class="nav-search" id="nav-search">
+            <div class="nav-search search-form" id="nav-search">
                 <?php $this->renderPartial('_search', array(
                     'model' => $model,
                 )); ?>
@@ -97,6 +97,7 @@ $this->breadcrumbs = array(
             'summaryText' => 'Showing {start}-{end} of {count} entries ' . $pageSizeDropDown . ' rows per page',
             'htmlOptions' => array('class' => 'table-responsive panel'),
             'dataProvider' => $model->search(),
+            'filter' => $model,
             'columns' => array(
                 /*
                 array('name'=>'id',
@@ -108,12 +109,12 @@ $this->breadcrumbs = array(
                     'name' => 'name',
                     'value' => '$data->status=="1" ? CHtml::link($data->name, Yii::app()->createUrl("item/updateImage",array("id"=>$data->primaryKey))) : "<span class=\"text-muted\">  $data->name <span>" ',
                     'type' => 'raw',
+                    'filter' => '',
                 ),
                 array(
                     'name' => 'item_number',
-                    'header' => 'Item-Code'
-                    //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs hidden-md'),
-                    //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs hidden-md'),
+                    'header' => 'Item-Code',
+                    'filter' => '',
                 ),
                 /*
                 array('name'=>'description',
@@ -129,10 +130,10 @@ $this->breadcrumbs = array(
                 ),
                 array(
                     'name' => 'category_id',
-                    'header' => 'Category',
+                    //'header' => 'Category',
                     //'headerHtmlOptions'=>array('class'=>'hidden-480 hidden-xs hidden-md'),
                     'value' => '$data->category_id==null? " " : $data->category->name',
-                    //'htmlOptions'=>array('class' => 'hidden-480 hidden-xs hidden-md'),
+                    'filter' =>  CHtml::listData(Category::model()->findAll(array('order'=>'name')), 'id', 'name'),
                 ),
                 /*
                 array('name'=>'supplier_id',
@@ -162,9 +163,7 @@ $this->breadcrumbs = array(
                     'name' => 'status',
                     'type' => 'raw',
                     'value' => '$data->status==1 ? TbHtml::labelTb("Active", array("color" => TbHtml::LABEL_COLOR_SUCCESS)) : TbHtml::labelTb("Inactive")',
-                    //'value' => 'TbHtml::labelTb($data->status)',
-                    //'headerHtmlOptions'=>array('class'=>'hidden-480'),
-                    //'htmlOptions'=>array('class' => 'hidden-480'),
+                    'filter' => '',
                 ),
                 array(
                     'class' => 'bootstrap.widgets.TbButtonColumn',

@@ -54,7 +54,8 @@
         //$cs->registerScriptFile($baseUrl.'/js/jquery.slimscroll.min.js',CClientScript::POS_END); 
         //$cs->registerScriptFile($baseUrl.'/js/jquery.bxslider.min.js',CClientScript::POS_END); 
         //$cs->registerScriptFile($baseUrl.'/js/jquery.colorbox-min.js',CClientScript::POS_END);
-        $cs->registerScriptFile($baseUrl.'/js/ace-elements.min.js',CClientScript::POS_END);  
+        $cs->registerScriptFile($baseUrl.'/js/jquery.maskedinput.min.js',CClientScript::POS_END);
+        $cs->registerScriptFile($baseUrl.'/js/ace-elements.min.js',CClientScript::POS_END);
         $cs->registerScriptFile($baseUrl.'/js/ace.min.js',CClientScript::POS_END);
         //$cs->registerScriptFile($baseUrl.'/js/jquery.jkey.min.js',CClientScript::POS_END);
         //$cs->registerScriptFile($baseUrl.'/js/common.js',CClientScript::POS_END);

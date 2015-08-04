@@ -146,7 +146,7 @@ class ReceivingItemController extends Controller
                 $error = CActiveForm::validate($model);
                 $errors = explode(":", $error);
                 $data['warning'] = str_replace("}", "", $errors[1]);
-                $data['warning'] = Yii::t('app', 'Input data type is invalid');
+                Yii::app()->user->setFlash('danger',$data['warning']);
             }
             $this->reload($data);
         } else {
@@ -271,15 +271,15 @@ class ReceivingItemController extends Controller
                 'bootstrap.bootbox.min.js' => false,
                 'bootstrap.min.js' => false,
                 'jquery-ui.min.js' => false,
-                'jquery.mask.js' => false,
+                //'jquery.mask.js' => false,
                 'EModalDlg.js'=>false,
             );
 
             Yii::app()->clientScript->scriptMap['jquery-ui.css'] = false; 
             Yii::app()->clientScript->scriptMap['box.css'] = false; 
-            $this->renderPartial('admin', $data, false, true);
+            $this->renderPartial('index', $data, false, true);
         } else {
-            $this->render('admin', $data);
+            $this->render('index', $data);
         }
     }
 

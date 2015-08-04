@@ -5,7 +5,7 @@
 )); ?>
 
     <span class="input-icon">
-        <?php echo CHtml::activeTelField($model,'first_name', array('class' => 'col-xs-12 col-sm-12','placeholder' => Yii::t('app','Filter'))); ?>
+        <?php echo CHtml::activeTelField($model,'first_name', array('class' => 'col-xs-12 col-sm-12','placeholder' => Yii::t('app','Search'))); ?>
         <i class="ace-icon fa fa-search nav-search-icon"></i>
     </span>
 

@@ -202,6 +202,10 @@ class Item extends CActiveRecord
         //$criteria->condition='deleted=:is_deleted';
         //$criteria->params=array(':is_deleted'=>$this::_item_not_deleted);
 
+        $criteria->compare('category_id',$this->category_id);
+        $criteria->compare('quantity',$this->quantity);
+        $criteria->compare('location',$this->location,true);
+
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => array(
