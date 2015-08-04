@@ -60,7 +60,7 @@ class Employee extends CActiveRecord
 			array('notes, dob, day, month, year', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, first_name, last_name, dob, mobile_no, adddress1, address2, city_id, country_code, email, notes, status', 'safe', 'on'=>'search'),
+			array('id, first_name, last_name, dob, mobile_no, adddress1, address2, city_id, country_code, email, notes, status, search', 'safe', 'on'=>'search'),
 		);
 	}
 
