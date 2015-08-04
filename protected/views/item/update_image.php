@@ -11,7 +11,7 @@ $this->breadcrumbs=array(
 
 <?php $box = $this->beginWidget('yiiwheels.widgets.box.WhBox', array(
               'title' => Yii::t('app','Update Item'),
-              'headerIcon' => 'ace-icon fa fa-tags',
+              'headerIcon' => 'ace-icon fa fa-coffee',
               'htmlHeaderOptions'=>array('class'=>'widget-header-flat widget-header-small'),
               'content' => $this->renderPartial('_form_image', array('model'=>$model,'price_tiers'=>$price_tiers), true),
               'headerButtons' => array(
